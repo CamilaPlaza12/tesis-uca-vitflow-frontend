@@ -1,0 +1,148 @@
+<div class="auth-page">
+  <div class="auth-card">
+    <div class="auth-card__left desktop-only">
+      <div class="brand">
+        <img
+          src="/images/logo.png"
+          alt="VitFlow"
+          class="brand-logo"
+        />
+        <div class="brand-text">
+          <h1>VitFlow</h1>
+        </div>
+      </div>
+
+      <h2 class="auth-card__title">
+        Gestión inteligente de donaciones de sangre para hospitales
+      </h2>
+
+      <p class="auth-card__description">
+        VitFlow ayuda a tu institución a coordinar donaciones, gestionar stock y
+        conectar con donantes de forma sencilla y segura.
+      </p>
+
+      <div class="features">
+        <div class="feature">
+          <img
+            src="/images/hospital.png"
+            alt="Gestión"
+            class="feature-icon"
+          />
+          <div class="feature-label">Gestión</div>
+        </div>
+        <div class="feature">
+          <img
+            src="/images/donaciones.png"
+            alt="Donaciones"
+            class="feature-icon"
+          />
+          <div class="feature-label">Donaciones</div>
+        </div>
+        <div class="feature">
+          <img
+            src="/images/comunidad.png"
+            alt="Conexión"
+            class="feature-icon"
+          />
+          <div class="feature-label">Conexión</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="auth-card__right">
+      <div class="mobile-brand mobile-only">
+        <img
+          src="/images/logo.png"
+          alt="VitFlow"
+          class="brand-logo"
+        />
+        <div class="brand-text">
+          <h1>VitFlow</h1>
+        </div>
+      </div>
+
+      <h2 class="signin-title">Inicia sesión en VitFlow</h2>
+
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="signin-form">
+        <div
+          class="form-field"
+          [class.form-field--error]="email?.touched && email?.invalid"
+        >
+          <label for="email">Email Institucional</label>
+          <input
+            id="email"
+            type="email"
+            formControlName="email"
+            placeholder="ejemplo@hospital.com"
+          />
+
+          <div class="form-error" *ngIf="email?.touched && email?.invalid">
+            <span *ngIf="email?.errors?.['required']">
+              El email es obligatorio.
+            </span>
+            <span *ngIf="email?.errors?.['email']">
+              Ingresá un email institucional válido.
+            </span>
+          </div>
+        </div>
+
+        <div
+          class="form-field"
+          [class.form-field--error]="password?.touched && password?.invalid"
+        >
+          <label for="password">Contraseña</label>
+          <input
+            id="password"
+            type="password"
+            formControlName="password"
+            placeholder="Contraseña"
+          />
+
+          <div
+            class="form-error"
+            *ngIf="password?.touched && password?.invalid"
+          >
+            <span *ngIf="password?.errors?.['required']">
+              La contraseña es obligatoria.
+            </span>
+            <span *ngIf="password?.errors?.['minlength']">
+              Debe tener al menos
+              {{ password?.errors?.['minlength'].requiredLength }} caracteres.
+            </span>
+          </div>
+        </div>
+
+        <button
+          class="btn btn-primary"
+          type="submit"
+          [disabled]="form.invalid || loading"
+        >
+          <span *ngIf="!loading">Iniciar Sesión</span>
+          <span *ngIf="loading">Iniciando…</span>
+        </button>
+
+        <button
+          type="button"
+          class="btn btn-google"
+          (click)="onGoogleSignIn()"
+        >
+          <span class="google-icon">G</span>
+          <span>Iniciar sesión con Google</span>
+        </button>
+
+        <div class="extra-links">
+          <a class="link" (click)="onForgotPassword()">
+            ¿Olvidaste tu contraseña? Haz click aquí
+          </a>
+
+          <div class="link-secondary">
+            <span>¿No tenés usuario?</span>
+            <a class="link" (click)="onRequestAccess()">
+              Solicitá tu registro
+            </a>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
