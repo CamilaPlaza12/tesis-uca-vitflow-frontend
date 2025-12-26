@@ -11,6 +11,11 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ButtonModule } from 'primeng/button';
 import { DrawerModule } from 'primeng/drawer';
 import { RippleModule } from 'primeng/ripple';
+import { Bancos } from './screens/pages/bancos/bancos';
+import { Turnos } from './screens/pages/turnos/turnos';
+import { PedidosAlertas } from './screens/pages/pedidos-alertas/pedidos-alertas';
+import { Donantes } from './screens/pages/donantes/donantes';
+import { Configuracion } from './screens/pages/configuracion/configuracion';
 
 
 @NgModule({
@@ -19,7 +24,12 @@ import { RippleModule } from 'primeng/ripple';
     Home,
     SignIn,
     Register,
-    SidebarComponent
+    SidebarComponent,
+    Bancos,
+    Turnos,
+    PedidosAlertas,
+    Donantes,
+    Configuracion
   ],
   imports: [
     BrowserModule,
