@@ -1,1 +1,25 @@
-<router-outlet></router-outlet>
+<ng-container *ngIf="showSidebar; else authLayout">
+  <div class="app-shell">
+    <button
+      class="mobile-menu-btn"
+      type="button"
+      aria-label="Open menu"
+      (click)="mobileMenuOpen = true"
+    >
+      <i class="pi pi-bars"></i>
+    </button>
+
+    <app-sidebar
+      [(collapsed)]="collapsed"
+      [(mobileOpen)]="mobileMenuOpen"
+    ></app-sidebar>
+
+    <div class="content" [class.collapsed]="collapsed">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</ng-container>
+
+<ng-template #authLayout>
+  <router-outlet></router-outlet>
+</ng-template>

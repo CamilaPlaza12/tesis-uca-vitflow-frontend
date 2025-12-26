@@ -1,0 +1,80 @@
+<div class="overlay" *ngIf="mobileOpen" (click)="closeMobile()"></div>
+
+<aside
+  class="sidebar"
+  [class.collapsed]="collapsed && !isMobile"
+  [class.mobile]="isMobile"
+  [class.mobile-open]="isMobile && mobileOpen"
+>
+  <!-- TOP -->
+  <div class="top">
+    <!-- IZQUIERDA: logo + texto (SOLO cuando NO está colapsado) -->
+    <div class="brand">
+      <img class="logo-img" src="images/gota.png" alt="VitFlow" />
+      <span class="brand-text" *ngIf="!(collapsed && !isMobile)">VitFlow</span>
+    </div>
+
+    <!-- DERECHA: flecha -->
+    <div class="actions">
+      <button
+        *ngIf="!isMobile"
+        class="icon-btn"
+        type="button"
+        (click)="toggleCollapse()"
+        aria-label="Toggle sidebar"
+      >
+        <i class="pi" [ngClass]="collapsed ? 'pi-angle-right' : 'pi-angle-left'"></i>
+      </button>
+
+      <!-- Mobile close -->
+      <button
+        *ngIf="isMobile"
+        class="icon-btn"
+        type="button"
+        (click)="closeMobile()"
+        aria-label="Close sidebar"
+      >
+        <i class="pi pi-times"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- NAV -->
+  <nav class="nav">
+    <a routerLink="/resumen" routerLinkActive="active" class="item" (click)="onNavClick()">
+      <i class="pi pi-home icon"></i>
+      <span class="label" *ngIf="!(collapsed && !isMobile)">Resumen</span>
+    </a>
+
+    <a routerLink="/bancos" routerLinkActive="active" class="item" (click)="onNavClick()">
+      <i class="pi pi-chart-bar icon"></i>
+      <span class="label" *ngIf="!(collapsed && !isMobile)">Bancos de sangre</span>
+    </a>
+
+    <a routerLink="/turnos" routerLinkActive="active" class="item" (click)="onNavClick()">
+      <i class="pi pi-calendar icon"></i>
+      <span class="label" *ngIf="!(collapsed && !isMobile)">Turnos</span>
+    </a>
+
+    <a routerLink="/pedidos-alertas" routerLinkActive="active" class="item" (click)="onNavClick()">
+      <i class="pi pi-bell icon"></i>
+      <span class="label" *ngIf="!(collapsed && !isMobile)">Pedidos y alertas</span>
+    </a>
+
+    <a routerLink="/donantes" routerLinkActive="active" class="item" (click)="onNavClick()">
+      <i class="pi pi-users icon"></i>
+      <span class="label" *ngIf="!(collapsed && !isMobile)">Donantes</span>
+    </a>
+
+    <a routerLink="/configuracion" routerLinkActive="active" class="item" (click)="onNavClick()">
+      <i class="pi pi-cog icon"></i>
+      <span class="label" *ngIf="!(collapsed && !isMobile)">Configuración</span>
+    </a>
+  </nav>
+
+  <!-- FOOTER -->
+  <div class="bottom" *ngIf="!(collapsed && !isMobile)">
+    <div class="hospital">Hospital Central de CABA</div>
+    <div class="user">Sección: Dra. García (Administración)</div>
+  </div>
+</aside>

@@ -1,0 +1,204 @@
+/* overlay solo mobile */
+.overlay{
+  position: fixed;
+  inset: 0;
+  background: rgba(15,23,42,.35);
+  backdrop-filter: blur(2px);
+  z-index: 40;
+}
+
+/* base */
+.sidebar{
+  width: 260px;
+  min-width: 260px;
+  height: 90vh;
+  position: sticky;
+  top: 0;
+  background: #ffffff;
+  border-right: 1px solid rgba(15,23,42,.08);
+  box-shadow: 0 10px 30px rgba(15,23,42,.06);
+  display: flex;
+  flex-direction: column;
+  padding: 18px 14px;
+  border-radius: 18px;
+  margin: 14px;
+  z-index: 50;
+}
+
+/* colapsado desktop */
+.sidebar.collapsed{
+  width: 86px;
+  min-width: 86px;
+  padding: 18px 10px;
+}
+
+/* TOP NORMAL (abierto) */
+.top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom: 14px;
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.logo-img{
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
+.brand-text{
+  font-size: 18px;
+}
+
+.actions{
+  display:flex;
+  gap: 8px;
+}
+
+.icon-btn{
+  border: 0;
+  background: #f1f5f9;
+  border-radius: 12px;
+  width: 40px;
+  height: 40px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor: pointer;
+  color: #0f172a;
+}
+
+.icon-btn i{
+  font-size: 1rem;
+}
+
+/* ---------- COLAPSADO (CAMBIA TODO SOLO ACÁ) ---------- */
+
+.sidebar.collapsed .top{
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+/* flecha arriba */
+.sidebar.collapsed .actions{
+  order: 1;
+}
+
+/* gota debajo */
+.sidebar.collapsed .brand{
+  order: 2;
+  flex-direction: column;
+  gap: 0;
+}
+
+.sidebar.collapsed .logo-img{
+  width: 24px;
+  height: 24px;
+}
+
+/* NAV */
+.nav{
+  display:flex;
+  flex-direction:column;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.item{
+  display:flex;
+  align-items:center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  text-decoration:none;
+  color: #334155;
+  transition: background .15s ease;
+}
+
+.item:hover{
+  background: #f1f5f9;
+}
+
+.item.active{
+  background: rgba(59,130,246,.10);
+  color: #1d4ed8;
+  font-weight: 700;
+}
+
+.icon{
+  width: 22px;
+  display:flex;
+  justify-content:center;
+}
+
+/* nav centrado en colapsado */
+.sidebar.collapsed .nav{
+  gap: 12px;
+}
+
+.sidebar.collapsed .item{
+  justify-content: center;
+  padding: 12px 10px;
+}
+
+.sidebar.collapsed .icon{
+  width: auto;
+}
+
+/* bottom */
+.bottom{
+  margin-top:auto;
+  padding-top: 14px;
+  border-top: 1px solid rgba(15,23,42,.08);
+  color: #64748b;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.hospital{
+  font-weight: 700;
+  color:#475569;
+}
+
+/* ---------------- MOBILE ---------------- */
+.sidebar.mobile{
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  margin: 0;
+  border-radius: 0;
+  transform: translateX(-105%);
+  transition: transform .22s ease;
+  z-index: 50;
+}
+
+.sidebar.mobile.mobile-open{
+  transform: translateX(0);
+}
+
+.sidebar.mobile.collapsed{
+  width: 260px;
+  min-width: 260px;
+  padding: 18px 14px;
+}
+
+@media (max-width: 900px){
+  .sidebar.mobile{
+    width: 84vw;
+    min-width: 84vw;
+    max-width: 360px;
+  }
+}

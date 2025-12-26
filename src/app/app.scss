@@ -1,0 +1,69 @@
+.app-shell{
+  min-height: 100vh;
+  display: flex;
+  background: #f6fbff;
+  position: relative;
+  overflow: hidden;
+}
+
+.app-shell::before{
+  content:"";
+  position:absolute;
+  inset:-80px;
+  background:
+    radial-gradient(circle at 80% 10%, rgba(158, 214, 229, .45) 0 260px, transparent 261px),
+    radial-gradient(circle at 20% 85%, rgba(255, 210, 210, .40) 0 240px, transparent 241px);
+  pointer-events:none;
+  z-index:0;
+}
+
+.content{
+  flex: 1;
+  padding: 22px 26px;
+  position: relative;
+  z-index:1;
+}
+
+.content.full{
+  padding: 0;
+}
+
+.content.collapsed{
+  padding-left: 26px;
+}
+
+/* Hamburguesa mobile */
+.mobile-menu-btn{
+  position: fixed;
+  top: 14px;
+  left: 14px;
+  z-index: 60;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 14px;
+  background: rgba(255,255,255,.85);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 10px 30px rgba(15,23,42,.10);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #0f172a;
+}
+
+.mobile-menu-btn i{
+  font-size: 1.1rem;
+}
+
+/* responsive */
+@media (max-width: 900px){
+  .mobile-menu-btn{
+    display: flex;
+  }
+
+  /* el content no necesita padding extra grande en mobile */
+  .content{
+    padding: 18px 16px;
+  }
+}
