@@ -1,0 +1,142 @@
+.card {
+  background: #fff;
+  border-radius: 18px;
+  border: 1px solid #eef2f6;
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.06);
+  padding: 16px;
+
+  display: flex;
+  flex-direction: column;
+  height: 499px;
+  min-height: 0;
+}
+
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+
+  h3 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+  }
+}
+
+.body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  padding-right: 6px;
+}
+
+
+.icon-btn {
+  border: 1px solid #eef2f6;
+  background: #fff;
+  border-radius: 10px;
+  width: 34px;
+  height: 34px;
+  cursor: pointer;
+  font-weight: 800;
+  color: #5b6b7a;
+
+  &:hover {
+    background: #f6f8fb;
+  }
+}
+
+.meta {
+  display: grid;
+  margin-top: 12px;
+
+  .row {
+    display: grid;
+    grid-template-columns: 170px 1fr;
+    gap: 14px;
+    align-items: start;
+    padding: 10px 0;
+    border-bottom: 1px solid #f2f5f9;
+  }
+
+  .row:last-child {
+    border-bottom: 0;
+  }
+
+  .k {
+    color: #7b8a99;
+    font-size: 13.5px;
+    font-weight: 750;
+  }
+
+  .v {
+    color: #1f2a37;
+    font-size: 13.5px;
+    line-height: 1.45;
+    font-weight: 650;
+  }
+}
+
+.actions {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+  flex: 0 0 auto;
+}
+
+
+.btn-danger,
+.btn-ghost {
+  border-radius: 12px;
+  padding: 12px 12px;
+  font-weight: 750;
+  cursor: pointer;
+  border: 1px solid transparent;
+  font-size: 13.5px;
+}
+
+
+.btn-danger {
+  background: #fff1f2;
+  color: #b91c1c;
+  border-color: #fee2e2;
+
+  &:hover {
+    background: #fee2e2;
+  }
+}
+
+.btn-ghost {
+  background: #f6f8fb;
+  color: #415162;
+  border-color: #eef2f6;
+
+  &:hover {
+    background: #eef2f6;
+  }
+}
+
+@media (max-width: 980px) {
+  .card {
+    height: min(470px, 70vh);
+  }
+
+  .meta .row {
+    grid-template-columns: 150px 1fr;
+  }
+}
+
+@media (max-width: 520px) {
+  .card {
+    height: min(470px, 75vh);
+    padding: 14px;
+  }
+
+  .meta .row {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+}

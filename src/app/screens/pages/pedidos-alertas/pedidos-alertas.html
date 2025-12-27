@@ -1,1 +1,33 @@
-<p>pedidos-alertas works!</p>
+<div class="page">
+  <header class="header">
+    <div class="header__left">
+      <h1>Pedidos y alertas</h1>
+      <p>Gestioná pedidos activos de componentes sanguíneos y su seguimiento.</p>
+    </div>
+
+    <div class="header__right">
+      <app-crear-pedido (crearPedido)="onCrearNuevoPedido()"></app-crear-pedido>
+    </div>
+  </header>
+
+  <section class="layout" [class.with-detail]="!!pedidoSeleccionado">
+    <div class="left">
+      <app-pedidos-table
+        [pedidos]="pedidos"
+        [pedidoSeleccionadoId]="pedidoSeleccionado?.id ?? null"
+        (selectPedido)="onSelectPedido($event)"
+      ></app-pedidos-table>
+    </div>
+
+    <div class="right" *ngIf="pedidoSeleccionado">
+      <app-pedido-detalle
+        [pedido]="pedidoSeleccionado"
+        (cerrar)="onCerrarDetalle()"
+      ></app-pedido-detalle>
+    </div>
+  </section>
+
+  <div class="empty-detail" *ngIf="!pedidoSeleccionado">
+    Seleccioná un pedido para ver el detalle.
+  </div>
+</div>

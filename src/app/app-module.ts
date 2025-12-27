@@ -18,6 +18,9 @@ import { Donantes } from './screens/pages/donantes/donantes';
 import { Configuracion } from './screens/pages/configuracion/configuracion';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthTokenInterceptor } from './interceptor/auth-token-interceptor';
+import { PedidosTable } from './screens/pages/pedidos-alertas/components/pedidos-table/pedidos-table';
+import { PedidoDetalle } from './screens/pages/pedidos-alertas/components/pedido-detalle/pedido-detalle';
+import { CrearPedido } from './screens/pages/pedidos-alertas/components/crear-pedido/crear-pedido';
 
 @NgModule({
   declarations: [
@@ -30,7 +33,10 @@ import { AuthTokenInterceptor } from './interceptor/auth-token-interceptor';
     Turnos,
     PedidosAlertas,
     Donantes,
-    Configuracion
+    Configuracion,
+    PedidosTable,
+    PedidoDetalle,
+    CrearPedido
   ],
   imports: [
     BrowserModule,

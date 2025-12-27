@@ -1,0 +1,49 @@
+<div class="card" *ngIf="pedido">
+  <div class="top">
+    <h3>Detalle del pedido</h3>
+    <button class="icon-btn" type="button" (click)="close()">✕</button>
+  </div>
+
+  <div class="body">
+    <div class="meta">
+      <div class="row">
+        <span class="k">Fecha y hora</span>
+        <span class="v">{{ pedido.fechaHora }}</span>
+      </div>
+      <div class="row">
+        <span class="k">Servicio</span>
+        <span class="v">{{ pedido.servicio }}</span>
+      </div>
+      <div class="row">
+        <span class="k">Componente</span>
+        <span class="v">{{ pedido.componente }} {{ pedido.grupoSanguineo }}</span>
+      </div>
+      <div class="row">
+        <span class="k">Cantidad solicitada</span>
+        <span class="v">{{ pedido.cantidad }} unidades</span>
+      </div>
+      <div class="row">
+        <span class="k">Prioridad</span>
+        <span class="v">{{ prioridadLabel(pedido.prioridad) }}</span>
+      </div>
+      <div class="row">
+        <span class="k">Estado actual</span>
+        <span class="v">{{ estadoLabel(pedido.estado) }}</span>
+      </div>
+      <div class="row">
+        <span class="k">Solicitado por</span>
+        <span class="v">{{ pedido.solicitadoPor }}</span>
+      </div>
+
+      <div class="row" *ngIf="pedido.comentarios">
+        <span class="k">Comentarios</span>
+        <span class="v">{{ pedido.comentarios }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button class="btn-danger" type="button">Cancelar pedido</button>
+    <button class="btn-ghost" type="button">Editar</button>
+  </div>
+</div>

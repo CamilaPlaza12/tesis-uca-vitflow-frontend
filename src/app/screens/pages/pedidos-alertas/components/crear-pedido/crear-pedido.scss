@@ -1,0 +1,20 @@
+.btn-primary {
+  border: 0;
+  cursor: pointer;
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-weight: 650;
+  font-size: 14px;
+  color: #fff;
+  background: linear-gradient(135deg, #ff6a5e, #ff4d7d);
+  box-shadow: 0 10px 22px rgba(255, 77, 125, 0.22);
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 14px 26px rgba(255, 77, 125, 0.26);
+  }
+
+  &:active {
+    transform: translateY(0px);
+  }
+}
