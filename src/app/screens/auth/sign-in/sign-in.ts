@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+import { UserService } from '../../../service/user_service';
 
 @Component({
   selector: 'app-sign-in',
@@ -10,12 +12,15 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 export class SignIn {
   form: FormGroup;
   loading = false;
+  errorMsg = '';
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder, private userService: UserService, private router: Router) {
     this.form = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
     });
+
+    localStorage.removeItem('token');
   }
 
   get email() {
@@ -26,20 +31,25 @@ export class SignIn {
     return this.form.get('password');
   }
 
-  onSubmit(): void {
+  async onSubmit(): Promise<void> {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
     }
 
     this.loading = true;
+    this.errorMsg = '';
 
     const { email, password } = this.form.value;
-    console.log('Sign in con:', { email, password });
 
-    setTimeout(() => {
-      this.loading = false;
-    }, 800);
+    const ok = await this.userService.login(String(email), String(password));
+    this.loading = false;
+
+    if (ok) {
+      this.router.navigate(['/home'], { replaceUrl: true });
+    } else {
+      this.errorMsg = 'Email o contraseña incorrectos.';
+    }
   }
 
   onGoogleSignIn(): void {

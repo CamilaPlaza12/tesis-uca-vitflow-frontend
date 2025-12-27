@@ -16,7 +16,8 @@ import { Turnos } from './screens/pages/turnos/turnos';
 import { PedidosAlertas } from './screens/pages/pedidos-alertas/pedidos-alertas';
 import { Donantes } from './screens/pages/donantes/donantes';
 import { Configuracion } from './screens/pages/configuracion/configuracion';
-
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { AuthTokenInterceptor } from './interceptor/auth-token-interceptor';
 
 @NgModule({
   declarations: [
@@ -41,7 +42,8 @@ import { Configuracion } from './screens/pages/configuracion/configuracion';
     RippleModule
   ],
   providers: [
-    provideBrowserGlobalErrorListeners()
+    provideBrowserGlobalErrorListeners(),
+     { provide: HTTP_INTERCEPTORS, useClass: AuthTokenInterceptor, multi: true }
   ],
   bootstrap: [App]
 })
