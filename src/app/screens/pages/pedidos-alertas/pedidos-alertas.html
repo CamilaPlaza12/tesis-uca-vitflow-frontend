@@ -23,6 +23,7 @@
       <app-pedido-detalle
         [pedido]="pedidoSeleccionado"
         (cerrar)="onCerrarDetalle()"
+        (pedidoActualizado)="onPedidoActualizado($event)"
       ></app-pedido-detalle>
     </div>
   </section>

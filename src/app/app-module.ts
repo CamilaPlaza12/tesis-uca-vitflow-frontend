@@ -21,6 +21,7 @@ import { AuthTokenInterceptor } from './interceptor/auth-token-interceptor';
 import { PedidosTable } from './screens/pages/pedidos-alertas/components/pedidos-table/pedidos-table';
 import { PedidoDetalle } from './screens/pages/pedidos-alertas/components/pedido-detalle/pedido-detalle';
 import { CrearPedido } from './screens/pages/pedidos-alertas/components/crear-pedido/crear-pedido';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -45,7 +46,8 @@ import { CrearPedido } from './screens/pages/pedidos-alertas/components/crear-pe
     ReactiveFormsModule,
     DrawerModule,
     ButtonModule,
-    RippleModule
+    RippleModule,
+    FormsModule
   ],
   providers: [
     provideBrowserGlobalErrorListeners(),

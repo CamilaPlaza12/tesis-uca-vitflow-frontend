@@ -5,7 +5,7 @@
   </div>
 
   <div class="body">
-    <div class="meta">
+    <div class="meta" *ngIf="!editMode">
       <div class="row">
         <span class="k">Fecha y hora</span>
         <span class="v">{{ pedido.fechaHora }}</span>
@@ -40,10 +40,65 @@
         <span class="v">{{ pedido.comentarios }}</span>
       </div>
     </div>
+
+    <div class="meta" *ngIf="editMode && draft">
+      <div class="row">
+        <span class="k">Servicio</span>
+        <div class="v">
+          <input class="field" list="serviciosList" [(ngModel)]="draft.servicio" />
+          <datalist id="serviciosList">
+            <option *ngFor="let s of servicios" [value]="s"></option>
+          </datalist>
+        </div>
+      </div>
+
+      <div class="row">
+        <span class="k">Cantidad</span>
+        <div class="v">
+          <input class="field" type="number" min="1" [(ngModel)]="draft.cantidad" />
+        </div>
+      </div>
+
+      <div class="row">
+        <span class="k">Prioridad</span>
+        <div class="v">
+          <select class="field" [(ngModel)]="draft.prioridad">
+            <option *ngFor="let p of prioridades" [ngValue]="p">
+              {{ prioridadLabel(p) }}
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row">
+        <span class="k">Estado actual</span>
+        <div class="v">
+          <select class="field" [(ngModel)]="draft.estado">
+            <option *ngFor="let e of estados" [ngValue]="e">
+              {{ estadoLabel(e) }}
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row">
+        <span class="k">Comentarios</span>
+        <div class="v">
+          <textarea class="field textarea" rows="3" [(ngModel)]="draft.comentarios"></textarea>
+        </div>
+      </div>
+
+      <div class="error" *ngIf="errorMsg">{{ errorMsg }}</div>
+    </div>
   </div>
 
-  <div class="actions">
+  <div class="actions" *ngIf="!editMode">
     <button class="btn-danger" type="button">Cancelar pedido</button>
-    <button class="btn-ghost" type="button">Editar</button>
+    <button class="btn-ghost" type="button" (click)="empezarEdicion()">Editar</button>
+  </div>
+
+  <div class="actions edit-actions" *ngIf="editMode">
+    <button class="btn-soft" type="button" (click)="guardar()">Guardar</button>
+    <button class="btn-ghost" type="button" (click)="cancelarEdicion()">Cancelar</button>
   </div>
 </div>

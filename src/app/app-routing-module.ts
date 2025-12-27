@@ -18,10 +18,10 @@ const routes: Routes = [
   { path: 'signin', component: SignIn },
   { path: 'register', component: Register },
 
-  { path: 'home', component: Home, canActivate: [AuthGuard]},
+  { path: 'home', component: Home},
   { path: 'bancos', component: Bancos, canActivate: [AuthGuard] },
   { path: 'turnos', component: Turnos, canActivate: [AuthGuard] },
-  { path: 'pedidos-alertas', component: PedidosAlertas, canActivate: [AuthGuard] },
+  { path: 'pedidos-alertas', component: PedidosAlertas },
   { path: 'donantes', component: Donantes, canActivate: [AuthGuard] },
   { path: 'configuracion', component: Configuracion, canActivate: [AuthGuard] },
 
