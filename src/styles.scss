@@ -6,3 +6,15 @@ body {
   margin: 0;
   font-family: 'Lato', sans-serif;
 }
+
+body.modal-open app-sidebar,
+body.modal-open .sidebar,
+body.modal-open .side-nav,
+body.modal-open .layout-sidebar {
+  z-index: 0 !important;
+  position: relative;
+}
+
+body.modal-open {
+  overflow: hidden;
+}

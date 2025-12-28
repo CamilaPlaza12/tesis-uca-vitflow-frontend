@@ -5,6 +5,7 @@
   </div>
 
   <div class="body">
+    <!-- VIEW MODE -->
     <div class="meta" *ngIf="!editMode">
       <div class="row">
         <span class="k">Fecha y hora</span>
@@ -20,7 +21,11 @@
       </div>
       <div class="row">
         <span class="k">Cantidad solicitada</span>
-        <span class="v">{{ pedido.cantidad }} unidades</span>
+        <span class="v">{{ pedido.cantidadSolicitadaMl }} unidades</span>
+      </div>
+      <div class="row">
+        <span class="k">Cantidad obtenida</span>
+        <span class="v">{{ pedido.cantidadObtenidaMl }} unidades</span>
       </div>
       <div class="row">
         <span class="k">Prioridad</span>
@@ -41,6 +46,7 @@
       </div>
     </div>
 
+    <!-- EDIT MODE -->
     <div class="meta" *ngIf="editMode && draft">
       <div class="row">
         <span class="k">Servicio</span>
@@ -55,29 +61,74 @@
       <div class="row">
         <span class="k">Cantidad</span>
         <div class="v">
-          <input class="field" type="number" min="1" [(ngModel)]="draft.cantidad" />
+          <input class="field" type="number" min="1" [(ngModel)]="draft.cantidadSolicitadaMl" />
         </div>
       </div>
 
+      <div class="row">
+        <span class="k">Cantidad</span>
+        <div class="v">
+          <input class="field" type="number" min="1" [(ngModel)]="draft.cantidadObtenidaMl" />
+        </div>
+      </div>
+
+      <!-- PRIORIDAD: dropdown custom -->
       <div class="row">
         <span class="k">Prioridad</span>
         <div class="v">
-          <select class="field" [(ngModel)]="draft.prioridad">
-            <option *ngFor="let p of prioridades" [ngValue]="p">
-              {{ prioridadLabel(p) }}
-            </option>
-          </select>
+          <div class="dropdown">
+            <button
+              class="drop-btn"
+              type="button"
+              (click)="toggleDropdown('prioridad')"
+              [class.open]="dropdownOpen.prioridad"
+            >
+              <span>{{ prioridadLabel(draft.prioridad) }}</span>
+              <span class="chev">▾</span>
+            </button>
+
+            <div class="menu" *ngIf="dropdownOpen.prioridad">
+              <button
+                class="opt"
+                type="button"
+                *ngFor="let p of prioridades"
+                (click)="selectPrioridad(p)"
+                [class.active]="p === draft.prioridad"
+              >
+                {{ prioridadLabel(p) }}
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
+      <!-- ESTADO: dropdown custom -->
       <div class="row">
         <span class="k">Estado actual</span>
         <div class="v">
-          <select class="field" [(ngModel)]="draft.estado">
-            <option *ngFor="let e of estados" [ngValue]="e">
-              {{ estadoLabel(e) }}
-            </option>
-          </select>
+          <div class="dropdown">
+            <button
+              class="drop-btn"
+              type="button"
+              (click)="toggleDropdown('estado')"
+              [class.open]="dropdownOpen.estado"
+            >
+              <span>{{ estadoLabel(draft.estado) }}</span>
+              <span class="chev">▾</span>
+            </button>
+
+            <div class="menu" *ngIf="dropdownOpen.estado">
+              <button
+                class="opt"
+                type="button"
+                *ngFor="let e of estados"
+                (click)="selectEstado(e)"
+                [class.active]="e === draft.estado"
+              >
+                {{ estadoLabel(e) }}
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 

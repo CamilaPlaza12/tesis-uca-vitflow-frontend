@@ -11,7 +11,8 @@
           <th>Fecha y hora</th>
           <th>Servicio</th>
           <th>Componente</th>
-          <th class="right">Cantidad</th>
+          <th>Solicitado (L)</th>
+          <th>Obtenido (L)</th>
           <th>Prioridad</th>
           <th>Estado</th>
         </tr>
@@ -27,7 +28,8 @@
           <td class="mono">{{ p.fechaHora }}</td>
           <td>{{ p.servicio }}</td>
           <td>{{ componenteLabel(p) }}</td>
-          <td class="right">{{ p.cantidad }} u.</td>
+          <td>{{ toLitros(p.cantidadSolicitadaMl) }}</td>
+          <td>{{ toLitros(p.cantidadObtenidaMl) }}</td>
 
           <td>
             <span
@@ -43,10 +45,9 @@
           <td>
             <span
               class="status"
-              [class.status--pendiente]="p.estado === 'PENDIENTE'"
-              [class.status--prep]="p.estado === 'EN_PREPARACION'"
-              [class.status--cancelado]="p.estado === 'CANCELADO'"
-              [class.status--rechazado]="p.estado === 'RECHAZADO'"
+              [class.status--pendiente]="p.estado === 'ACTIVO'"
+              [class.status--prep]="p.estado === 'CANCELADO'"
+              [class.status--cancelado]="p.estado === 'COMPLETO'"
             >
               {{ estadoLabel(p.estado) }}
             </span>

@@ -24,8 +24,8 @@ export class PedidosTable {
   }
 
   estadoLabel(e: Pedido['estado']): string {
-    if (e === 'EN_PREPARACION') return 'En preparación';
-    if (e === 'PENDIENTE') return 'Pendiente';
+    if (e === 'ACTIVO') return 'Activo';
+    if (e === 'COMPLETO') return 'Competo';
     if (e === 'CANCELADO') return 'Cancelado';
     return 'Rechazado';
   }
@@ -33,5 +33,11 @@ export class PedidosTable {
   componenteLabel(p: Pedido): string {
     const gs = p.grupoSanguineo && p.grupoSanguineo !== '—' ? ` ${p.grupoSanguineo}` : '';
     return `${p.componente}${gs}`;
+  }
+
+   toLitros(ml: number): string {
+    const litros = ml / 1000;
+    const txt = Number.isInteger(litros) ? litros.toString() : litros.toFixed(2);
+    return `${txt} L`;
   }
 }

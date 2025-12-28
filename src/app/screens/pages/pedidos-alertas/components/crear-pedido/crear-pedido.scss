@@ -1,3 +1,7 @@
+body.modal-open {
+  overflow: hidden;
+}
+
 .btn-primary {
   border: 0;
   cursor: pointer;
@@ -16,5 +20,264 @@
 
   &:active {
     transform: translateY(0px);
+  }
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 14, 22, 0.62);
+  backdrop-filter: blur(7px);
+  z-index: 999999;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+}
+
+.modal {
+  width: min(600px, 95vw);
+  background: #fff;
+  border-radius: 18px;
+  border: 1px solid #eef2f6;
+  box-shadow: 0 20px 60px rgba(15, 23, 42, 0.26);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  max-height: 70vh;
+}
+
+.modal-top {
+  padding: 16px 16px 12px 16px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid #f2f5f9;
+
+  h3 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 900;
+    letter-spacing: -0.01em;
+  }
+
+  p {
+    margin: 6px 0 0 0;
+    color: #728193;
+    font-size: 13px;
+    font-weight: 650;
+  }
+}
+
+.icon-btn {
+  border: 1px solid #eef2f6;
+  background: #fff;
+  border-radius: 10px;
+  width: 34px;
+  height: 34px;
+  cursor: pointer;
+  font-weight: 800;
+  color: #5b6b7a;
+
+  &:hover {
+    background: #f6f8fb;
+  }
+}
+
+.modal-body {
+  padding: 14px 16px 16px 16px;
+  overflow: auto;
+  min-height: 0;
+}
+
+/* ✅ grilla consistente */
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  align-items: start;
+}
+
+/* ✅ cada bloque “reserva” altura similar */
+.field-block {
+  display: grid;
+  grid-template-rows: auto auto auto; /* label / control / helper (si existe) */
+  gap: 6px;
+  align-content: start;
+  min-width: 0;
+
+  label {
+    color: #7b8a99;
+    font-size: 12.5px;
+    font-weight: 750;
+  }
+}
+
+/* ✅ helper ocupa su línea sin deformar y sin empujar raro */
+.helper {
+  min-height: 16px; /* ✅ reserva espacio aunque no haya helper */
+  color: #98a6b5;
+  font-size: 12px;
+  font-weight: 650;
+  line-height: 1.2;
+}
+
+/* Para campos que NO tengan helper, le damos un helper vacío desde HTML (te lo paso abajo) */
+.helper--empty {
+  visibility: hidden;
+}
+
+.full {
+  grid-column: 1 / -1;
+}
+
+.field {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #e6ecf3;
+  background: #fbfcfe;
+  border-radius: 12px;
+  padding: 12px 14px; /* ✅ iguala altura con dropdown */
+  font-size: 13.5px;
+  font-weight: 650;
+  color: #1f2a37;
+  outline: none;
+  display: block;
+  height: 46px; /* ✅ fuerza misma altura visual */
+  line-height: 20px;
+
+  &:focus {
+    border-color: rgba(59, 130, 246, 0.55);
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
+    background: #fff;
+  }
+}
+
+.textarea {
+  height: auto;
+  min-height: 110px;
+  resize: none;
+  padding: 12px 14px;
+}
+
+/* ✅ dropdowns con MISMA altura que los inputs */
+.dropdown {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+}
+
+.drop-btn {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #e6ecf3;
+  background: #fbfcfe;
+  border-radius: 12px;
+  padding: 12px 14px; /* ✅ match */
+  font-size: 13.5px;
+  font-weight: 650;
+  color: #1f2a37;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  height: 46px; /* ✅ match exacto con inputs */
+
+  &:hover {
+    background: #fff;
+  }
+
+  &.open {
+    border-color: rgba(59, 130, 246, 0.55);
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
+    background: #fff;
+  }
+}
+
+.chev {
+  color: #607080;
+  font-weight: 900;
+  font-size: 12px;
+}
+
+.menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  z-index: 50;
+
+  background: #fff;
+  border: 1px solid #e6ecf3;
+  border-radius: 14px;
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.14);
+  overflow: hidden;
+}
+
+.opt {
+  width: 100%;
+  border: 0;
+  background: #fff;
+  padding: 10px 12px;
+  text-align: left;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #1f2a37;
+  cursor: pointer;
+
+  &:hover {
+    background: #f6f8fb;
+  }
+
+  &.active {
+    background: rgba(59, 130, 246, 0.1);
+    color: #1d4ed8;
+  }
+}
+
+.error {
+  grid-column: 1 / -1;
+  margin-top: 6px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: #fff1f2;
+  border: 1px solid #fee2e2;
+  color: #b91c1c;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.modal-actions {
+  padding: 12px 16px 16px 16px;
+  border-top: 1px solid #f2f5f9;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.btn-ghost {
+  background: #f6f8fb;
+  color: #415162;
+  border: 1px solid #eef2f6;
+  border-radius: 12px;
+  padding: 12px 12px;
+  font-weight: 750;
+  cursor: pointer;
+  font-size: 13.5px;
+
+  &:hover {
+    background: #eef2f6;
+  }
+}
+
+@media (max-width: 720px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .modal-actions {
+    grid-template-columns: 1fr;
   }
 }

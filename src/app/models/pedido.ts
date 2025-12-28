@@ -1,5 +1,5 @@
 export type PedidoPrioridad = 'NORMAL' | 'URGENTE' | 'CRITICA';
-export type PedidoEstado = 'PENDIENTE' | 'EN_PREPARACION' | 'CANCELADO' | 'RECHAZADO';
+export type PedidoEstado = 'ACTIVO' | 'COMPLETO' | 'CANCELADO';
 
 export interface Pedido {
   id: string;
@@ -7,9 +7,10 @@ export interface Pedido {
   servicio: string;
   componente: string;
   grupoSanguineo: string;
-  cantidad: number;
   prioridad: PedidoPrioridad;
   estado: PedidoEstado;
   solicitadoPor: string;
   comentarios?: string;
+  cantidadSolicitadaMl: number;
+  cantidadObtenidaMl: number;
 }
