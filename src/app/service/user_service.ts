@@ -46,6 +46,6 @@ export class UserService {
   }
 
   async fetchUserData(uid: string): Promise<any> {
-    return await firstValueFrom(this.http.get(`${this.baseUrl}/users/getByID/${uid}`));
+    return await firstValueFrom(this.http.get(`${this.baseUrl}/api/v1/users/getByID/${uid}`));
   }
 }
