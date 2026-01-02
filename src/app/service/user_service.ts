@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { BehaviorSubject, firstValueFrom } from 'rxjs';
 import { signInWithEmailAndPassword, User } from 'firebase/auth';
 import { auth } from './firebaseconfig';
@@ -25,7 +25,7 @@ export class UserService {
       localStorage.setItem('token', token);
 
       const uid = cred.user.uid;
-      const userData = await this.fetchUserData(uid);
+      const userData = await this.fetchUserData(uid); // ahora va con Bearer
       userData.uid = uid;
 
       this.currentUserData = userData;
@@ -46,6 +46,13 @@ export class UserService {
   }
 
   async fetchUserData(uid: string): Promise<any> {
-    return await firstValueFrom(this.http.get(`${this.baseUrl}/api/v1/users/getByID/${uid}`));
+    const token = localStorage.getItem('token');
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`,
+    });
+
+    return await firstValueFrom(
+      this.http.get(`${this.baseUrl}/api/v1/users/getByID/${uid}`, { headers })
+    );
   }
 }

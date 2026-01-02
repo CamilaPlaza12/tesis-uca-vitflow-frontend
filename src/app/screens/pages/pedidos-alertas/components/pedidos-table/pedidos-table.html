@@ -25,37 +25,38 @@
           [class.selected]="p.id === pedidoSeleccionadoId"
           (click)="onRowClick(p)"
         >
-          <td class="mono">{{ p.fechaHora }}</td>
-          <td>{{ p.servicio }}</td>
+          <td class="mono">{{ formatFechaHora(p.datetime_local) }}</td>
+          <td>{{ p.hospital_unit }}</td>
           <td>{{ componenteLabel(p) }}</td>
-          <td>{{ toLitros(p.cantidadSolicitadaMl) }}</td>
-          <td>{{ toLitros(p.cantidadObtenidaMl) }}</td>
+
+          <td>{{ toLitros(p.requested_ml) }}</td>
+          <td>{{ toLitros(p.collected_ml) }}</td>
 
           <td>
             <span
               class="badge"
-              [class.badge--normal]="p.prioridad === 'NORMAL'"
-              [class.badge--urgente]="p.prioridad === 'URGENTE'"
-              [class.badge--critica]="p.prioridad === 'CRITICA'"
+              [class.badge--normal]="p.priority === 'NORMAL'"
+              [class.badge--urgente]="p.priority === 'URGENTE'"
+              [class.badge--critica]="p.priority === 'CRITICA'"
             >
-              {{ prioridadLabel(p.prioridad) }}
+              {{ prioridadLabel(p.priority) }}
             </span>
           </td>
 
           <td>
             <span
               class="status"
-              [class.status--pendiente]="p.estado === 'ACTIVO'"
-              [class.status--prep]="p.estado === 'CANCELADO'"
-              [class.status--cancelado]="p.estado === 'COMPLETO'"
+              [class.status--pendiente]="p.status === 'ACTIVO'"
+              [class.status--prep]="p.status === 'CANCELADO'"
+              [class.status--cancelado]="p.status === 'COMPLETO'"
             >
-              {{ estadoLabel(p.estado) }}
+              {{ estadoLabel(p.status) }}
             </span>
           </td>
         </tr>
 
         <tr *ngIf="pedidos.length === 0">
-          <td class="empty" colspan="6">No hay pedidos activos para mostrar.</td>
+          <td class="empty" colspan="7">No hay pedidos activos para mostrar.</td>
         </tr>
       </tbody>
     </table>

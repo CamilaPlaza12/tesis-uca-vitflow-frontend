@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { Pedido } from '../../../../../models/pedido';
+import { HospitalRequest } from '../../../../../models/pedido';
 
 @Component({
   selector: 'app-pedidos-table',
@@ -8,36 +8,52 @@ import { Pedido } from '../../../../../models/pedido';
   styleUrl: './pedidos-table.scss',
 })
 export class PedidosTable {
-  @Input() pedidos: Pedido[] = [];
+  @Input() pedidos: HospitalRequest[] = [];
   @Input() pedidoSeleccionadoId: string | null = null;
 
-  @Output() selectPedido = new EventEmitter<Pedido>();
+  @Output() selectPedido = new EventEmitter<HospitalRequest>();
 
-  onRowClick(pedido: Pedido): void {
+  onRowClick(pedido: HospitalRequest): void {
     this.selectPedido.emit(pedido);
   }
 
-  prioridadLabel(p: Pedido['prioridad']): string {
+  prioridadLabel(p: HospitalRequest['priority']): string {
     if (p === 'CRITICA') return 'Crítica';
     if (p === 'URGENTE') return 'Urgente';
     return 'Normal';
   }
 
-  estadoLabel(e: Pedido['estado']): string {
+  estadoLabel(e: HospitalRequest['status']): string {
     if (e === 'ACTIVO') return 'Activo';
-    if (e === 'COMPLETO') return 'Competo';
+    if (e === 'COMPLETO') return 'Completo';
     if (e === 'CANCELADO') return 'Cancelado';
-    return 'Rechazado';
+    if (e === 'FINALIZADO') return 'Finalizado';
+    return e;
   }
 
-  componenteLabel(p: Pedido): string {
-    const gs = p.grupoSanguineo && p.grupoSanguineo !== '—' ? ` ${p.grupoSanguineo}` : '';
-    return `${p.componente}${gs}`;
+  componenteLabel(p: HospitalRequest): string {
+    const bg = p.blood_group ? ` ${p.blood_group}` : '';
+    return `${p.component}${bg}`;
   }
 
-   toLitros(ml: number): string {
+  toLitros(ml: number): string {
     const litros = ml / 1000;
     const txt = Number.isInteger(litros) ? litros.toString() : litros.toFixed(2);
     return `${txt} L`;
   }
+
+  formatFechaHora(iso: string): string {
+  if (!iso) return '';
+
+  const d = new Date(iso);
+
+  const dd = String(d.getDate()).padStart(2, '0');
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const yyyy = d.getFullYear();
+  const hh = String(d.getHours()).padStart(2, '0');
+  const min = String(d.getMinutes()).padStart(2, '0');
+
+  return `${dd}/${mm}/${yyyy} · ${hh}:${min}`;
+}
+
 }

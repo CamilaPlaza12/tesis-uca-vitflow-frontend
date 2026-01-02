@@ -1,5 +1,12 @@
 import { Component, EventEmitter, HostListener, Input, Output } from '@angular/core';
-import { Pedido } from '../../../../../models/pedido';
+import {
+  HospitalRequest,
+  HospitalRequestPriority,
+  HospitalRequestStatus,
+  HospitalUnit,
+  UpdateHospitalRequestRequest,
+} from '../../../../../models/pedido';
+import { PedidoService } from '../../../../../service/pedido_service';
 
 type DropKey = 'prioridad' | 'estado';
 
@@ -9,47 +16,36 @@ type DropKey = 'prioridad' | 'estado';
   templateUrl: './pedido-detalle.html',
   styleUrl: './pedido-detalle.scss',
 })
+
+
 export class PedidoDetalle {
-  @Input() pedido: Pedido | null = null;
+  @Input() pedido: HospitalRequest | null = null;
 
   @Output() cerrar = new EventEmitter<void>();
-  @Output() pedidoActualizado = new EventEmitter<Pedido>();
+  @Output() pedidoActualizado = new EventEmitter<UpdateHospitalRequestRequest>();
+  constructor(private pedidoService: PedidoService) {}
 
   editMode = false;
-  draft: Pedido | null = null;
+  draft: HospitalRequest | null = null;
   errorMsg = '';
 
-  servicios: string[] = ['UTI', 'Terapia Intensiva', 'Guardia', 'Quirófano', 'Clínica Médica'];
+  servicios: HospitalUnit[] = [
+    'ITU',
+    'Terapia Intensiva',
+    'Guardia',
+    'Quirofano',
+    'Clinica Medica',
+  ];
 
-  prioridades: Pedido['prioridad'][] = ['NORMAL', 'URGENTE', 'CRITICA'];
-  estados: Pedido['estado'][] = ['ACTIVO', 'COMPLETO', 'CANCELADO'];
+  prioridades: HospitalRequestPriority[] = ['NORMAL', 'URGENTE', 'CRITICA'];
+
+  // ❌ COMPLETO fuera
+  estados: HospitalRequestStatus[] = ['ACTIVO', 'CANCELADO', 'FINALIZADO'];
 
   dropdownOpen: Record<DropKey, boolean> = {
     prioridad: false,
     estado: false,
   };
-
-  prioridadLabel(p: Pedido['prioridad']): string {
-    if (p === 'CRITICA') return 'Crítica';
-    if (p === 'URGENTE') return 'Urgente';
-    return 'Normal';
-  }
-
-  estadoLabel(e: Pedido['estado']): string {
-    if (e === 'ACTIVO') return 'Activo';
-    if (e === 'COMPLETO') return 'Competo';
-    if (e === 'CANCELADO') return 'Cancelado';
-    return 'Rechazado';
-  }
-
-  close(): void {
-    this.editMode = false;
-    this.draft = null;
-    this.errorMsg = '';
-    this.dropdownOpen.prioridad = false;
-    this.dropdownOpen.estado = false;
-    this.cerrar.emit();
-  }
 
   empezarEdicion(): void {
     if (!this.pedido) return;
@@ -59,33 +55,49 @@ export class PedidoDetalle {
   }
 
   cancelarEdicion(): void {
-    this.editMode = false;
-    this.draft = null;
-    this.errorMsg = '';
-    this.dropdownOpen.prioridad = false;
-    this.dropdownOpen.estado = false;
+    this.reset();
   }
 
   guardar(): void {
-    if (!this.draft) return;
+    if (!this.draft || !this.pedido) return;
 
-    const cantidad = Number(this.draft.cantidadSolicitadaMl);
-    if (!Number.isFinite(cantidad) || cantidad < 1) {
-      this.errorMsg = 'La cantidad debe ser un número mayor o igual a 1.';
-      return;
-    }
-
-    if (!this.draft.servicio || this.draft.servicio.trim().length < 2) {
+    if (!this.draft.hospital_unit) {
       this.errorMsg = 'El servicio es obligatorio.';
       return;
     }
 
-    this.draft.cantidadSolicitadaMl = cantidad;
-    this.draft.servicio = this.draft.servicio.trim();
-    this.draft.comentarios = (this.draft.comentarios ?? '').trim() || undefined;
+    const body = {
+      hospital_unit: this.draft.hospital_unit,
+      priority: this.draft.priority,
+      status: this.draft.status,
+      comments: this.draft.comments?.trim() || null,
+    };
 
-    this.pedidoActualizado.emit({ ...this.draft });
+    this.pedidoService
+      .updateHospitalRequest(this.pedido.id, body)
+      .subscribe({
+        next: (updated: HospitalRequest) => {
+          this.pedidoActualizado.emit(updated);
+          this.editMode = false;
+          this.draft = null;
+          this.errorMsg = '';
+          this.dropdownOpen.prioridad = false;
+          this.dropdownOpen.estado = false;
+        },
+        error: (err: any) => {
+          console.error('Error actualizando pedido', err);
+          this.errorMsg = 'No se pudo guardar el pedido.';
+        },
+      });
+  }
 
+
+  close(): void {
+    this.reset();
+    this.cerrar.emit();
+  }
+
+  private reset(): void {
     this.editMode = false;
     this.draft = null;
     this.errorMsg = '';
@@ -100,24 +112,39 @@ export class PedidoDetalle {
     this.dropdownOpen[key] = next;
   }
 
-  selectPrioridad(p: Pedido['prioridad']): void {
+  selectPrioridad(p: HospitalRequestPriority): void {
     if (!this.draft) return;
-    this.draft.prioridad = p;
+    this.draft.priority = p;
     this.dropdownOpen.prioridad = false;
   }
 
-  selectEstado(e: Pedido['estado']): void {
+  selectEstado(e: HospitalRequestStatus): void {
     if (!this.draft) return;
-    this.draft.estado = e;
+    this.draft.status = e;
     this.dropdownOpen.estado = false;
   }
 
   @HostListener('document:click', ['$event'])
   onDocClick(ev: MouseEvent): void {
     const target = ev.target as HTMLElement | null;
-    if (!target) return;
-    if (target.closest('.dropdown')) return;
+    if (!target || target.closest('.dropdown')) return;
     this.dropdownOpen.prioridad = false;
     this.dropdownOpen.estado = false;
   }
+
+  prioridadLabel(p: HospitalRequestPriority): string {
+  if (p === 'CRITICA') return 'Crítica';
+  if (p === 'URGENTE') return 'Urgente';
+  return 'Normal'; 
+  }
+
+  estadoLabel(e: HospitalRequestStatus): string {
+  if (e === 'ACTIVO') return 'Activo';
+  if (e === 'COMPLETO') return 'Completo';
+  if (e === 'CANCELADO') return 'Cancelado';
+  if (e === 'FINALIZADO') return 'Finalizado';
+  return e;
+}
+
+
 }

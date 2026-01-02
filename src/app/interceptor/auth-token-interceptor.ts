@@ -8,17 +8,21 @@ import { AuthService } from '../service/auth_service';
 export class AuthTokenInterceptor implements HttpInterceptor {
   constructor(private authService: AuthService) {}
 
-  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    return from(this.authService.getIdToken()).pipe(
-      switchMap((token) => {
-        if (!token) return next.handle(req);
+intercept(req: HttpRequest<any>, next: HttpHandler) {
+  console.log('🔥 INTERCEPTOR:', req.url);
 
-        const cloned = req.clone({
+  return from(this.authService.getIdToken()).pipe(
+    switchMap((token) => {
+      console.log('🔑 TOKEN:', token);
+
+      if (!token) return next.handle(req);
+
+      return next.handle(
+        req.clone({
           setHeaders: { Authorization: `Bearer ${token}` },
-        });
-
-        return next.handle(cloned);
-      })
-    );
-  }
+        })
+      );
+    })
+  );
+}
 }

@@ -1,16 +1,51 @@
-export type PedidoPrioridad = 'NORMAL' | 'URGENTE' | 'CRITICA';
-export type PedidoEstado = 'ACTIVO' | 'COMPLETO' | 'CANCELADO';
+// pedido.ts  (o renombralo a hospital-request.ts si querés después)
 
-export interface Pedido {
+export type HospitalRequestPriority = 'NORMAL' | 'URGENTE' | 'CRITICA';
+
+export type HospitalRequestStatus =
+  | 'ACTIVO'
+  | 'COMPLETO'
+  | 'CANCELADO'
+  | 'FINALIZADO';
+
+export type HospitalUnit =
+  | 'ITU'
+  | 'Terapia Intensiva'
+  | 'Guardia'
+  | 'Quirofano'
+  | 'Clinica Medica';
+
+export interface HospitalRequestCreate {
+  hospital_unit: HospitalUnit;
+  component: string;
+  blood_group: string;
+  requested_ml: number;
+  priority: HospitalRequestPriority;
+  requested_by: string;
+  comments?: string | null;
+}
+
+export interface HospitalRequest {
   id: string;
-  fechaHora: string;
-  servicio: string;
-  componente: string;
-  grupoSanguineo: string;
-  prioridad: PedidoPrioridad;
-  estado: PedidoEstado;
-  solicitadoPor: string;
-  comentarios?: string;
-  cantidadSolicitadaMl: number;
-  cantidadObtenidaMl: number;
+  datetime_local: string;
+  hospital_unit: HospitalUnit;
+  component: string;
+  blood_group: string;
+  requested_ml: number;
+  collected_ml: number; // default 0 en back
+  priority: HospitalRequestPriority;
+  status: HospitalRequestStatus;
+  requested_by: string;
+  comments?: string | null;
+}
+
+export interface UpdateHospitalRequestStatusRequest {
+  status: HospitalRequestStatus;
+}
+
+export interface UpdateHospitalRequestRequest {
+  hospital_unit?: HospitalUnit;
+  priority?: HospitalRequestPriority;
+  status?: HospitalRequestStatus;
+  comments?: string | null;
 }

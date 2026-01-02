@@ -9,40 +9,47 @@
     <div class="meta" *ngIf="!editMode">
       <div class="row">
         <span class="k">Fecha y hora</span>
-        <span class="v">{{ pedido.fechaHora }}</span>
-      </div>
-      <div class="row">
-        <span class="k">Servicio</span>
-        <span class="v">{{ pedido.servicio }}</span>
-      </div>
-      <div class="row">
-        <span class="k">Componente</span>
-        <span class="v">{{ pedido.componente }} {{ pedido.grupoSanguineo }}</span>
-      </div>
-      <div class="row">
-        <span class="k">Cantidad solicitada</span>
-        <span class="v">{{ pedido.cantidadSolicitadaMl }} unidades</span>
-      </div>
-      <div class="row">
-        <span class="k">Cantidad obtenida</span>
-        <span class="v">{{ pedido.cantidadObtenidaMl }} unidades</span>
-      </div>
-      <div class="row">
-        <span class="k">Prioridad</span>
-        <span class="v">{{ prioridadLabel(pedido.prioridad) }}</span>
-      </div>
-      <div class="row">
-        <span class="k">Estado actual</span>
-        <span class="v">{{ estadoLabel(pedido.estado) }}</span>
-      </div>
-      <div class="row">
-        <span class="k">Solicitado por</span>
-        <span class="v">{{ pedido.solicitadoPor }}</span>
+        <span class="v">{{ pedido.datetime_local }}</span>
       </div>
 
-      <div class="row" *ngIf="pedido.comentarios">
+      <div class="row">
+        <span class="k">Servicio</span>
+        <span class="v">{{ pedido.hospital_unit }}</span>
+      </div>
+
+      <div class="row">
+        <span class="k">Componente</span>
+        <span class="v">{{ pedido.component }} {{ pedido.blood_group }}</span>
+      </div>
+
+      <div class="row">
+        <span class="k">Cantidad solicitada</span>
+        <span class="v">{{ pedido.requested_ml }} unidades</span>
+      </div>
+
+      <div class="row">
+        <span class="k">Cantidad obtenida</span>
+        <span class="v">{{ pedido.collected_ml }} unidades</span>
+      </div>
+
+      <div class="row">
+        <span class="k">Prioridad</span>
+        <span class="v">{{ prioridadLabel(pedido.priority) }}</span>
+      </div>
+
+      <div class="row">
+        <span class="k">Estado actual</span>
+        <span class="v">{{ estadoLabel(pedido.status) }}</span>
+      </div>
+
+      <div class="row">
+        <span class="k">Solicitado por</span>
+        <span class="v">{{ pedido.requested_by }}</span>
+      </div>
+
+      <div class="row" *ngIf="pedido.comments">
         <span class="k">Comentarios</span>
-        <span class="v">{{ pedido.comentarios }}</span>
+        <span class="v">{{ pedido.comments }}</span>
       </div>
     </div>
 
@@ -51,28 +58,27 @@
       <div class="row">
         <span class="k">Servicio</span>
         <div class="v">
-          <input class="field" list="serviciosList" [(ngModel)]="draft.servicio" />
+          <input
+            class="field"
+            list="serviciosList"
+            [(ngModel)]="draft.hospital_unit"
+          />
           <datalist id="serviciosList">
             <option *ngFor="let s of servicios" [value]="s"></option>
           </datalist>
         </div>
       </div>
-
       <div class="row">
-        <span class="k">Cantidad</span>
-        <div class="v">
-          <input class="field" type="number" min="1" [(ngModel)]="draft.cantidadSolicitadaMl" />
-        </div>
+        <span class="k">Cantidad solicitada</span>
+        <div class="v readonly">{{ draft.requested_ml }} unidades</div>
       </div>
 
       <div class="row">
-        <span class="k">Cantidad</span>
-        <div class="v">
-          <input class="field" type="number" min="1" [(ngModel)]="draft.cantidadObtenidaMl" />
-        </div>
+        <span class="k">Cantidad obtenida</span>
+        <div class="v readonly">{{ draft.collected_ml }} unidades</div>
       </div>
 
-      <!-- PRIORIDAD: dropdown custom -->
+      <!-- PRIORIDAD -->
       <div class="row">
         <span class="k">Prioridad</span>
         <div class="v">
@@ -81,19 +87,15 @@
               class="drop-btn"
               type="button"
               (click)="toggleDropdown('prioridad')"
-              [class.open]="dropdownOpen.prioridad"
             >
-              <span>{{ prioridadLabel(draft.prioridad) }}</span>
-              <span class="chev">▾</span>
+              {{ prioridadLabel(draft.priority) }} ▾
             </button>
 
             <div class="menu" *ngIf="dropdownOpen.prioridad">
               <button
                 class="opt"
-                type="button"
                 *ngFor="let p of prioridades"
                 (click)="selectPrioridad(p)"
-                [class.active]="p === draft.prioridad"
               >
                 {{ prioridadLabel(p) }}
               </button>
@@ -102,7 +104,7 @@
         </div>
       </div>
 
-      <!-- ESTADO: dropdown custom -->
+      <!-- ESTADO -->
       <div class="row">
         <span class="k">Estado actual</span>
         <div class="v">
@@ -111,19 +113,15 @@
               class="drop-btn"
               type="button"
               (click)="toggleDropdown('estado')"
-              [class.open]="dropdownOpen.estado"
             >
-              <span>{{ estadoLabel(draft.estado) }}</span>
-              <span class="chev">▾</span>
+              {{ estadoLabel(draft.status) }} ▾
             </button>
 
             <div class="menu" *ngIf="dropdownOpen.estado">
               <button
                 class="opt"
-                type="button"
                 *ngFor="let e of estados"
                 (click)="selectEstado(e)"
-                [class.active]="e === draft.estado"
               >
                 {{ estadoLabel(e) }}
               </button>
@@ -135,7 +133,11 @@
       <div class="row">
         <span class="k">Comentarios</span>
         <div class="v">
-          <textarea class="field textarea" rows="3" [(ngModel)]="draft.comentarios"></textarea>
+          <textarea
+            class="field textarea"
+            rows="3"
+            [(ngModel)]="draft.comments"
+          ></textarea>
         </div>
       </div>
 
@@ -144,12 +146,15 @@
   </div>
 
   <div class="actions" *ngIf="!editMode">
-    <button class="btn-danger" type="button">Cancelar pedido</button>
-    <button class="btn-ghost" type="button" (click)="empezarEdicion()">Editar</button>
+    <button class="btn-ghost" type="button" (click)="empezarEdicion()">
+      Editar
+    </button>
   </div>
 
   <div class="actions edit-actions" *ngIf="editMode">
     <button class="btn-soft" type="button" (click)="guardar()">Guardar</button>
-    <button class="btn-ghost" type="button" (click)="cancelarEdicion()">Cancelar</button>
+    <button class="btn-ghost" type="button" (click)="cancelarEdicion()">
+      Cancelar
+    </button>
   </div>
 </div>

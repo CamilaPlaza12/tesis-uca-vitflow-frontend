@@ -1,5 +1,9 @@
 import { Component, EventEmitter, HostListener, Output } from '@angular/core';
-import { Pedido, PedidoEstado, PedidoPrioridad } from '../../../../../models/pedido';
+import {
+  HospitalRequestCreate,
+  HospitalRequestPriority,
+  HospitalUnit,
+} from '../../../../../models/pedido';
 
 type DropKey = 'servicio' | 'componente' | 'grupo' | 'prioridad';
 
@@ -10,14 +14,26 @@ type DropKey = 'servicio' | 'componente' | 'grupo' | 'prioridad';
   styleUrl: './crear-pedido.scss',
 })
 export class CrearPedido {
-  @Output() pedidoCreado = new EventEmitter<Pedido>();
+  @Output() pedidoCreado = new EventEmitter<HospitalRequestCreate>();
 
   open = false;
 
-  servicios: string[] = ['UTI', 'Terapia Intensiva', 'Guardia', 'Quirófano', 'Clínica Médica'];
+  // ✅ ahora alineado a HospitalUnit (back)
+  servicios: HospitalUnit[] = [
+    'ITU',
+    'Terapia Intensiva',
+    'Guardia',
+    'Quirofano',
+    'Clinica Medica',
+  ];
+
+  // back: component es string libre, dejamos tus opciones
   componentes: string[] = ['Sangre', 'Plaquetas', 'Plasma'];
+
+  // back: blood_group min 2 max 4
   grupos: string[] = ['O-', 'O+', 'A-', 'A+', 'B-', 'B+', 'AB-', 'AB+'];
-  prioridades: PedidoPrioridad[] = ['NORMAL', 'URGENTE', 'CRITICA'];
+
+  prioridades: HospitalRequestPriority[] = ['NORMAL', 'URGENTE', 'CRITICA'];
 
   dropdownOpen: Record<DropKey, boolean> = {
     servicio: false,
@@ -26,11 +42,12 @@ export class CrearPedido {
     prioridad: false,
   };
 
+
   form = {
-    servicio: 'UTI',
+    servicio: 'ITU' as HospitalUnit,
     componente: 'Sangre',
     grupoSanguineo: 'O-',
-    prioridad: 'NORMAL' as PedidoPrioridad,
+    prioridad: 'NORMAL' as HospitalRequestPriority,
     solicitadoPor: '',
     comentarios: '',
     litrosSolicitados: 1,
@@ -46,7 +63,7 @@ export class CrearPedido {
     this.open = true;
     this.errorMsg = '';
     this.closeAllDropdowns();
-    document.body.classList.add('modal-open'); // ✅ bloquea scroll y “apaga” fondo
+    document.body.classList.add('modal-open');
     if (!this.form.solicitadoPor) this.form.solicitadoPor = 'Dra. García';
   }
 
@@ -74,7 +91,8 @@ export class CrearPedido {
     this.dropdownOpen[key] = next;
   }
 
-  selectServicio(s: string): void {
+  // ✅ ahora HospitalUnit
+  selectServicio(s: HospitalUnit): void {
     this.form.servicio = s;
     this.dropdownOpen.servicio = false;
   }
@@ -89,7 +107,7 @@ export class CrearPedido {
     this.dropdownOpen.grupo = false;
   }
 
-  selectPrioridad(p: PedidoPrioridad): void {
+  selectPrioridad(p: HospitalRequestPriority): void {
     this.form.prioridad = p;
     this.dropdownOpen.prioridad = false;
   }
@@ -108,20 +126,10 @@ export class CrearPedido {
     if (this.open) this.closeModal();
   }
 
-  prioridadLabel(p: PedidoPrioridad): string {
+  prioridadLabel(p: HospitalRequestPriority): string {
     if (p === 'CRITICA') return 'Crítica';
     if (p === 'URGENTE') return 'Urgente';
     return 'Normal';
-  }
-
-  formatNow(): string {
-    const d = new Date();
-    const dd = String(d.getDate()).padStart(2, '0');
-    const mm = String(d.getMonth() + 1).padStart(2, '0');
-    const yyyy = d.getFullYear();
-    const hh = String(d.getHours()).padStart(2, '0');
-    const min = String(d.getMinutes()).padStart(2, '0');
-    return `${dd}/${mm}/${yyyy} · ${hh}:${min}`;
   }
 
   toMlFromLitros(l: number): number {
@@ -155,28 +163,25 @@ export class CrearPedido {
 
     const litros = Number(this.form.litrosSolicitados);
 
-    const pedido: Pedido = {
-      id: `p-${Date.now()}`,
-      fechaHora: this.formatNow(),
-      servicio: this.form.servicio,
-      componente: this.form.componente,
-      grupoSanguineo: this.form.grupoSanguineo,
-      prioridad: this.form.prioridad,
-      estado: 'ACTIVO' as PedidoEstado,
-      solicitadoPor: this.form.solicitadoPor.trim(),
-      comentarios: this.form.comentarios?.trim() || undefined,
-      cantidadSolicitadaMl: this.toMlFromLitros(litros),
-      cantidadObtenidaMl: 0,
+    const pedido: HospitalRequestCreate = {
+      hospital_unit: this.form.servicio,
+      component: this.form.componente,
+      blood_group: this.form.grupoSanguineo,
+      requested_ml: this.toMlFromLitros(litros),
+      priority: this.form.prioridad,
+      requested_by: this.form.solicitadoPor.trim(),
+      comments: this.form.comentarios?.trim() || undefined,
     };
 
     this.pedidoCreado.emit(pedido);
 
+    // reset (igual que antes)
     this.form.comentarios = '';
     this.form.litrosSolicitados = 1;
     this.form.prioridad = 'NORMAL';
     this.form.componente = 'Sangre';
     this.form.grupoSanguineo = 'O-';
-    this.form.servicio = 'UTI';
+    this.form.servicio = 'ITU';
 
     this.closeModal();
   }

@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
-import { Pedido } from '../../../models/pedido';
+import { Component, OnInit } from '@angular/core';
+import { HospitalRequest, HospitalRequestCreate, UpdateHospitalRequestRequest } from '../../../models/pedido';
+import { PedidoService } from '../../../service/pedido_service';
 
 @Component({
   selector: 'app-pedidos-alertas',
@@ -7,168 +8,41 @@ import { Pedido } from '../../../models/pedido';
   templateUrl: './pedidos-alertas.html',
   styleUrl: './pedidos-alertas.scss',
 })
-export class PedidosAlertas {
-  pedidos: Pedido[] = [
-    {
-      id: 'p-1001',
-      fechaHora: '18/03/2024 · 08:30',
-      servicio: 'UTI',
-      componente: 'Sangre',
-      grupoSanguineo: 'O-',
-      cantidadSolicitadaMl: 2000,
-      cantidadObtenidaMl: 900,
-      prioridad: 'NORMAL',
-      estado: 'ACTIVO',
-      solicitadoPor: 'Dra. Lopez',
-      comentarios: 'Paciente crítico en UTI, se requiere disponibilidad inmediata.',
-    },
-    {
-      id: 'p-1002',
-      fechaHora: '18/03/2024 · 11:10',
-      servicio: 'Terapia Intensiva',
-      componente: 'Plaquetas',
-      grupoSanguineo: '—',
-      cantidadSolicitadaMl: 2000,
-      cantidadObtenidaMl: 900,
-      prioridad: 'URGENTE',
-      estado: 'CANCELADO',
-      solicitadoPor: 'Dr. Fernández',
-    },
-    {
-      id: 'p-1003',
-      fechaHora: '18/03/2024 · 11:10',
-      servicio: 'Terapia Intensiva',
-      componente: 'Plasma',
-      grupoSanguineo: 'AB+',
-      cantidadSolicitadaMl: 2000,
-      cantidadObtenidaMl: 2000,
-      prioridad: 'CRITICA',
-      estado: 'COMPLETO',
-      solicitadoPor: 'Dra. Suárez',
-      comentarios: 'Post-operatorio complejo. Prioridad máxima.',
-    },
-    {
-      id: 'p-1004',
-      fechaHora: '17/03/2024 · 11:04',
-      servicio: 'Terapia Intensiva',
-      componente: 'Sangre',
-      grupoSanguineo: 'A+',
-      cantidadSolicitadaMl: 2000,
-      cantidadObtenidaMl: 900,
-      prioridad: 'NORMAL',
-      estado: 'CANCELADO',
-      solicitadoPor: 'Dr. Peña',
-      comentarios: 'Cambio de indicación clínica.',
-    },
-    {
-      id: 'p-1005',
-      fechaHora: '18/03/2024 · 08:30',
-      servicio: 'UTI',
-      componente: 'Sangre',
-      grupoSanguineo: 'O-',
-      cantidadSolicitadaMl: 2000,
-      cantidadObtenidaMl: 900,
-      prioridad: 'NORMAL',
-      estado: 'ACTIVO',
-      solicitadoPor: 'Dra. Lopez',
-      comentarios: 'Paciente crítico en UTI, se requiere disponibilidad inmediata.',
-    },
-    {
-      id: 'p-1006',
-      fechaHora: '18/03/2024 · 11:10',
-      servicio: 'Terapia Intensiva',
-      componente: 'Plaquetas',
-      grupoSanguineo: '—',
-      cantidadSolicitadaMl: 2000,
-      cantidadObtenidaMl: 900,
-      prioridad: 'URGENTE',
-      estado: 'ACTIVO',
-      solicitadoPor: 'Dr. Fernández',
-    },
-    {
-      id: 'p-1007',
-      fechaHora: '18/03/2024 · 11:10',
-      servicio: 'Terapia Intensiva',
-      componente: 'Plasma',
-      grupoSanguineo: 'AB+',
-      cantidadSolicitadaMl: 2000,
-      cantidadObtenidaMl: 900,
-      prioridad: 'CRITICA',
-      estado: 'ACTIVO',
-      solicitadoPor: 'Dra. Suárez',
-      comentarios: 'Post-operatorio complejo. Prioridad máxima.',
-    },
-    {
-      id: 'p-1008',
-      fechaHora: '17/03/2024 · 11:04',
-      servicio: 'Terapia Intensiva',
-      componente: 'Sangre',
-      grupoSanguineo: 'A+',
-      cantidadSolicitadaMl: 2000,
-      cantidadObtenidaMl: 900,
-      prioridad: 'NORMAL',
-      estado: 'CANCELADO',
-      solicitadoPor: 'Dr. Peña',
-      comentarios: 'Cambio de indicación clínica.',
-    },
-    {
-      id: 'p-1009',
-      fechaHora: '18/03/2024 · 11:10',
-      servicio: 'Terapia Intensiva',
-      componente: 'Plaquetas',
-      grupoSanguineo: '—',
-      cantidadSolicitadaMl: 2000,
-      cantidadObtenidaMl: 900,
-      prioridad: 'URGENTE',
-      estado: 'CANCELADO',
-      solicitadoPor: 'Dr. Fernández',
-    },
-    {
-      id: 'p-1010',
-      fechaHora: '18/03/2024 · 11:10',
-      servicio: 'Terapia Intensiva',
-      componente: 'Plasma',
-      grupoSanguineo: 'AB+',
-      cantidadSolicitadaMl: 900,
-      cantidadObtenidaMl: 900,
-      prioridad: 'CRITICA',
-      estado: 'COMPLETO',
-      solicitadoPor: 'Dra. Suárez',
-      comentarios: 'Post-operatorio complejo. Prioridad máxima.',
-    },
-    {
-      id: 'p-1011',
-      fechaHora: '17/03/2024 · 11:04',
-      servicio: 'Terapia Intensiva',
-      componente: 'Sangre',
-      grupoSanguineo: 'A+',
-      cantidadSolicitadaMl: 2000,
-      cantidadObtenidaMl: 900,
-      prioridad: 'NORMAL',
-      estado: 'CANCELADO',
-      solicitadoPor: 'Dr. Peña',
-      comentarios: 'Cambio de indicación clínica.',
-    },
-    {
-      id: 'p-1045',
-      fechaHora: '18/03/2024 · 08:30',
-      servicio: 'UTI',
-      componente: 'Sangre',
-      grupoSanguineo: 'O-',
-      cantidadSolicitadaMl: 2000,
-      cantidadObtenidaMl: 900,
-      prioridad: 'NORMAL',
-      estado: 'CANCELADO',
-      solicitadoPor: 'Dra. Lopez',
-      comentarios: 'Paciente crítico en UTI, se requiere disponibilidad inmediata.',
-    }
-  ];
+export class PedidosAlertas implements OnInit {
+  pedidos: HospitalRequest[] = [];
+  pedidoSeleccionado: HospitalRequest | null = null;
 
-  pedidoSeleccionado: Pedido | null = null;
+  constructor(private hospitalRequestService: PedidoService) {}
 
-  onCrearNuevoPedido(): void {}
+  ngOnInit(): void {
+    this.cargarPedidos();
+  }
 
-  onSelectPedido(pedido: Pedido): void {
+  private cargarPedidos(): void {
+    this.hospitalRequestService.getHospitalRequests().subscribe({
+      next: (data) => {
+        this.pedidos = data;
+      },
+      error: (err) => {
+        console.error('Error cargando hospital requests', err);
+      },
+    });
+  }
+
+  // ✅ ahora recibe el body del modal y llama POST
+  onCrearNuevoPedido(body: HospitalRequestCreate): void {
+    this.hospitalRequestService.createHospitalRequest(body).subscribe({
+      next: (_) => {
+        // sin loader: lo más simple y seguro
+        this.cargarPedidos();
+      },
+      error: (err) => {
+        console.error('Error creando hospital request', err);
+      },
+    });
+  }
+
+  onSelectPedido(pedido: HospitalRequest): void {
     this.pedidoSeleccionado = pedido;
   }
 
@@ -176,9 +50,23 @@ export class PedidosAlertas {
     this.pedidoSeleccionado = null;
   }
 
-  onPedidoActualizado(pedido: Pedido): void {
-    this.pedidos = this.pedidos.map(p => (p.id === pedido.id ? pedido : p));
-    this.pedidoSeleccionado = pedido;
-  }
+ onPedidoActualizado(body: UpdateHospitalRequestRequest): void {
+  if (!this.pedidoSeleccionado) return;
+
+  this.hospitalRequestService
+    .updateHospitalRequest(this.pedidoSeleccionado.id, body)
+    .subscribe({
+      next: (updated) => {
+        this.pedidos = this.pedidos.map(p =>
+          p.id === updated.id ? updated : p
+        );
+        this.pedidoSeleccionado = updated;
+      },
+      error: (err) => {
+        console.error('Error actualizando pedido', err);
+      },
+    });
+}
+
 
 }
