@@ -1,4 +1,3 @@
-// pedido.ts  (o renombralo a hospital-request.ts si querés después)
 
 export type HospitalRequestPriority = 'NORMAL' | 'URGENTE' | 'CRITICA';
 
@@ -32,7 +31,7 @@ export interface HospitalRequest {
   component: string;
   blood_group: string;
   requested_ml: number;
-  collected_ml: number; // default 0 en back
+  collected_ml: number;
   priority: HospitalRequestPriority;
   status: HospitalRequestStatus;
   requested_by: string;

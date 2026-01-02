@@ -6,8 +6,6 @@ import {
   HospitalRequest,
   HospitalRequestCreate,
   UpdateHospitalRequestRequest,
-  // Si lo tenés definido también:
-  // UpdateHospitalRequestStatusRequest
 } from '../models/pedido';
 
 @Injectable({ providedIn: 'root' })
@@ -17,22 +15,18 @@ export class PedidoService {
 
   constructor(private http: HttpClient) {}
 
-  // GET /hospital-requests/
   getHospitalRequests(): Observable<HospitalRequest[]> {
     return this.http.get<HospitalRequest[]>(`${this.endpoint}/`);
   }
 
-  // GET /hospital-requests/{request_id}
   getHospitalRequestById(requestId: string): Observable<HospitalRequest> {
     return this.http.get<HospitalRequest>(`${this.endpoint}/${requestId}`);
   }
 
-  // POST /hospital-requests/
   createHospitalRequest(body: HospitalRequestCreate): Observable<HospitalRequest> {
     return this.http.post<HospitalRequest>(`${this.endpoint}/`, body);
   }
 
-  // PATCH /hospital-requests/{request_id}
   updateHospitalRequest(
     requestId: string,
     body: UpdateHospitalRequestRequest

@@ -54,11 +54,7 @@ import { CrearPedido } from './screens/pages/pedidos-alertas/components/crear-pe
   ],
   providers: [
     provideBrowserGlobalErrorListeners(),
-
-    // ✅ NUEVO: HttpClient moderno
     provideHttpClient(withInterceptorsFromDi()),
-
-    // ✅ Tu interceptor por DI
     { provide: HTTP_INTERCEPTORS, useClass: AuthTokenInterceptor, multi: true }
   ],
   bootstrap: [App]

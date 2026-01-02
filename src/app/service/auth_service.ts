@@ -20,12 +20,9 @@ export class AuthService {
   }
 
   async getIdToken(forceRefresh = false): Promise<string | null> {
-    // Caso normal: Firebase ya tiene el user
     if (auth.currentUser) {
       return await auth.currentUser.getIdToken(forceRefresh);
     }
-
-    // Caso edge: Firebase todavía no resolvió la sesión
     return new Promise((resolve) => {
       const unsubscribe = onAuthStateChanged(auth, async (user) => {
         unsubscribe();

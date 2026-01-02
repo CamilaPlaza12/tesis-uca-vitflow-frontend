@@ -39,7 +39,6 @@ export class PedidoDetalle {
 
   prioridades: HospitalRequestPriority[] = ['NORMAL', 'URGENTE', 'CRITICA'];
 
-  // ❌ COMPLETO fuera
   estados: HospitalRequestStatus[] = ['ACTIVO', 'CANCELADO', 'FINALIZADO'];
 
   dropdownOpen: Record<DropKey, boolean> = {

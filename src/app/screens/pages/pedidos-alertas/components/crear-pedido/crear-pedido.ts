@@ -18,7 +18,6 @@ export class CrearPedido {
 
   open = false;
 
-  // ✅ ahora alineado a HospitalUnit (back)
   servicios: HospitalUnit[] = [
     'ITU',
     'Terapia Intensiva',
@@ -27,10 +26,8 @@ export class CrearPedido {
     'Clinica Medica',
   ];
 
-  // back: component es string libre, dejamos tus opciones
   componentes: string[] = ['Sangre', 'Plaquetas', 'Plasma'];
 
-  // back: blood_group min 2 max 4
   grupos: string[] = ['O-', 'O+', 'A-', 'A+', 'B-', 'B+', 'AB-', 'AB+'];
 
   prioridades: HospitalRequestPriority[] = ['NORMAL', 'URGENTE', 'CRITICA'];
@@ -91,7 +88,6 @@ export class CrearPedido {
     this.dropdownOpen[key] = next;
   }
 
-  // ✅ ahora HospitalUnit
   selectServicio(s: HospitalUnit): void {
     this.form.servicio = s;
     this.dropdownOpen.servicio = false;
@@ -175,7 +171,6 @@ export class CrearPedido {
 
     this.pedidoCreado.emit(pedido);
 
-    // reset (igual que antes)
     this.form.comentarios = '';
     this.form.litrosSolicitados = 1;
     this.form.prioridad = 'NORMAL';

@@ -29,11 +29,9 @@ export class PedidosAlertas implements OnInit {
     });
   }
 
-  // ✅ ahora recibe el body del modal y llama POST
   onCrearNuevoPedido(body: HospitalRequestCreate): void {
     this.hospitalRequestService.createHospitalRequest(body).subscribe({
       next: (_) => {
-        // sin loader: lo más simple y seguro
         this.cargarPedidos();
       },
       error: (err) => {
