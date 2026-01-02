@@ -10,6 +10,7 @@ import { HospitalRequest } from '../../../../../models/pedido';
 export class PedidosTable {
   @Input() pedidos: HospitalRequest[] = [];
   @Input() pedidoSeleccionadoId: string | null = null;
+  @Input() cargando = false;
 
   @Output() selectPedido = new EventEmitter<HospitalRequest>();
 

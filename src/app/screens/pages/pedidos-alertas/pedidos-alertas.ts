@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { HospitalRequest, HospitalRequestCreate, UpdateHospitalRequestRequest } from '../../../models/pedido';
 import { PedidoService } from '../../../service/pedido_service';
 
@@ -11,21 +11,31 @@ import { PedidoService } from '../../../service/pedido_service';
 export class PedidosAlertas implements OnInit {
   pedidos: HospitalRequest[] = [];
   pedidoSeleccionado: HospitalRequest | null = null;
+  cargando = true;
 
-  constructor(private hospitalRequestService: PedidoService) {}
+  constructor(
+    private hospitalRequestService: PedidoService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
     this.cargarPedidos();
   }
 
   private cargarPedidos(): void {
+    this.cargando = true;
+    
     this.hospitalRequestService.getHospitalRequests().subscribe({
-      next: (data) => {
+      next: (data: any) => {
         this.pedidos = data;
+        this.cargando = false;
+        this.cdr.detectChanges();
       },
       error: (err) => {
-        console.error('Error cargando hospital requests', err);
-      },
+        console.error(err);
+        this.cargando = false;
+        this.cdr.detectChanges();
+      }
     });
   }
 
@@ -64,7 +74,5 @@ export class PedidosAlertas implements OnInit {
         console.error('Error actualizando pedido', err);
       },
     });
-}
-
-
+  }
 }

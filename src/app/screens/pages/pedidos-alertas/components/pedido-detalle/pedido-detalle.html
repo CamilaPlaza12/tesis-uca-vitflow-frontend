@@ -145,7 +145,8 @@
     </div>
   </div>
 
-  <div class="actions" *ngIf="!editMode">
+  <!-- Solo mostrar botón de editar si el pedido está ACTIVO -->
+  <div class="actions" *ngIf="!editMode && pedido.status === 'ACTIVO'">
     <button class="btn-ghost" type="button" (click)="empezarEdicion()">
       Editar
     </button>

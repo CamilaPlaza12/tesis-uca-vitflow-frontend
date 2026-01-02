@@ -57,6 +57,12 @@ export class PedidoDetalle {
     this.reset();
   }
 
+  puedeEditar(): boolean {
+  if (!this.pedido) return false;
+  
+  return this.pedido.status === 'ACTIVO';
+}
+
   guardar(): void {
     if (!this.draft || !this.pedido) return;
 

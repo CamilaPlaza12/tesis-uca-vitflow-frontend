@@ -15,6 +15,7 @@
       <app-pedidos-table
         [pedidos]="pedidos"
         [pedidoSeleccionadoId]="pedidoSeleccionado?.id ?? null"
+        [cargando]="cargando"
         (selectPedido)="onSelectPedido($event)"
       ></app-pedidos-table>
     </div>

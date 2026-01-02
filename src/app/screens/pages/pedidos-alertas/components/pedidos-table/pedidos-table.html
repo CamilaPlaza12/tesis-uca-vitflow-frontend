@@ -19,6 +19,20 @@
       </thead>
 
       <tbody>
+        <tr *ngIf="cargando">
+          <td class="empty" colspan="7">
+            <div style="text-align: center; padding: 20px;">
+              <span>Cargando pedidos...</span>
+            </div>
+          </td>
+        </tr>
+
+        <tr *ngIf="!cargando && pedidos.length === 0">
+          <td class="empty" colspan="7">
+            No hay pedidos activos para mostrar.
+          </td>
+        </tr>
+
         <tr
           *ngFor="let p of pedidos"
           class="row"
@@ -28,10 +42,8 @@
           <td class="mono">{{ formatFechaHora(p.datetime_local) }}</td>
           <td>{{ p.hospital_unit }}</td>
           <td>{{ componenteLabel(p) }}</td>
-
           <td>{{ toLitros(p.requested_ml) }}</td>
           <td>{{ toLitros(p.collected_ml) }}</td>
-
           <td>
             <span
               class="badge"
@@ -42,21 +54,16 @@
               {{ prioridadLabel(p.priority) }}
             </span>
           </td>
-
           <td>
             <span
               class="status"
               [class.status--pendiente]="p.status === 'ACTIVO'"
               [class.status--prep]="p.status === 'CANCELADO'"
-              [class.status--cancelado]="p.status === 'COMPLETO'"
+              [class.status--cancelado]="p.status === 'COMPLETO' || p.status === 'FINALIZADO'"
             >
               {{ estadoLabel(p.status) }}
             </span>
           </td>
-        </tr>
-
-        <tr *ngIf="pedidos.length === 0">
-          <td class="empty" colspan="7">No hay pedidos activos para mostrar.</td>
         </tr>
       </tbody>
     </table>
