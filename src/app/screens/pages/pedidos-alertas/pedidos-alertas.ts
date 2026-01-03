@@ -57,22 +57,11 @@ export class PedidosAlertas implements OnInit {
   onCerrarDetalle(): void {
     this.pedidoSeleccionado = null;
   }
+  onPedidoActualizado(updated: HospitalRequest): void {
+  this.pedidos = this.pedidos.map(p => (p.id === updated.id ? updated : p));
+  this.pedidoSeleccionado = null;
+  this.cdr.detectChanges();
+}
 
- onPedidoActualizado(body: UpdateHospitalRequestRequest): void {
-  if (!this.pedidoSeleccionado) return;
 
-  this.hospitalRequestService
-    .updateHospitalRequest(this.pedidoSeleccionado.id, body)
-    .subscribe({
-      next: (updated) => {
-        this.pedidos = this.pedidos.map(p =>
-          p.id === updated.id ? updated : p
-        );
-        this.pedidoSeleccionado = updated;
-      },
-      error: (err) => {
-        console.error('Error actualizando pedido', err);
-      },
-    });
-  }
 }

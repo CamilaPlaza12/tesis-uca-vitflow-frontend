@@ -19,7 +19,7 @@
       </thead>
 
       <tbody>
-        <tr *ngIf="cargando">
+        <tr *ngIf="cargando && pedidos.length === 0">
           <td class="empty" colspan="7">
             <div style="text-align: center; padding: 20px;">
               <span>Cargando pedidos...</span>
@@ -42,8 +42,9 @@
           <td class="mono">{{ formatFechaHora(p.datetime_local) }}</td>
           <td>{{ p.hospital_unit }}</td>
           <td>{{ componenteLabel(p) }}</td>
-          <td>{{ toLitros(p.requested_ml) }}</td>
-          <td>{{ toLitros(p.collected_ml) }}</td>
+          <td>{{ p.requested_liters | number:'1.0-2' }} L</td>
+          <td>{{ p.collected_liters | number:'1.0-2' }} L</td>
+
           <td>
             <span
               class="badge"

@@ -39,7 +39,6 @@ export class CrearPedido {
     prioridad: false,
   };
 
-
   form = {
     servicio: 'ITU' as HospitalUnit,
     componente: 'Sangre',
@@ -128,10 +127,6 @@ export class CrearPedido {
     return 'Normal';
   }
 
-  toMlFromLitros(l: number): number {
-    return Math.round(l * 1000);
-  }
-
   validar(): boolean {
     const litros = Number(this.form.litrosSolicitados);
 
@@ -159,11 +154,14 @@ export class CrearPedido {
 
     const litros = Number(this.form.litrosSolicitados);
 
+    // opcional: limitar a 2 decimales para evitar floats raros
+    const litros2 = Math.round(litros * 100) / 100;
+
     const pedido: HospitalRequestCreate = {
       hospital_unit: this.form.servicio,
       component: this.form.componente,
       blood_group: this.form.grupoSanguineo,
-      requested_ml: this.toMlFromLitros(litros),
+      requested_liters: litros2, // ✅ ahora va en litros, sin convertir
       priority: this.form.prioridad,
       requested_by: this.form.solicitadoPor.trim(),
       comments: this.form.comentarios?.trim() || undefined,

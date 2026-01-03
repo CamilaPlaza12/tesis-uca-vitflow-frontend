@@ -4,7 +4,6 @@ import {
   HospitalRequestPriority,
   HospitalRequestStatus,
   HospitalUnit,
-  UpdateHospitalRequestRequest,
 } from '../../../../../models/pedido';
 import { PedidoService } from '../../../../../service/pedido_service';
 
@@ -16,13 +15,12 @@ type DropKey = 'prioridad' | 'estado';
   templateUrl: './pedido-detalle.html',
   styleUrl: './pedido-detalle.scss',
 })
-
-
 export class PedidoDetalle {
   @Input() pedido: HospitalRequest | null = null;
 
   @Output() cerrar = new EventEmitter<void>();
-  @Output() pedidoActualizado = new EventEmitter<UpdateHospitalRequestRequest>();
+  @Output() pedidoActualizado = new EventEmitter<HospitalRequest>();
+
   constructor(private pedidoService: PedidoService) {}
 
   editMode = false;
@@ -38,7 +36,6 @@ export class PedidoDetalle {
   ];
 
   prioridades: HospitalRequestPriority[] = ['NORMAL', 'URGENTE', 'CRITICA'];
-
   estados: HospitalRequestStatus[] = ['ACTIVO', 'CANCELADO', 'FINALIZADO'];
 
   dropdownOpen: Record<DropKey, boolean> = {
@@ -58,10 +55,9 @@ export class PedidoDetalle {
   }
 
   puedeEditar(): boolean {
-  if (!this.pedido) return false;
-  
-  return this.pedido.status === 'ACTIVO';
-}
+    if (!this.pedido) return false;
+    return this.pedido.status === 'ACTIVO';
+  }
 
   guardar(): void {
     if (!this.draft || !this.pedido) return;
@@ -78,24 +74,20 @@ export class PedidoDetalle {
       comments: this.draft.comments?.trim() || null,
     };
 
-    this.pedidoService
-      .updateHospitalRequest(this.pedido.id, body)
-      .subscribe({
-        next: (updated: HospitalRequest) => {
-          this.pedidoActualizado.emit(updated);
-          this.editMode = false;
-          this.draft = null;
-          this.errorMsg = '';
-          this.dropdownOpen.prioridad = false;
-          this.dropdownOpen.estado = false;
-        },
-        error: (err: any) => {
-          console.error('Error actualizando pedido', err);
-          this.errorMsg = 'No se pudo guardar el pedido.';
-        },
-      });
-  }
+    this.pedidoService.updateHospitalRequest(this.pedido.id, body).subscribe({
+      next: (updated: HospitalRequest) => {
+        // 1) aviso al padre
+        this.pedidoActualizado.emit(updated);
 
+        // 2) cierro el detalle (así al reabrir ya se ve con el refresh del padre)
+        this.close();
+      },
+      error: (err: any) => {
+        console.error('Error actualizando pedido', err);
+        this.errorMsg = 'No se pudo guardar el pedido.';
+      },
+    });
+  }
 
   close(): void {
     this.reset();
@@ -138,18 +130,16 @@ export class PedidoDetalle {
   }
 
   prioridadLabel(p: HospitalRequestPriority): string {
-  if (p === 'CRITICA') return 'Crítica';
-  if (p === 'URGENTE') return 'Urgente';
-  return 'Normal'; 
+    if (p === 'CRITICA') return 'Crítica';
+    if (p === 'URGENTE') return 'Urgente';
+    return 'Normal';
   }
 
   estadoLabel(e: HospitalRequestStatus): string {
-  if (e === 'ACTIVO') return 'Activo';
-  if (e === 'COMPLETO') return 'Completo';
-  if (e === 'CANCELADO') return 'Cancelado';
-  if (e === 'FINALIZADO') return 'Finalizado';
-  return e;
-}
-
-
+    if (e === 'ACTIVO') return 'Activo';
+    if (e === 'COMPLETO') return 'Completo';
+    if (e === 'CANCELADO') return 'Cancelado';
+    if (e === 'FINALIZADO') return 'Finalizado';
+    return e;
+  }
 }

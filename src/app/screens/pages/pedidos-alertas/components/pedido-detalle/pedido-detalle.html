@@ -9,7 +9,9 @@
     <div class="meta" *ngIf="!editMode">
       <div class="row">
         <span class="k">Fecha y hora</span>
-        <span class="v">{{ pedido.datetime_local }}</span>
+        <span class="v"> {{ pedido.datetime_local | date:'dd/MM/yyyy · HH:mm' }}
+</span>
+
       </div>
 
       <div class="row">
@@ -24,12 +26,12 @@
 
       <div class="row">
         <span class="k">Cantidad solicitada</span>
-        <span class="v">{{ pedido.requested_ml }} unidades</span>
+        <span class="v">{{ pedido.requested_liters }} unidades</span>
       </div>
 
       <div class="row">
         <span class="k">Cantidad obtenida</span>
-        <span class="v">{{ pedido.collected_ml }} unidades</span>
+        <span class="v">{{ pedido.collected_liters }} unidades</span>
       </div>
 
       <div class="row">
@@ -70,12 +72,12 @@
       </div>
       <div class="row">
         <span class="k">Cantidad solicitada</span>
-        <div class="v readonly">{{ draft.requested_ml }} unidades</div>
+        <div class="v readonly">{{ draft.requested_liters }} unidades</div>
       </div>
 
       <div class="row">
         <span class="k">Cantidad obtenida</span>
-        <div class="v readonly">{{ draft.collected_ml }} unidades</div>
+        <div class="v readonly">{{ draft.collected_liters }} unidades</div>
       </div>
 
       <!-- PRIORIDAD -->
