@@ -20,7 +20,7 @@ const routes: Routes = [
 
   { path: 'home', component: Home},
   { path: 'bancos', component: Bancos, canActivate: [AuthGuard] },
-  { path: 'turnos', component: Turnos, canActivate: [AuthGuard] },
+  { path: 'turnos', component: Turnos },
   { path: 'pedidos-alertas', component: PedidosAlertas },
   { path: 'donantes', component: Donantes, canActivate: [AuthGuard] },
   { path: 'configuracion', component: Configuracion, canActivate: [AuthGuard] },

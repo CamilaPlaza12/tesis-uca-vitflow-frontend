@@ -1,0 +1,81 @@
+<div class="card">
+  <div class="card__header">
+    <div class="title">
+      <h2>Turnos</h2>
+      <span class="hint">{{ turnosFiltrados.length }} en lista</span>
+    </div>
+
+    <div class="filters">
+      <div class="chips">
+        <button class="chip" [class.active]="tipoSeleccionado === 'TODOS'" (click)="setTipo('TODOS')">Todos</button>
+        <button class="chip" [class.active]="tipoSeleccionado === 'SANGRE'" (click)="setTipo('SANGRE')">Sangre</button>
+        <button class="chip" [class.active]="tipoSeleccionado === 'PLAQUETAS'" (click)="setTipo('PLAQUETAS')">Plaquetas</button>
+        <button class="chip" [class.active]="tipoSeleccionado === 'MEDULA_OSEA'" (click)="setTipo('MEDULA_OSEA')">Médula</button>
+      </div>
+
+      <div class="dropdown" (clickOutside)="closeEstado()">
+        <button class="dropdown__btn" type="button" (click)="toggleEstado()">
+          <span>{{ estadoLabel }}</span>
+          <span class="caret" [class.up]="estadoOpen"></span>
+        </button>
+
+        <div class="dropdown__menu" *ngIf="estadoOpen">
+          <button class="dropdown__item" (click)="setEstado('TODOS')">Todos los estados</button>
+          <button class="dropdown__item" (click)="setEstado('PROGRAMADO')">Programado</button>
+          <button class="dropdown__item" (click)="setEstado('CONFIRMADO')">Confirmado</button>
+          <button class="dropdown__item" (click)="setEstado('COMPLETADO')">Completado</button>
+          <button class="dropdown__item" (click)="setEstado('NO_PRESENTADO')">No presentado</button>
+          <button class="dropdown__item" (click)="setEstado('CANCELADO')">Cancelado</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="table-wrap">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Hora</th>
+          <th>Donante</th>
+          <th>Tipo</th>
+          <th>Estado</th>
+          <th>Pedido</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr
+          *ngFor="let t of turnosFiltrados"
+          class="row"
+          [class.selected]="t.id === turnoSeleccionadoId"
+          (click)="onRowClick(t)"
+        >
+          <td class="mono">{{ t.fecha }}</td>
+          <td class="mono">{{ t.hora }}</td>
+          <td>{{ t.nombreDonante }}</td>
+          <td>{{ tipoHuman(t.tipoDonacion) }}</td>
+
+          <td>
+            <span
+              class="status"
+              [class.status--programado]="t.estado === 'PROGRAMADO'"
+              [class.status--confirmado]="t.estado === 'CONFIRMADO'"
+              [class.status--completado]="t.estado === 'COMPLETADO'"
+              [class.status--no-presentado]="t.estado === 'NO_PRESENTADO'"
+              [class.status--cancelado]="t.estado === 'CANCELADO'"
+            >
+              {{ estadoHuman(t.estado) }}
+            </span>
+          </td>
+
+          <td class="mono">#{{ t.pedidoId }}</td>
+        </tr>
+
+        <tr *ngIf="turnosFiltrados.length === 0">
+          <td class="empty" colspan="6">No hay turnos para mostrar con esos filtros.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

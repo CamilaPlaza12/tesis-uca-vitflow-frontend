@@ -1,7 +1,7 @@
 import { SidebarComponent } from './screens/common/sidebar/sidebar';
 import { NgModule, provideBrowserGlobalErrorListeners } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
 import { AppRoutingModule } from './app-routing-module';
 import { App } from './app';
 import { Home } from './screens/pages/home/home';
@@ -25,6 +25,9 @@ import { AuthTokenInterceptor } from './interceptor/auth-token-interceptor';
 import { PedidosTable } from './screens/pages/pedidos-alertas/components/pedidos-table/pedidos-table';
 import { PedidoDetalle } from './screens/pages/pedidos-alertas/components/pedido-detalle/pedido-detalle';
 import { CrearPedido } from './screens/pages/pedidos-alertas/components/crear-pedido/crear-pedido';
+import { FormsModule } from '@angular/forms';
+import { TurnosTable } from './screens/pages/turnos/componentes/turnos-table/turnos-table';
+import { TurnosCalendar } from './screens/pages/turnos/componentes/turnos-calendar/turnos-calendar';
 
 @NgModule({
   declarations: [
@@ -40,7 +43,9 @@ import { CrearPedido } from './screens/pages/pedidos-alertas/components/crear-pe
     Configuracion,
     PedidosTable,
     PedidoDetalle,
-    CrearPedido
+    CrearPedido,
+    TurnosTable,
+    TurnosCalendar
   ],
   imports: [
     BrowserModule,
