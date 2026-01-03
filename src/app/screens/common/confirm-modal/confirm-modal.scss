@@ -1,0 +1,142 @@
+body.modal-open {
+  overflow: hidden;
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 14, 22, 0.62);
+  backdrop-filter: blur(7px);
+  z-index: 999999;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+}
+
+.modal {
+  width: min(520px, 95vw);
+  background: #fff;
+  border-radius: 18px;
+  border: 1px solid #eef2f6;
+  box-shadow: 0 20px 60px rgba(15, 23, 42, 0.26);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  max-height: 70vh;
+}
+
+.modal-top {
+  padding: 16px 16px 12px 16px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid #f2f5f9;
+
+  h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 900;
+    letter-spacing: -0.01em;
+  }
+}
+
+.icon-btn {
+  border: 1px solid #eef2f6;
+  background: #fff;
+  border-radius: 10px;
+  width: 34px;
+  height: 34px;
+  cursor: pointer;
+  font-weight: 800;
+  color: #5b6b7a;
+
+  &:hover {
+    background: #f6f8fb;
+  }
+
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+}
+
+.modal-body {
+  padding: 14px 16px 16px 16px;
+  overflow: auto;
+  min-height: 0;
+}
+
+.message {
+  margin: 0;
+  color: #475569;
+  font-size: 13.5px;
+  font-weight: 650;
+  line-height: 1.45;
+  white-space: pre-line;
+}
+
+.error {
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: #fff1f2;
+  border: 1px solid #fee2e2;
+  color: #b91c1c;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.modal-actions {
+  padding: 12px 16px 16px 16px;
+  border-top: 1px solid #f2f5f9;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.btn-primary {
+  border: 0;
+  cursor: pointer;
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-weight: 750;
+  font-size: 13.5px;
+  color: #1d4ed8;
+  background: #eef6ff;
+  border: 1px solid #dbeafe;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-1px);
+    filter: brightness(0.98);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0px);
+  }
+
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+}
+
+.btn-ghost {
+  background: #f6f8fb;
+  color: #415162;
+  border: 1px solid #eef2f6;
+  border-radius: 12px;
+  padding: 12px 12px;
+  font-weight: 750;
+  cursor: pointer;
+  font-size: 13.5px;
+
+  &:hover:not(:disabled) {
+    background: #eef2f6;
+  }
+
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+}

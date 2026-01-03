@@ -1,0 +1,31 @@
+<div class="overlay" *ngIf="open" (click)="onOverlayClick()">
+  <div class="modal" (click)="stop($event)">
+    <div class="modal-top">
+      <div>
+        <h3>{{ title }}</h3>
+      </div>
+
+      <button class="icon-btn" type="button" (click)="onCancel()" aria-label="Cerrar">
+        ✕
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <p class="message">{{ message }}</p>
+
+      <div class="error" *ngIf="error">
+        {{ error }}
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-ghost" type="button" (click)="onCancel()" [disabled]="loading">
+        {{ cancelText }}
+      </button>
+
+      <button class="btn-primary" type="button" (click)="onConfirm()" [disabled]="loading">
+        {{ loading ? 'Procesando…' : confirmText }}
+      </button>
+    </div>
+  </div>
+</div>

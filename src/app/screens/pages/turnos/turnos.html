@@ -23,7 +23,9 @@
 
     <div class="right" *ngIf="turnoSeleccionado as t">
       <div class="detail-card">
-        <button class="close" (click)="turnoSeleccionado = null">✕</button>
+        <button class="close" type="button" (click)="turnoSeleccionado = null" aria-label="Cerrar detalle">
+          ✕
+        </button>
 
         <h3>Detalle del turno</h3>
 
@@ -37,42 +39,23 @@
         </div>
 
         <div class="actions">
-          <button
-            *ngIf="canConfirm(t)"
-            class="btn btn--primary"
-            (click)="confirmarTurno(t)"
-          >
+          <button *ngIf="canConfirm(t)" class="btn btn--success" (click)="requestAction('CONFIRMAR', t)">
             Confirmar turno
           </button>
 
-          <button
-            *ngIf="canReprogram(t)"
-            class="btn btn--primary"
-          >
+          <button *ngIf="canReprogram(t)" class="btn btn--primary" (click)="requestAction('REPROGRAMAR', t)">
             Reprogramar turno
           </button>
 
-          <button
-            *ngIf="canMarkCompleted(t)"
-            class="btn btn--success"
-            (click)="marcarAsistencia(t)"
-          >
+          <button *ngIf="canMarkCompleted(t)" class="btn btn--success" (click)="requestAction('COMPLETAR', t)">
             Marcar asistencia
           </button>
 
-          <button
-            *ngIf="canMarkNoShow(t)"
-            class="btn btn--danger"
-            (click)="marcarNoPresentado(t)"
-          >
+          <button *ngIf="canMarkNoShow(t)" class="btn btn--danger" (click)="requestAction('NO_PRESENTADO', t)">
             No se presentó
           </button>
 
-          <button
-            *ngIf="canCancel(t)"
-            class="btn btn--danger"
-            (click)="cancelarTurno(t)"
-          >
+          <button *ngIf="canCancel(t)" class="btn btn--danger" (click)="requestAction('CANCELAR', t)">
             Cancelar turno
           </button>
         </div>
@@ -84,3 +67,14 @@
     Seleccioná un turno para ver el detalle.
   </div>
 </div>
+
+<app-confirm-modal
+  [open]="modalOpen"
+  [title]="modalTitle"
+  [message]="modalMessage"
+  [confirmText]="modalConfirmText"
+  [loading]="modalLoading"
+  [error]="modalError"
+  (confirm)="confirmModal()"
+  (cancel)="closeModal()"
+></app-confirm-modal>
