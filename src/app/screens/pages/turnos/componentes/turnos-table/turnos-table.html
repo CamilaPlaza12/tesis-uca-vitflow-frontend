@@ -1,52 +1,98 @@
 <div class="card">
   <div class="card__header">
-    <div class="title">
-      <h2>Turnos</h2>
-      <span class="hint">{{ turnosFiltrados.length }} en lista</span>
-    </div>
-
-    <div class="filters">
-      <div class="chips">
-        <button class="chip" [class.active]="tipoSeleccionado === 'TODOS'" (click)="setTipo('TODOS')">Todos</button>
-        <button class="chip" [class.active]="tipoSeleccionado === 'SANGRE'" (click)="setTipo('SANGRE')">Sangre</button>
-        <button class="chip" [class.active]="tipoSeleccionado === 'PLAQUETAS'" (click)="setTipo('PLAQUETAS')">Plaquetas</button>
-        <button class="chip" [class.active]="tipoSeleccionado === 'MEDULA_OSEA'" (click)="setTipo('MEDULA_OSEA')">Médula</button>
-      </div>
-
-      <div class="dropdown" (clickOutside)="closeEstado()">
-        <button class="dropdown__btn" type="button" (click)="toggleEstado()">
-          <span>{{ estadoLabel }}</span>
-          <span class="caret" [class.up]="estadoOpen"></span>
-        </button>
-
-        <div class="dropdown__menu" *ngIf="estadoOpen">
-          <button class="dropdown__item" (click)="setEstado('TODOS')">Todos los estados</button>
-          <button class="dropdown__item" (click)="setEstado('PROGRAMADO')">Programado</button>
-          <button class="dropdown__item" (click)="setEstado('CONFIRMADO')">Confirmado</button>
-          <button class="dropdown__item" (click)="setEstado('COMPLETADO')">Completado</button>
-          <button class="dropdown__item" (click)="setEstado('NO_PRESENTADO')">No presentado</button>
-          <button class="dropdown__item" (click)="setEstado('CANCELADO')">Cancelado</button>
-        </div>
-      </div>
-    </div>
+    <h2>Turnos</h2>
+    <span class="hint">{{ turnosProcesados.length }} en lista</span>
   </div>
 
   <div class="table-wrap">
     <table class="table">
       <thead>
-        <tr>
-          <th>Fecha</th>
-          <th>Hora</th>
-          <th>Donante</th>
-          <th>Tipo</th>
-          <th>Estado</th>
-          <th>Pedido</th>
+        <tr class="head-row">
+          <th>
+            <div class="th">
+              <span>Fecha</span>
+
+              <button class="icon-btn" type="button" (click)="open('FECHA', $event, 210)" aria-label="Filtrar por fecha">
+                <svg class="icon" viewBox="0 0 24 24" fill="none">
+                  <path d="M8 3v2M16 3v2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  <path d="M4 7h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  <path d="M6.5 21h11A2.5 2.5 0 0 0 20 18.5V8.5A2.5 2.5 0 0 0 17.5 6h-11A2.5 2.5 0 0 0 4 8.5v10A2.5 2.5 0 0 0 6.5 21Z" stroke="currentColor" stroke-width="2"/>
+                </svg>
+              </button>
+
+              <span class="dot" *ngIf="filtroFecha"></span>
+            </div>
+          </th>
+
+          <th>
+            <div class="th">
+              <span>Hora</span>
+            </div>
+          </th>
+
+          <th>
+            <div class="th">
+              <span>Donante</span>
+
+              <button class="icon-btn" type="button" (click)="open('DONANTE', $event, 240)" aria-label="Buscar donante">
+                <svg class="icon" viewBox="0 0 24 24" fill="none">
+                  <path d="M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z" stroke="currentColor" stroke-width="2"/>
+                  <path d="M16.2 16.2 21 21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </button>
+
+              <span class="dot" *ngIf="filtroDonante.trim()"></span>
+            </div>
+          </th>
+
+          <th>
+            <div class="th">
+              <span>Tipo</span>
+
+              <button class="icon-btn" type="button" (click)="open('TIPO', $event, 210)" aria-label="Filtrar tipo">
+                <svg class="icon" viewBox="0 0 24 24" fill="none">
+                  <path d="M7 10l5 5 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+
+              <span class="dot" *ngIf="tipoFiltro !== 'TODOS'"></span>
+            </div>
+          </th>
+
+          <th>
+            <div class="th">
+              <span>Estado</span>
+
+              <button class="icon-btn" type="button" (click)="open('ESTADO', $event, 230)" aria-label="Filtrar estado">
+                <svg class="icon" viewBox="0 0 24 24" fill="none">
+                  <path d="M7 10l5 5 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+
+              <span class="dot" *ngIf="estadoFiltro !== 'TODOS'"></span>
+            </div>
+          </th>
+
+          <th>
+            <div class="th">
+              <span>Pedido</span>
+
+              <button class="icon-btn" type="button" (click)="open('PEDIDO', $event, 240)" aria-label="Buscar pedido">
+                <svg class="icon" viewBox="0 0 24 24" fill="none">
+                  <path d="M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z" stroke="currentColor" stroke-width="2"/>
+                  <path d="M16.2 16.2 21 21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </button>
+
+              <span class="dot" *ngIf="filtroPedido.trim()"></span>
+            </div>
+          </th>
         </tr>
       </thead>
 
       <tbody>
         <tr
-          *ngFor="let t of turnosFiltrados"
+          *ngFor="let t of turnosProcesados"
           class="row"
           [class.selected]="t.id === turnoSeleccionadoId"
           (click)="onRowClick(t)"
@@ -72,10 +118,84 @@
           <td class="mono">#{{ t.pedidoId }}</td>
         </tr>
 
-        <tr *ngIf="turnosFiltrados.length === 0">
+        <tr *ngIf="turnosProcesados.length === 0">
           <td class="empty" colspan="6">No hay turnos para mostrar con esos filtros.</td>
         </tr>
       </tbody>
     </table>
+  </div>
+
+  <div
+    class="overlay-pop"
+    *ngIf="popover"
+    [style.top.px]="overlayTop"
+    [style.left.px]="overlayLeft"
+    [style.width.px]="overlayWidth"
+    (click)="stop($event)"
+  >
+    <ng-container [ngSwitch]="popover">
+
+      <div *ngSwitchCase="'FECHA'">
+        <div class="pop-top">
+          <div class="pop-title">Filtrar fecha</div>
+
+          <button class="mini-btn" type="button" (click)="clearFecha()" [disabled]="!filtroFecha" aria-label="Limpiar filtro">
+            <svg class="mini-ic" viewBox="0 0 24 24" fill="none">
+              <path d="M9 9l6 6M15 9l-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20Z" stroke="currentColor" stroke-width="2"/>
+            </svg>
+          </button>
+        </div>
+
+        <input class="field" type="date" [(ngModel)]="filtroFecha" />
+      </div>
+
+      <div *ngSwitchCase="'DONANTE'">
+        <div class="pop-top">
+          <div class="pop-title">Buscar donante</div>
+
+          <button class="mini-btn" type="button" (click)="clearDonante()" [disabled]="!filtroDonante.trim()" aria-label="Limpiar filtro">
+            <svg class="mini-ic" viewBox="0 0 24 24" fill="none">
+              <path d="M9 9l6 6M15 9l-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20Z" stroke="currentColor" stroke-width="2"/>
+            </svg>
+          </button>
+        </div>
+
+        <input class="field" type="text" [(ngModel)]="filtroDonante" placeholder="Ej: Juan Pérez" />
+      </div>
+
+      <div *ngSwitchCase="'PEDIDO'">
+        <div class="pop-top">
+          <div class="pop-title">Buscar pedido</div>
+
+          <button class="mini-btn" type="button" (click)="clearPedido()" [disabled]="!filtroPedido.trim()" aria-label="Limpiar filtro">
+            <svg class="mini-ic" viewBox="0 0 24 24" fill="none">
+              <path d="M9 9l6 6M15 9l-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20Z" stroke="currentColor" stroke-width="2"/>
+            </svg>
+          </button>
+        </div>
+
+        <input class="field" type="text" [(ngModel)]="filtroPedido" placeholder="Ej: PED-1007" />
+      </div>
+
+      <div *ngSwitchCase="'TIPO'">
+        <button class="opt" type="button" (click)="setTipo('TODOS')" [class.active]="tipoFiltro==='TODOS'">Todos</button>
+        <button class="opt" type="button" (click)="setTipo('SANGRE')" [class.active]="tipoFiltro==='SANGRE'">Sangre</button>
+        <button class="opt" type="button" (click)="setTipo('PLAQUETAS')" [class.active]="tipoFiltro==='PLAQUETAS'">Plaquetas</button>
+        <button class="opt" type="button" (click)="setTipo('MEDULA_OSEA')" [class.active]="tipoFiltro==='MEDULA_OSEA'">Médula</button>
+      </div>
+
+      <div *ngSwitchCase="'ESTADO'">
+        <button class="opt" type="button" (click)="setEstado('TODOS')" [class.active]="estadoFiltro==='TODOS'">Todos</button>
+        <button class="opt" type="button" (click)="setEstado('PROGRAMADO')" [class.active]="estadoFiltro==='PROGRAMADO'">Programado</button>
+        <button class="opt" type="button" (click)="setEstado('CONFIRMADO')" [class.active]="estadoFiltro==='CONFIRMADO'">Confirmado</button>
+        <button class="opt" type="button" (click)="setEstado('COMPLETADO')" [class.active]="estadoFiltro==='COMPLETADO'">Completado</button>
+        <button class="opt" type="button" (click)="setEstado('NO_PRESENTADO')" [class.active]="estadoFiltro==='NO_PRESENTADO'">No presentado</button>
+        <button class="opt" type="button" (click)="setEstado('CANCELADO')" [class.active]="estadoFiltro==='CANCELADO'">Cancelado</button>
+      </div>
+
+    </ng-container>
   </div>
 </div>
