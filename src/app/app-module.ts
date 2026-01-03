@@ -29,6 +29,8 @@ import { FormsModule } from '@angular/forms';
 import { TurnosTable } from './screens/pages/turnos/componentes/turnos-table/turnos-table';
 import { TurnosCalendar } from './screens/pages/turnos/componentes/turnos-calendar/turnos-calendar';
 import { ConfirmModal } from './screens/common/confirm-modal/confirm-modal';
+import { TurnoDetail } from './screens/pages/turnos/componentes/turno-detail/turno-detail';
+import { AccionTurno } from './screens/pages/turnos/turno-actions.policy';
 
 @NgModule({
   declarations: [
@@ -47,7 +49,8 @@ import { ConfirmModal } from './screens/common/confirm-modal/confirm-modal';
     CrearPedido,
     TurnosTable,
     TurnosCalendar,
-    ConfirmModal
+    ConfirmModal,
+    TurnoDetail
   ],
   imports: [
     BrowserModule,

@@ -1,0 +1,38 @@
+<div class="detail-card">
+  <button class="close" type="button" (click)="close.emit()" aria-label="Cerrar detalle">
+    ✕
+  </button>
+
+  <h3>Detalle del turno</h3>
+
+  <div class="kv">
+    <div><span>Donante</span><b>{{ turno.nombreDonante }}</b></div>
+    <div><span>Tipo de donación</span><b>{{ turno.tipoDonacion }}</b></div>
+    <div><span>Fecha</span><b>{{ turno.fecha }}</b></div>
+    <div><span>Hora</span><b>{{ turno.hora }}</b></div>
+    <div><span>Estado</span><b>{{ turno.estado }}</b></div>
+    <div><span>Pedido asociado</span><b>#{{ turno.pedidoId }}</b></div>
+  </div>
+
+  <div class="actions">
+    <button *ngIf="canConfirm()" class="btn btn--success" (click)="emitAction('CONFIRMAR')">
+      Confirmar turno
+    </button>
+
+    <button *ngIf="canReprogram()" class="btn btn--primary" (click)="emitAction('REPROGRAMAR')">
+      Reprogramar turno
+    </button>
+
+    <button *ngIf="canMarkCompleted()" class="btn btn--success" (click)="emitAction('COMPLETAR')">
+      Marcar asistencia
+    </button>
+
+    <button *ngIf="canMarkNoShow()" class="btn btn--danger" (click)="emitAction('NO_PRESENTADO')">
+      No se presentó
+    </button>
+
+    <button *ngIf="canCancel()" class="btn btn--danger" (click)="emitAction('CANCELAR')">
+      Cancelar turno
+    </button>
+  </div>
+</div>

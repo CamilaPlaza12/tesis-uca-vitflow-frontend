@@ -1,10 +1,6 @@
 import { Component } from '@angular/core';
 import { Turno } from '../../../models/turno';
-
-const MIN_CANCEL_MINUTES = 30;
-const MAX_ACTION_WINDOW_HOURS = 24;
-
-type AccionTurno = 'CONFIRMAR' | 'REPROGRAMAR' | 'CANCELAR' | 'COMPLETAR' | 'NO_PRESENTADO';
+import { AccionTurno } from './turno-actions.policy';
 
 @Component({
   selector: 'app-turnos',
@@ -236,46 +232,5 @@ export class Turnos {
     );
 
     return [t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15];
-  }
-
-  private getTurnoDateTime(turno: Turno): Date {
-    return new Date(`${turno.fecha}T${turno.hora}`);
-  }
-
-  private minutesUntilTurno(turno: Turno): number {
-    const now = new Date().getTime();
-    const turnoTime = this.getTurnoDateTime(turno).getTime();
-    return Math.floor((turnoTime - now) / 60000);
-  }
-
-  private withinActionWindow(turno: Turno): boolean {
-    const now = new Date().getTime();
-    const turnoTime = this.getTurnoDateTime(turno).getTime();
-    const max = turnoTime + MAX_ACTION_WINDOW_HOURS * 3600000;
-    return now >= turnoTime && now <= max;
-  }
-
-  canConfirm(turno: Turno): boolean {
-    return turno.estado === 'PROGRAMADO' && this.minutesUntilTurno(turno) > 0;
-  }
-
-  canReprogram(turno: Turno): boolean {
-    if (!['PROGRAMADO', 'CONFIRMADO'].includes(turno.estado)) return false;
-    return this.minutesUntilTurno(turno) >= MIN_CANCEL_MINUTES;
-  }
-
-  canCancel(turno: Turno): boolean {
-    if (!['PROGRAMADO', 'CONFIRMADO'].includes(turno.estado)) return false;
-    return this.minutesUntilTurno(turno) >= MIN_CANCEL_MINUTES;
-  }
-
-  canMarkCompleted(turno: Turno): boolean {
-    if (!['PROGRAMADO', 'CONFIRMADO'].includes(turno.estado)) return false;
-    return this.withinActionWindow(turno);
-  }
-
-  canMarkNoShow(turno: Turno): boolean {
-    if (!['PROGRAMADO', 'CONFIRMADO'].includes(turno.estado)) return false;
-    return this.withinActionWindow(turno);
   }
 }

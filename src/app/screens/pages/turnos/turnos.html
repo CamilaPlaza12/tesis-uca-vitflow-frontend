@@ -22,44 +22,11 @@
     </div>
 
     <div class="right" *ngIf="turnoSeleccionado as t">
-      <div class="detail-card">
-        <button class="close" type="button" (click)="turnoSeleccionado = null" aria-label="Cerrar detalle">
-          ✕
-        </button>
-
-        <h3>Detalle del turno</h3>
-
-        <div class="kv">
-          <div><span>Donante</span><b>{{ t.nombreDonante }}</b></div>
-          <div><span>Tipo de donación</span><b>{{ t.tipoDonacion }}</b></div>
-          <div><span>Fecha</span><b>{{ t.fecha }}</b></div>
-          <div><span>Hora</span><b>{{ t.hora }}</b></div>
-          <div><span>Estado</span><b>{{ t.estado }}</b></div>
-          <div><span>Pedido asociado</span><b>#{{ t.pedidoId }}</b></div>
-        </div>
-
-        <div class="actions">
-          <button *ngIf="canConfirm(t)" class="btn btn--success" (click)="requestAction('CONFIRMAR', t)">
-            Confirmar turno
-          </button>
-
-          <button *ngIf="canReprogram(t)" class="btn btn--primary" (click)="requestAction('REPROGRAMAR', t)">
-            Reprogramar turno
-          </button>
-
-          <button *ngIf="canMarkCompleted(t)" class="btn btn--success" (click)="requestAction('COMPLETAR', t)">
-            Marcar asistencia
-          </button>
-
-          <button *ngIf="canMarkNoShow(t)" class="btn btn--danger" (click)="requestAction('NO_PRESENTADO', t)">
-            No se presentó
-          </button>
-
-          <button *ngIf="canCancel(t)" class="btn btn--danger" (click)="requestAction('CANCELAR', t)">
-            Cancelar turno
-          </button>
-        </div>
-      </div>
+      <app-turno-detail
+        [turno]="t"
+        (close)="turnoSeleccionado = null"
+        (action)="requestAction($event, t)"
+      ></app-turno-detail>
     </div>
   </section>
 
