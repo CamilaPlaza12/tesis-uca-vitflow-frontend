@@ -1,0 +1,93 @@
+<div class="backdrop" *ngIf="open" (click)="cancel.emit()"></div>
+
+<div class="modal" *ngIf="open" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+  <div class="top">
+    <div>
+      <div class="title">Disponibilidad de turnos</div>
+      <div class="subtitle">Definí días, horarios y capacidad por franja.</div>
+    </div>
+
+    <button class="x" type="button" aria-label="Cerrar" (click)="cancel.emit()">✕</button>
+  </div>
+
+  <div class="note">
+    Los cambios aplican a <b>turnos futuros</b> (los ya tomados no se modifican automáticamente).
+  </div>
+
+  <div class="days">
+    <button
+      *ngFor="let d of dias"
+      type="button"
+      class="day"
+      [class.enabled]="isDayEnabled(d)"
+      [class.active]="selectedDay === d"
+      (click)="isDayEnabled(d) ? selectDay(d) : toggleDay(d)"
+    >
+      {{ d }}
+    </button>
+  </div>
+
+  <div class="day-actions">
+    <button
+      class="mini"
+      type="button"
+      (click)="toggleDay(selectedDay)"
+    >
+      {{ isDayEnabled(selectedDay) ? 'Desactivar día' : 'Activar día' }}
+    </button>
+
+    <button
+      class="mini mini--primary"
+      type="button"
+      [disabled]="!currentDay"
+      (click)="addSlot()"
+    >
+      + Agregar horario
+    </button>
+  </div>
+
+  <div class="content" *ngIf="currentDay as day; else disabledDay">
+    <div class="table">
+      <div class="row head">
+        <div>Hora</div>
+        <div>Capacidad</div>
+        <div></div>
+      </div>
+
+      <div class="row" *ngFor="let s of day.horarios; let i = index; trackBy: trackSlot">
+        <div>
+          <input class="field" type="time" [(ngModel)]="s.hora" />
+        </div>
+
+        <div>
+          <input class="field" type="number" min="1" step="1" [(ngModel)]="s.capacidad" />
+        </div>
+
+        <div class="right">
+          <button class="trash" type="button" (click)="removeSlot(i)" aria-label="Eliminar horario">
+            Eliminar
+          </button>
+        </div>
+      </div>
+
+      <div class="empty" *ngIf="day.horarios.length === 0">
+        No hay horarios cargados para <b>{{ day.dia }}</b>. Agregá uno para habilitar turnos ese día.
+      </div>
+    </div>
+
+    <div class="error" *ngIf="error">{{ error }}</div>
+  </div>
+
+  <ng-template #disabledDay>
+    <div class="disabled">
+      Este día está desactivado. Tocá <b>Activar día</b> para cargar horarios.
+    </div>
+
+    <div class="error" *ngIf="error">{{ error }}</div>
+  </ng-template>
+
+  <div class="footer">
+    <button class="btn btn--ghost" type="button" (click)="cancel.emit()">Cancelar</button>
+    <button class="btn btn--primary" type="button" (click)="onSave()">Guardar</button>
+  </div>
+</div>

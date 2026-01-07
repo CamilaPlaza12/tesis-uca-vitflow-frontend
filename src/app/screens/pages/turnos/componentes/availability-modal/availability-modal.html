@@ -1,0 +1,33 @@
+<div class="availability-overlay" *ngIf="open" (click)="onOverlayClick()">
+  <div class="availability-modal" (click)="stop($event)" role="dialog" aria-modal="true">
+    <div class="modal-top">
+      <div>
+        <h3>Configurá tu disponibilidad</h3>
+        <p class="subtitle">
+          Antes de gestionar turnos, necesitás definir qué días y horarios ofrecés y cuántas personas aceptás por franja.
+        </p>
+      </div>
+
+      <button class="icon-btn" type="button" (click)="onCancel()" aria-label="Cerrar">
+        ✕
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <div class="info">
+        <div class="bullet">• Podés cargar días distintos con horarios y capacidades distintas.</div>
+        <div class="bullet">• Después lo vas a poder editar cuando cambie tu agenda.</div>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-primary" type="button" (click)="onConfigureNow()">
+        Configurar ahora
+      </button>
+
+      <button class="btn-ghost" type="button" (click)="onContinueLater()">
+        Continuar después
+      </button>
+    </div>
+  </div>
+</div>

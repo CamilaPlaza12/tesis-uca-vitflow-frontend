@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Turno } from '../../../models/turno';
 import { AccionTurno } from './turno-actions.policy';
+import { DisponibilidadDia } from '../../../models/disponibilidad';
 
 @Component({
   selector: 'app-turnos',
@@ -11,8 +12,14 @@ import { AccionTurno } from './turno-actions.policy';
 export class Turnos {
   today = new Date();
 
-  turnos: Turno[] = this.buildMockTurnos();
+  hospitalId: number | string = 123;
 
+  disponibilidad: DisponibilidadDia[] | null = null;
+
+  showAvailabilityOnboarding = false;
+  showAvailabilityEditor = false;
+
+  turnos: Turno[] = this.buildMockTurnos();
   turnoSeleccionado: Turno | null = null;
 
   modalOpen = false;
@@ -24,8 +31,39 @@ export class Turnos {
 
   private accionPendiente: AccionTurno | null = null;
 
+  constructor() {
+    this.showAvailabilityOnboarding = this.disponibilidad === null;
+  }
+
+  get hasDisponibilidad(): boolean {
+    return Array.isArray(this.disponibilidad) && this.disponibilidad.length > 0;
+  }
+
   onSelectTurno(turno: Turno): void {
     this.turnoSeleccionado = turno;
+  }
+
+  openAvailabilityEditor(): void {
+    this.showAvailabilityOnboarding = false;
+    this.showAvailabilityEditor = true;
+  }
+
+  continueAvailabilityLater(): void {
+    this.showAvailabilityOnboarding = false;
+  }
+
+  closeAvailabilityOnboarding(): void {
+    this.showAvailabilityOnboarding = false;
+  }
+
+  closeAvailabilityEditor(): void {
+    this.showAvailabilityEditor = false;
+  }
+
+  onAvailabilitySaved(data: DisponibilidadDia[]): void {
+    this.disponibilidad = data;
+    this.showAvailabilityEditor = false;
+    this.showAvailabilityOnboarding = false;
   }
 
   requestAction(accion: AccionTurno, turno: Turno): void {
