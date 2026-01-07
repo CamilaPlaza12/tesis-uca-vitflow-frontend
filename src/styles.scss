@@ -1,43 +1,20 @@
 @import url('https://fonts.googleapis.com/css2?family=Lato:wght@300;400;600;700&display=swap');
 @import "primeicons/primeicons.css";
 
-/* Base */
+
 body {
   margin: 0;
   font-family: 'Lato', sans-serif;
 }
 
-/* =========================================
-   MODAL OPEN (bloque global)
-   - Evita scroll
-   - Pone el contenido (router-outlet) arriba de la sidebar
-   - Deshabilita sidebar + hamburger
-   ========================================= */
+body.modal-open app-sidebar,
+body.modal-open .sidebar,
+body.modal-open .side-nav,
+body.modal-open .layout-sidebar {
+  z-index: 0 !important;
+  position: relative;
+}
+
 body.modal-open {
   overflow: hidden;
-}
-
-/* Subimos el contenido (donde vive el modal) por arriba del sidebar */
-body.modal-open .content {
-  position: relative !important;
-  z-index: 99999999 !important;
-}
-
-/* Bajamos y deshabilitamos sidebar + hamburger */
-body.modal-open app-sidebar,
-body.modal-open app-sidebar .sidebar,
-body.modal-open .mobile-menu-btn {
-  z-index: 0 !important;
-  pointer-events: none !important;
-}
-
-/* Evita que el overlay mobile del sidebar se meta en el medio */
-body.modal-open app-sidebar .overlay {
-  display: none !important;
-}
-
-/* (Opcional pero útil) Garantiza que el backdrop del availability quede arriba de todo.
-   Si tu clase se llama distinto, cambiala acá. */
-body.modal-open .availability-overlay {
-  z-index: 2147483647 !important;
 }

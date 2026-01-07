@@ -9,26 +9,8 @@
       <div class="date">
         Hoy – {{ today | date: 'dd/MM/yyyy' }}
       </div>
-
-      <button
-        class="availability-btn"
-        type="button"
-        (click)="openAvailabilityEditor()"
-      >
-        {{ hasDisponibilidad ? 'Editar disponibilidad' : 'Configurar disponibilidad' }}
-      </button>
     </div>
   </header>
-
-  <div class="availability-empty" *ngIf="disponibilidad === null && !showAvailabilityOnboarding">
-    <div class="availability-empty__title">Todavía no configuraste tu disponibilidad</div>
-    <div class="availability-empty__text">
-      Definí días, horarios y capacidad por franja para habilitar la agenda.
-    </div>
-    <button class="availability-empty__cta" type="button" (click)="openAvailabilityEditor()">
-      Configurar disponibilidad
-    </button>
-  </div>
 
   <section class="layout" [class.with-detail]="!!turnoSeleccionado">
     <div class="left">
@@ -52,21 +34,6 @@
     Seleccioná un turno para ver el detalle.
   </div>
 </div>
-
-<app-availability-modal
-  [open]="showAvailabilityOnboarding"
-  (configureNow)="openAvailabilityEditor()"
-  (continueLater)="continueAvailabilityLater()"
-  (close)="closeAvailabilityOnboarding()"
-></app-availability-modal>
-
-<app-availability-editor-modal
-  [open]="showAvailabilityEditor"
-  [hospitalId]="hospitalId"
-  [initial]="disponibilidad"
-  (cancel)="closeAvailabilityEditor()"
-  (save)="onAvailabilitySaved($event)"
-></app-availability-editor-modal>
 
 <app-confirm-modal
   [open]="modalOpen"
