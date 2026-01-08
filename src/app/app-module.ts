@@ -31,6 +31,8 @@ import { TurnosCalendar } from './screens/pages/turnos/componentes/turnos-calend
 import { ConfirmModal } from './screens/common/confirm-modal/confirm-modal';
 import { TurnoDetail } from './screens/pages/turnos/componentes/turno-detail/turno-detail';
 import { AccionTurno } from './screens/pages/turnos/turno-actions.policy';
+import { AvailabilityEmptyState } from './screens/pages/turnos/componentes/availability-empty-state/availability-empty-state';
+import { AvailabilityConfig } from './screens/pages/turnos/componentes/availability-config/availability-config';
 
 @NgModule({
   declarations: [
@@ -50,7 +52,9 @@ import { AccionTurno } from './screens/pages/turnos/turno-actions.policy';
     TurnosTable,
     TurnosCalendar,
     ConfirmModal,
-    TurnoDetail
+    TurnoDetail,
+    AvailabilityEmptyState,
+    AvailabilityConfig
   ],
   imports: [
     BrowserModule,

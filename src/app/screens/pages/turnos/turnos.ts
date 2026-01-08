@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Turno } from '../../../models/turno';
 import { AccionTurno } from './turno-actions.policy';
+import { DisponibilidadDia } from '../../../models/disponibilidad';
 
 @Component({
   selector: 'app-turnos',
@@ -11,8 +12,16 @@ import { AccionTurno } from './turno-actions.policy';
 export class Turnos {
   today = new Date();
 
-  turnos: Turno[] = this.buildMockTurnos();
+  hospitalId: number | string = 123;
 
+  disponibilidad: DisponibilidadDia[] | null = null;
+
+  availabilityConfigOpen = false;
+  availabilityConfigClosing = false;
+
+  private readonly configAnimMs = 220;
+
+  turnos: Turno[] = this.buildMockTurnos();
   turnoSeleccionado: Turno | null = null;
 
   modalOpen = false;
@@ -23,6 +32,54 @@ export class Turnos {
   modalError: string | null = null;
 
   private accionPendiente: AccionTurno | null = null;
+
+  get hasDisponibilidad(): boolean {
+    return !!this.disponibilidad && this.disponibilidad.length > 0;
+  }
+
+  onClickConfigurar(): void {
+    this.availabilityConfigClosing = false;
+    this.availabilityConfigOpen = true;
+  }
+
+  onCancelConfigurar(): void {
+    this.closeAvailabilityConfig();
+  }
+
+  onSaveDisponibilidad(data: DisponibilidadDia[]): void {
+    this.disponibilidad = data;
+
+    console.log('✅ Disponibilidad guardada:', data);
+    console.table(
+      data.flatMap(d =>
+        d.horarios.map(h => ({
+          dia: d.dia,
+          hora: h.hora,
+          capacidad: h.capacidad,
+          hospital: d.id_hospital,
+        }))
+      )
+    );
+
+    this.closeAvailabilityConfig();
+  }
+
+
+  onEditDisponibilidad(): void {
+    this.availabilityConfigClosing = false;
+    this.availabilityConfigOpen = true;
+  }
+
+  private closeAvailabilityConfig(): void {
+    if (this.availabilityConfigClosing) return;
+
+    this.availabilityConfigOpen = false;
+    this.availabilityConfigClosing = true;
+
+    setTimeout(() => {
+      this.availabilityConfigClosing = false;
+    }, this.configAnimMs);
+  }
 
   onSelectTurno(turno: Turno): void {
     this.turnoSeleccionado = turno;

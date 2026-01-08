@@ -1,5 +1,5 @@
 .page {
-  padding: 28px 28px 3px;
+  padding: 28px 28px 36px;
   max-width: 1280px;
   margin: 0 auto;
 }
@@ -46,6 +46,95 @@
   white-space: nowrap;
 }
 
+/* ---------- ONBOARDING ---------- */
+
+.onboarding {
+  border: 1px solid #eef2f6;
+  background: #ffffff;
+  border-radius: 18px;
+  box-shadow: 0 16px 34px rgba(15, 23, 42, 0.06);
+  overflow: hidden;
+}
+
+/* ACORDEÓN REAL: cuando está cerrado, NO ocupa alto */
+.config-inline {
+  background: linear-gradient(180deg, #fbfdff 0%, #ffffff 100%);
+  overflow: hidden;
+
+  max-height: 0;
+  padding: 0 18px;
+  border-top: 0;
+
+  opacity: 0;
+  transform: translateY(-6px);
+
+  transition:
+    max-height 220ms ease,
+    padding 220ms ease,
+    opacity 180ms ease,
+    transform 220ms ease,
+    border-top-color 220ms ease;
+}
+
+.config-inline.is-open {
+  border-top: 1px solid #eef2f6;
+
+  max-height: 70vh;
+
+  padding: 18px;
+
+  opacity: 1;
+  transform: translateY(0);
+
+  /* 👇 clave: scroll adentro cuando el contenido es largo */
+  overflow: auto;
+}
+
+/* Scrollbar prolija (Chrome/Edge/Safari) */
+.config-inline.is-open::-webkit-scrollbar {
+  width: 10px;
+}
+.config-inline.is-open::-webkit-scrollbar-thumb {
+  background: rgba(15, 23, 42, 0.18);
+  border-radius: 999px;
+  border: 3px solid rgba(255, 255, 255, 0.9);
+}
+.config-inline.is-open::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Firefox */
+.config-inline.is-open {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(15, 23, 42, 0.22) transparent;
+}
+
+/* ---------- TOOLBAR ---------- */
+
+.layout-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin: 8px 0 12px;
+}
+
+.btn {
+  border: 1px solid transparent;
+  border-radius: 12px;
+  font-weight: 750;
+  padding: 10px 14px;
+  cursor: pointer;
+}
+
+.btn--ghost {
+  background: #ffffff;
+  border-color: #e7edf4;
+  color: #334155;
+}
+
+.btn--ghost:hover {
+  background: #f8fbff;
+}
+
 /* ---------- LAYOUT ---------- */
 
 .layout {
@@ -73,5 +162,9 @@
 @media (max-width: 980px) {
   .layout.with-detail {
     grid-template-columns: 1fr;
+  }
+
+  .layout-toolbar {
+    justify-content: flex-start;
   }
 }

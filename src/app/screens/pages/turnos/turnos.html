@@ -6,33 +6,59 @@
     </div>
 
     <div class="header__right">
-      <div class="date">
-        Hoy – {{ today | date: 'dd/MM/yyyy' }}
-      </div>
+      <div class="date">Hoy – {{ today | date: 'dd/MM/yyyy' }}</div>
     </div>
   </header>
 
-  <section class="layout" [class.with-detail]="!!turnoSeleccionado">
-    <div class="left">
-      <app-turnos-table
-        [turnos]="turnos"
-        [turnoSeleccionadoId]="turnoSeleccionado?.id ?? null"
-        (selectTurno)="onSelectTurno($event)"
-      ></app-turnos-table>
-    </div>
+  <!-- ONBOARDING: no hay disponibilidad -->
+  <section class="onboarding" *ngIf="!hasDisponibilidad; else agenda">
+    <app-availability-empty-state
+      [open]="availabilityConfigOpen"
+      (configure)="onClickConfigurar()"
+    ></app-availability-empty-state>
 
-    <div class="right" *ngIf="turnoSeleccionado as t">
-      <app-turno-detail
-        [turno]="t"
-        (close)="turnoSeleccionado = null"
-        (action)="requestAction($event, t)"
-      ></app-turno-detail>
+    <!-- Acordeón: SIEMPRE está, pero colapsa altura cuando está cerrado -->
+    <div class="config-inline" [class.is-open]="availabilityConfigOpen">
+      <app-availability-config
+        *ngIf="availabilityConfigOpen || availabilityConfigClosing"
+        [hospitalId]="hospitalId"
+        [initial]="disponibilidad"
+        (save)="onSaveDisponibilidad($event)"
+        (cancel)="onCancelConfigurar()"
+      ></app-availability-config>
     </div>
   </section>
 
-  <div class="empty-detail" *ngIf="!turnoSeleccionado">
-    Seleccioná un turno para ver el detalle.
-  </div>
+  <!-- AGENDA (por ahora la tabla; después acá va el calendario) -->
+  <ng-template #agenda>
+    <section class="layout-toolbar">
+      <button class="btn btn--ghost" type="button" (click)="onEditDisponibilidad()">
+        Editar disponibilidad
+      </button>
+    </section>
+
+    <section class="layout" [class.with-detail]="!!turnoSeleccionado">
+      <div class="left">
+        <app-turnos-table
+          [turnos]="turnos"
+          [turnoSeleccionadoId]="turnoSeleccionado?.id ?? null"
+          (selectTurno)="onSelectTurno($event)"
+        ></app-turnos-table>
+      </div>
+
+      <div class="right" *ngIf="turnoSeleccionado as t">
+        <app-turno-detail
+          [turno]="t"
+          (close)="turnoSeleccionado = null"
+          (action)="requestAction($event, t)"
+        ></app-turno-detail>
+      </div>
+    </section>
+
+    <div class="empty-detail" *ngIf="!turnoSeleccionado">
+      Seleccioná un turno para ver el detalle.
+    </div>
+  </ng-template>
 </div>
 
 <app-confirm-modal
