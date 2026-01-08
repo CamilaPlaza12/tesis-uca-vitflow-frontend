@@ -11,13 +11,12 @@
   </header>
 
   <!-- ONBOARDING: no hay disponibilidad -->
-  <section class="onboarding" *ngIf="!hasDisponibilidad; else agenda">
+  <section class="onboarding" *ngIf="!hasDisponibilidad">
     <app-availability-empty-state
       [open]="availabilityConfigOpen"
       (configure)="onClickConfigurar()"
     ></app-availability-empty-state>
 
-    <!-- Acordeón: SIEMPRE está, pero colapsa altura cuando está cerrado -->
     <div class="config-inline" [class.is-open]="availabilityConfigOpen">
       <app-availability-config
         *ngIf="availabilityConfigOpen || availabilityConfigClosing"
@@ -29,14 +28,28 @@
     </div>
   </section>
 
-  <!-- AGENDA (por ahora la tabla; después acá va el calendario) -->
-  <ng-template #agenda>
+  <!-- AGENDA -->
+  <section *ngIf="hasDisponibilidad">
     <section class="layout-toolbar">
       <button class="btn btn--ghost" type="button" (click)="onEditDisponibilidad()">
         Editar disponibilidad
       </button>
     </section>
 
+    <!-- Editor inline (modo edición) -->
+    <div class="onboarding">
+      <div class="config-inline" [class.is-open]="availabilityConfigOpen">
+        <app-availability-config
+          *ngIf="availabilityConfigOpen || availabilityConfigClosing"
+          [hospitalId]="hospitalId"
+          [initial]="disponibilidad"
+          (save)="onSaveDisponibilidad($event)"
+          (cancel)="onCancelConfigurar()"
+        ></app-availability-config>
+      </div>
+    </div>
+
+    <!-- Por ahora: tabla. Después lo reemplazamos por calendario -->
     <section class="layout" [class.with-detail]="!!turnoSeleccionado">
       <div class="left">
         <app-turnos-table
@@ -58,7 +71,7 @@
     <div class="empty-detail" *ngIf="!turnoSeleccionado">
       Seleccioná un turno para ver el detalle.
     </div>
-  </ng-template>
+  </section>
 </div>
 
 <app-confirm-modal

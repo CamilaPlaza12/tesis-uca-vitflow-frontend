@@ -14,7 +14,8 @@ export class Turnos {
 
   hospitalId: number | string = 123;
 
-  disponibilidad: DisponibilidadDia[] | null = null;
+  // ✅ Simula “ya configurado” (después lo conectamos al back)
+  disponibilidad: DisponibilidadDia[] | null = this.buildMockDisponibilidad();
 
   availabilityConfigOpen = false;
   availabilityConfigClosing = false;
@@ -63,7 +64,6 @@ export class Turnos {
 
     this.closeAvailabilityConfig();
   }
-
 
   onEditDisponibilidad(): void {
     this.availabilityConfigClosing = false;
@@ -289,5 +289,48 @@ export class Turnos {
     );
 
     return [t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15];
+  }
+
+  // ✅ MOCK disponibilidad ya existente
+  private buildMockDisponibilidad(): DisponibilidadDia[] {
+    const id = this.hospitalId;
+
+    return [
+      {
+        id_hospital: id,
+        dia: 'Lunes',
+        horarios: [
+          { hora: '08:00', capacidad: 3 },
+          { hora: '08:20', capacidad: 3 },
+          { hora: '08:40', capacidad: 3 },
+          { hora: '09:00', capacidad: 3 },
+          { hora: '09:20', capacidad: 3 },
+          { hora: '09:40', capacidad: 3 },
+          { hora: '10:00', capacidad: 2 },
+        ],
+      },
+      {
+        id_hospital: id,
+        dia: 'Miércoles',
+        horarios: [
+          { hora: '14:00', capacidad: 2 },
+          { hora: '14:30', capacidad: 2 },
+          { hora: '15:00', capacidad: 2 },
+          { hora: '15:30', capacidad: 2 },
+          { hora: '16:00', capacidad: 2 },
+        ],
+      },
+      {
+        id_hospital: id,
+        dia: 'Viernes',
+        horarios: [
+          { hora: '09:00', capacidad: 4 },
+          { hora: '09:15', capacidad: 4 },
+          { hora: '09:30', capacidad: 4 },
+          { hora: '09:45', capacidad: 4 },
+          { hora: '10:00', capacidad: 4 },
+        ],
+      },
+    ];
   }
 }
