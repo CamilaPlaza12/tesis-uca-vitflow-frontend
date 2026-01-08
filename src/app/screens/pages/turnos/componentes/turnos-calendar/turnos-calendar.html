@@ -1,1 +1,28 @@
-<p>turnos-calendar works!</p>
+<div class="calendar">
+  <div class="calendar__header">
+    <h3>Agenda del día</h3>
+    <span class="date">
+      {{ selectedDate | date: 'EEEE dd/MM/yyyy' }}
+    </span>
+  </div>
+
+  <div class="calendar__grid">
+    <div class="hour-row" *ngFor="let hour of hours">
+      <div class="hour-label">{{ hour }}</div>
+
+      <div class="hour-slots">
+        <div
+          class="turno"
+          *ngFor="let t of turnosPorHora(hour)"
+          (click)="onSelect(t)"
+          [class.confirmado]="t.estado === 'CONFIRMADO'"
+          [class.programado]="t.estado === 'PROGRAMADO'"
+        >
+          <div class="turno__hora">{{ t.hora }}</div>
+          <div class="turno__nombre">{{ t.nombreDonante }}</div>
+          <div class="turno__tipo">{{ t.tipoDonacion }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

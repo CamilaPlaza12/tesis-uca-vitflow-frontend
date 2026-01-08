@@ -1,0 +1,98 @@
+.calendar {
+  background: #ffffff;
+  border: 1px solid #eef2f6;
+  border-radius: 18px;
+  overflow: hidden;
+}
+
+.calendar__header {
+  padding: 14px 16px;
+  background: #fbfdff;
+
+  /* ✅ en vez de una línea fuerte, algo mínimo */
+  border-bottom: 1px solid rgba(15, 23, 42, 0.06);
+
+  h3 {
+    margin: 0;
+    font-size: 15.5px;
+    font-weight: 850;
+    letter-spacing: -0.01em;
+  }
+
+  .date {
+    display: inline-block;
+    margin-top: 4px;
+    font-size: 12.5px;
+    color: #64748b;
+    letter-spacing: -0.01em;
+  }
+}
+
+/* ✅ Ajustá esto para que entre sin scrollear la página */
+.calendar__grid {
+  max-height: 65vh;
+  overflow-y: auto;
+}
+
+.hour-row {
+  display: grid;
+  grid-template-columns: 74px 1fr;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.05);
+}
+
+/* si veías una línea rara al inicio, esto ayuda */
+.hour-row:first-child {
+  border-top: 0;
+}
+
+.hour-label {
+  padding: 10px 12px;
+  font-size: 12px;
+  font-weight: 850;
+  color: #475569;
+  background: #f8fafc;
+}
+
+.hour-slots {
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.turno {
+  border-radius: 12px;
+  padding: 8px 10px;
+  cursor: pointer;
+  font-size: 12px;
+  border: 1px solid transparent;
+
+  &.programado {
+    background: rgba(37, 99, 235, 0.08);
+    border-color: rgba(37, 99, 235, 0.22);
+    color: #1d4ed8;
+  }
+
+  &.confirmado {
+    background: rgba(34, 197, 94, 0.10);
+    border-color: rgba(34, 197, 94, 0.22);
+    color: #166534;
+  }
+
+  &:hover {
+    filter: brightness(0.97);
+  }
+}
+
+.turno__hora {
+  font-weight: 900;
+}
+
+.turno__nombre {
+  font-weight: 800;
+}
+
+.turno__tipo {
+  font-size: 11px;
+  opacity: 0.85;
+}
