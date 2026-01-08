@@ -6,10 +6,12 @@ type Row = {
   enabled: boolean;
   horarios: HorarioCapacidad[];
 
-  rangeStart: string; // "HH:mm"
-  rangeEnd: string;   // "HH:mm"
-  interval: number;   // minutos
-  defaultCap: number; // capacidad para los slots generados
+  rangeStart: string;
+  rangeEnd: string;
+  interval: number;
+  defaultCap: number;
+
+  error?: string | null;
 };
 
 @Component({
@@ -28,39 +30,49 @@ export class AvailabilityConfig implements OnChanges {
   dias: DiaSemana[] = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
   intervalOptions = [5, 10, 15, 20, 30, 60];
 
-  rows: Row[] = this.dias.map((d) => ({
-    dia: d,
-    enabled: false,
-    horarios: [],
-    rangeStart: '08:00',
-    rangeEnd: '16:00',
-    interval: 20,
-    defaultCap: 1,
-  }));
+  rows: Row[] = [];
+
+  // snapshot “último estado confirmado” (initial al abrir / lo guardado)
+  private lastInitialSnapshot: DisponibilidadDia[] | null = null;
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['initial']) this.hydrateFromInitial();
+    if (changes['initial']) {
+      this.lastInitialSnapshot = this.cloneDisponibilidad(this.initial);
+      this.hydrateFromInitial(this.lastInitialSnapshot);
+    }
   }
 
-  private hydrateFromInitial(): void {
-    const base = this.dias.map((d) => ({
+  private baseRows(): Row[] {
+    return this.dias.map((d) => ({
       dia: d,
       enabled: false,
-      horarios: [] as HorarioCapacidad[],
+      horarios: [],
       rangeStart: '08:00',
       rangeEnd: '16:00',
       interval: 20,
       defaultCap: 1,
+      error: null,
     }));
+  }
 
-    if (!this.initial || this.initial.length === 0) {
+  private hydrateFromInitial(source: DisponibilidadDia[] | null): void {
+    const base = this.baseRows();
+
+    if (!source || source.length === 0) {
       this.rows = base;
       return;
     }
 
     const map = new Map<DiaSemana, HorarioCapacidad[]>();
-    for (const item of this.initial) {
-      map.set(item.dia, (item.horarios ?? []).map((h) => ({ ...h, hora: this.normalizeTime(h.hora) })));
+    for (const item of source) {
+      map.set(
+        item.dia,
+        (item.horarios ?? []).map((h) => ({
+          ...h,
+          hora: this.normalizeTime(h.hora),
+          capacidad: Math.max(1, Math.min(999, Math.floor(Number(h.capacidad) || 1))),
+        }))
+      );
     }
 
     this.rows = base.map((r) => ({
@@ -71,6 +83,7 @@ export class AvailabilityConfig implements OnChanges {
 
     for (const row of this.rows) {
       if (!row.enabled || row.horarios.length === 0) continue;
+
       const mins = row.horarios
         .map((h) => this.toMinutes(h.hora))
         .filter((x) => x !== null) as number[];
@@ -86,48 +99,50 @@ export class AvailabilityConfig implements OnChanges {
 
   toggleDay(row: Row): void {
     row.enabled = !row.enabled;
+    row.error = null;
     if (!row.enabled) row.horarios = [];
   }
 
   addHorario(row: Row): void {
     if (!row.enabled) return;
-
-    const hora = this.normalizeTime('08:00');
-    if (this.hasHora(row, hora)) {
-      alert(`Ese horario (${hora}) ya existe para ${row.dia}.`);
-      return;
-    }
-
     const cap = Math.max(1, row.defaultCap || 1);
-    row.horarios = this.sortUnique([...row.horarios, { hora, capacidad: cap }]);
+    row.horarios = [...row.horarios, { hora: '', capacidad: cap }];
   }
 
   clearHorarios(row: Row): void {
     if (!row.enabled) return;
     row.horarios = [];
+    row.error = null;
   }
 
   removeHorario(row: Row, idx: number): void {
     if (!row.enabled) return;
     row.horarios = row.horarios.filter((_, i) => i !== idx);
+    row.error = null;
   }
 
   updateHora(row: Row, idx: number, value: string): void {
     if (!row.enabled) return;
 
-    const v = this.normalizeTime((value || '').slice(0, 5));
+    const vRaw = (value || '').slice(0, 5);
+    const v = this.normalizeTime(vRaw);
     const prev = this.normalizeTime(row.horarios?.[idx]?.hora || '');
 
-    if (!v || v.length !== 5) return;
+    if (!vRaw) {
+      row.horarios = row.horarios.map((h, i) => (i === idx ? { ...h, hora: '' } : h));
+      return;
+    }
 
-    if (v !== prev && this.hasHora(row, v)) {
-      alert(`Ese horario (${v}) ya existe para ${row.dia}.`);
+    if (v.length !== 5) return;
+
+    if (v !== prev && this.hasHora(row, v, idx)) {
+      this.showRowError(row, `Ese horario (${v}) ya existe para ${row.dia}.`);
       row.horarios = row.horarios.map((h, i) => (i === idx ? { ...h, hora: prev } : h));
       return;
     }
 
     row.horarios = row.horarios.map((h, i) => (i === idx ? { ...h, hora: v } : h));
-    row.horarios = this.sortUnique(row.horarios);
+    row.horarios = this.sortKeepEmpties(row.horarios);
   }
 
   updateCapacidad(row: Row, idx: number, value: string): void {
@@ -137,7 +152,6 @@ export class AvailabilityConfig implements OnChanges {
     const cap = Number.isFinite(n) ? Math.max(1, Math.min(999, Math.floor(n))) : 1;
 
     row.horarios = row.horarios.map((h, i) => (i === idx ? { ...h, capacidad: cap } : h));
-    row.horarios = this.sortUnique(row.horarios);
   }
 
   updateDefaultCap(row: Row, value: string): void {
@@ -163,13 +177,20 @@ export class AvailabilityConfig implements OnChanges {
       generated.push({ hora: this.fromMinutes(m), capacidad: cap });
     }
 
-    // Merge sin duplicar: si ya existe la hora, NO la agrega
-    const merged = [...row.horarios.map(h => ({ ...h, hora: this.normalizeTime(h.hora) })), ...generated];
+    const merged = [...row.horarios, ...generated];
+    row.horarios = this.sortKeepEmpties(merged);
 
-    row.horarios = this.sortUnique(merged);
+    const dup = this.findDuplicateHora(merged);
+    if (dup) this.showRowError(row, `Ya existía ${dup} en ${row.dia}. Se evitó duplicar.`);
+  }
+
+  dismissError(row: Row): void {
+    row.error = null;
   }
 
   onCancel(): void {
+    // ✅ descartar cambios: volver al snapshot de “lo que estaba” (initial)
+    this.hydrateFromInitial(this.lastInitialSnapshot);
     this.cancel.emit();
   }
 
@@ -188,12 +209,36 @@ export class AvailabilityConfig implements OnChanges {
       }))
       .filter((d) => d.horarios.length > 0);
 
+    // ✅ lo guardado pasa a ser el nuevo “estado original” para futuros Cancel
+    this.lastInitialSnapshot = this.cloneDisponibilidad(out);
+
     this.save.emit(out);
   }
 
-  private hasHora(row: Row, hhmm: string): boolean {
+  private showRowError(row: Row, msg: string): void {
+    row.error = msg;
+    window.setTimeout(() => {
+      if (row.error === msg) row.error = null;
+    }, 2800);
+  }
+
+  private hasHora(row: Row, hhmm: string, ignoreIdx?: number): boolean {
     const target = this.normalizeTime(hhmm);
-    return (row.horarios ?? []).some((h) => this.normalizeTime(h.hora) === target);
+    return (row.horarios ?? []).some((h, i) => {
+      if (ignoreIdx !== undefined && i === ignoreIdx) return false;
+      return this.normalizeTime(h.hora) === target && target.length === 5;
+    });
+  }
+
+  private findDuplicateHora(list: HorarioCapacidad[]): string | null {
+    const seen = new Set<string>();
+    for (const h of list ?? []) {
+      const t = this.normalizeTime(h?.hora || '');
+      if (!t || t.length !== 5) continue;
+      if (seen.has(t)) return t;
+      seen.add(t);
+    }
+    return null;
   }
 
   private sortUnique(list: HorarioCapacidad[]): HorarioCapacidad[] {
@@ -212,6 +257,29 @@ export class AvailabilityConfig implements OnChanges {
 
     out.sort((a, b) => a.hora.localeCompare(b.hora));
     return out;
+  }
+
+  private sortKeepEmpties(list: HorarioCapacidad[]): HorarioCapacidad[] {
+    const valids = this.sortUnique(list);
+    const empties = (list ?? [])
+      .filter((h) => !h?.hora || (h.hora || '').length < 5)
+      .map((h) => ({
+        hora: '',
+        capacidad: Math.max(1, Math.min(999, Math.floor(Number(h?.capacidad) || 1))),
+      }));
+    return [...valids, ...empties];
+  }
+
+  private cloneDisponibilidad(src: DisponibilidadDia[] | null): DisponibilidadDia[] | null {
+    if (!src) return null;
+    return src.map((d) => ({
+      id_hospital: d.id_hospital,
+      dia: d.dia,
+      horarios: (d.horarios ?? []).map((h) => ({
+        hora: this.normalizeTime(h.hora),
+        capacidad: Math.max(1, Math.min(999, Math.floor(Number(h.capacidad) || 1))),
+      })),
+    }));
   }
 
   private normalizeTime(t: string): string {

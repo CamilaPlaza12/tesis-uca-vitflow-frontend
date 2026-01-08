@@ -38,6 +38,15 @@
       <div class="day">{{ r.dia }}</div>
 
       <div class="slots">
+        <!-- Banner inline (sin popups) -->
+        <div class="row-error" *ngIf="r.error">
+          <span class="row-error__dot"></span>
+          <div class="row-error__text">{{ r.error }}</div>
+          <button type="button" class="row-error__x" (click)="dismissError(r)" aria-label="Cerrar">
+            ✕
+          </button>
+        </div>
+
         <!-- Rango rápido -->
         <div class="range" [class.range--disabled]="!r.enabled">
           <div class="range__title">
