@@ -10,7 +10,6 @@
     </div>
   </header>
 
-  <!-- ONBOARDING: no hay disponibilidad -->
   <section class="onboarding" *ngIf="!hasDisponibilidad">
     <app-availability-empty-state
       [open]="availabilityConfigOpen"
@@ -28,14 +27,13 @@
     </div>
   </section>
 
-  <!-- AGENDA -->
   <section *ngIf="hasDisponibilidad">
     <section class="layout" [class.with-detail]="!!turnoSeleccionado">
       <div class="left">
         <app-turnos-calendar
           [turnos]="turnos"
           [selectedDate]="today"
-          (selectTurno)="onSelectTurno($event)"
+          (selectTurno)="onSelectTurnoFromCalendar($event)"
         ></app-turnos-calendar>
 
         <div class="empty-detail" *ngIf="!turnoSeleccionado">
@@ -52,7 +50,6 @@
           </button>
         </div>
 
-        <!-- ✅ Panel inline SOLO cuando abre/cierra -->
         <div
           class="availability-panel"
           [class.is-open]="availabilityConfigOpen"
@@ -65,17 +62,22 @@
             (cancel)="onCancelConfigurar()"
           ></app-availability-config>
         </div>
+
+        <app-turnos-table
+          [turnos]="turnos"
+          [turnoSeleccionadoId]="turnoSeleccionado?.id || null"
+          (selectTurno)="onSelectTurnoFromHistory($event)"
+        ></app-turnos-table>
       </div>
 
       <div class="right" *ngIf="turnoSeleccionado as t">
         <app-turno-detail
           [turno]="t"
           (close)="turnoSeleccionado = null"
-          (action)="requestAction($event, t)"
+          (action)="onDetailAction($event, t)"
         ></app-turno-detail>
       </div>
     </section>
-
   </section>
 </div>
 

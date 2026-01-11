@@ -1,9 +1,7 @@
-import { Component, EventEmitter, HostListener, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Turno, DonationType, AppointmentStatus } from '../../../../../models/turno';
 
-type PopoverKey = 'FECHA' | 'DONANTE' | 'TIPO' | 'ESTADO' | 'PEDIDO' | null;
 type TipoFiltro = 'TODOS' | DonationType;
-type EstadoFiltro = 'TODOS' | AppointmentStatus;
 
 @Component({
   selector: 'app-turnos-table',
@@ -17,80 +15,20 @@ export class TurnosTable {
 
   @Output() selectTurno = new EventEmitter<Turno>();
 
-  popover: PopoverKey = null;
-  overlayTop = 0;
-  overlayLeft = 0;
-  overlayWidth = 240;
-
-  filtroFecha = '';
-  filtroDonante = '';
-  filtroPedido = '';
-  tipoFiltro: TipoFiltro = 'TODOS';
-  estadoFiltro: EstadoFiltro = 'TODOS';
+  desde = '';
+  hasta = '';
+  donante = '';
+  tipo: TipoFiltro = 'TODOS';
 
   onRowClick(turno: Turno): void {
     this.selectTurno.emit(turno);
   }
 
-  open(key: Exclude<PopoverKey, null>, ev: MouseEvent, width = 240): void {
-    ev.stopPropagation();
-
-    const el = ev.currentTarget as HTMLElement;
-    const r = el.getBoundingClientRect();
-
-    this.overlayWidth = width;
-
-    const top = r.bottom + 10;
-    let left = r.left + r.width / 2 - width / 2;
-
-    const pad = 10;
-    const maxLeft = window.innerWidth - width - pad;
-    if (left < pad) left = pad;
-    if (left > maxLeft) left = maxLeft;
-
-    this.overlayTop = top;
-    this.overlayLeft = left;
-    this.popover = key;
-  }
-
-  close(): void {
-    this.popover = null;
-  }
-
-  stop(ev: MouseEvent): void {
-    ev.stopPropagation();
-  }
-
-  @HostListener('document:click')
-  onDocClick(): void {
-    this.close();
-  }
-
-  @HostListener('document:keydown.escape')
-  onEsc(): void {
-    this.close();
-  }
-
-  clearFecha(): void {
-    this.filtroFecha = '';
-  }
-
-  clearDonante(): void {
-    this.filtroDonante = '';
-  }
-
-  clearPedido(): void {
-    this.filtroPedido = '';
-  }
-
-  setTipo(t: TipoFiltro): void {
-    this.tipoFiltro = t;
-    this.close();
-  }
-
-  setEstado(e: EstadoFiltro): void {
-    this.estadoFiltro = e;
-    this.close();
+  clear(): void {
+    this.desde = '';
+    this.hasta = '';
+    this.donante = '';
+    this.tipo = 'TODOS';
   }
 
   tipoHuman(t: DonationType): string {
@@ -111,18 +49,24 @@ export class TurnosTable {
     return new Date(`${t.fecha}T${t.hora}:00`).getTime();
   }
 
+  private inRange(fecha: string): boolean {
+    const d = this.desde.trim();
+    const h = this.hasta.trim();
+
+    if (d && fecha < d) return false;
+    if (h && fecha > h) return false;
+
+    return true;
+  }
+
   get turnosProcesados(): Turno[] {
-    const fFecha = this.filtroFecha.trim();
-    const fDon = this.filtroDonante.trim().toLowerCase();
-    const fPed = this.filtroPedido.trim().toLowerCase();
+    const qDon = this.donante.trim().toLowerCase();
 
     const filtered = this.turnos.filter(t => {
-      const okFecha = !fFecha || t.fecha === fFecha;
-      const okDon = !fDon || (t.nombreDonante || '').toLowerCase().includes(fDon);
-      const okPed = !fPed || (t.pedidoId || '').toLowerCase().includes(fPed);
-      const okTipo = this.tipoFiltro === 'TODOS' || t.tipoDonacion === this.tipoFiltro;
-      const okEstado = this.estadoFiltro === 'TODOS' || t.estado === this.estadoFiltro;
-      return okFecha && okDon && okPed && okTipo && okEstado;
+      const okRango = this.inRange(t.fecha);
+      const okDon = !qDon || (t.nombreDonante || '').toLowerCase().includes(qDon);
+      const okTipo = this.tipo === 'TODOS' || t.tipoDonacion === this.tipo;
+      return okRango && okDon && okTipo;
     });
 
     const now = Date.now();
@@ -138,6 +82,6 @@ export class TurnosTable {
     upcoming.sort((a, b) => this.turnoDateTime(a) - this.turnoDateTime(b));
     past.sort((a, b) => this.turnoDateTime(b) - this.turnoDateTime(a));
 
-    return [...upcoming, ...past];
+    return [...past, ...upcoming];
   }
 }

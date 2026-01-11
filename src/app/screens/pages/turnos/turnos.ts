@@ -3,6 +3,8 @@ import { Turno } from '../../../models/turno';
 import { AccionTurno } from './turno-actions.policy';
 import { DisponibilidadDia } from '../../../models/disponibilidad';
 
+type TurnoContext = 'AGENDA' | 'HISTORICO';
+
 @Component({
   selector: 'app-turnos',
   standalone: false,
@@ -14,7 +16,6 @@ export class Turnos {
 
   hospitalId: number | string = 123;
 
-  // ✅ Simula “ya configurado” (después lo conectamos al back)
   disponibilidad: DisponibilidadDia[] | null = this.buildMockDisponibilidad();
 
   availabilityConfigOpen = false;
@@ -24,6 +25,8 @@ export class Turnos {
 
   turnos: Turno[] = this.buildMockTurnos();
   turnoSeleccionado: Turno | null = null;
+
+  private turnoContext: TurnoContext = 'AGENDA';
 
   modalOpen = false;
   modalTitle = '';
@@ -49,19 +52,6 @@ export class Turnos {
 
   onSaveDisponibilidad(data: DisponibilidadDia[]): void {
     this.disponibilidad = data;
-
-    console.log('✅ Disponibilidad guardada:', data);
-    console.table(
-      data.flatMap(d =>
-        d.horarios.map(h => ({
-          dia: d.dia,
-          hora: h.hora,
-          capacidad: h.capacidad,
-          hospital: d.id_hospital,
-        }))
-      )
-    );
-
     this.closeAvailabilityConfig();
   }
 
@@ -81,8 +71,19 @@ export class Turnos {
     }, this.configAnimMs);
   }
 
-  onSelectTurno(turno: Turno): void {
+  onSelectTurnoFromCalendar(turno: Turno): void {
+    this.turnoContext = 'AGENDA';
     this.turnoSeleccionado = turno;
+  }
+
+  onSelectTurnoFromHistory(turno: Turno): void {
+    this.turnoContext = 'HISTORICO';
+    this.turnoSeleccionado = turno;
+  }
+
+  onDetailAction(accion: AccionTurno, turno: Turno): void {
+    if (this.turnoContext === 'HISTORICO') return;
+    this.requestAction(accion, turno);
   }
 
   requestAction(accion: AccionTurno, turno: Turno): void {
@@ -291,7 +292,6 @@ export class Turnos {
     return [t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15];
   }
 
-  // ✅ MOCK disponibilidad ya existente
   private buildMockDisponibilidad(): DisponibilidadDia[] {
     const id = this.hospitalId;
 
