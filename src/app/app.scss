@@ -1,9 +1,17 @@
 .app-shell{
+  --sb-open: 260px;
+  --sb-collapsed: 86px;
+  --sb-gap: 14px;
+  --sb-offset: calc(var(--sb-open) + var(--sb-gap) * 2);
+
   min-height: 100vh;
-  display: flex;
   background: #f6fbff;
   position: relative;
   overflow: hidden;
+}
+
+.app-shell.is-collapsed{
+  --sb-offset: calc(var(--sb-collapsed) + var(--sb-gap) * 2);
 }
 
 .app-shell::before{
@@ -18,21 +26,20 @@
 }
 
 .content{
-  flex: 1;
   padding: 22px 26px;
   position: relative;
   z-index:1;
+  min-height: 100vh;
+
+  margin-left: var(--sb-offset);
+  transition: margin-left .18s ease;
 }
 
 .content.full{
   padding: 0;
+  margin-left: 0;
 }
 
-.content.collapsed{
-  padding-left: 26px;
-}
-
-/* Hamburguesa mobile */
 .mobile-menu-btn{
   position: fixed;
   top: 14px;
@@ -56,14 +63,17 @@
   font-size: 1.1rem;
 }
 
-/* responsive */
 @media (max-width: 900px){
   .mobile-menu-btn{
     display: flex;
   }
 
-  /* el content no necesita padding extra grande en mobile */
+  .app-shell{
+    --sb-offset: 0px;
+  }
+
   .content{
+    margin-left: 0;
     padding: 18px 16px;
   }
 }

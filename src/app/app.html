@@ -1,5 +1,5 @@
 <ng-container *ngIf="showSidebar; else authLayout">
-  <div class="app-shell">
+  <div class="app-shell" [class.is-collapsed]="collapsed">
     <button
       class="mobile-menu-btn"
       type="button"
@@ -14,7 +14,7 @@
       [(mobileOpen)]="mobileMenuOpen"
     ></app-sidebar>
 
-    <div class="content" [class.collapsed]="collapsed">
+    <div class="content">
       <router-outlet></router-outlet>
     </div>
   </div>
