@@ -170,7 +170,9 @@
   opacity: 1;
   transform: translateY(0);
   max-height: 80vh;
-  overflow: hidden;
+
+  /* ✅ IMPORTANTE: antes estaba hidden y a veces te traba el scroll/visual */
+  overflow: visible;
 }
 
 @media (max-width: 980px) {

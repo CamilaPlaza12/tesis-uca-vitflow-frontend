@@ -34,6 +34,7 @@ export class Turnos {
   private accionPendiente: AccionTurno | null = null;
 
   @ViewChild('availabilityAnchor') availabilityAnchor?: ElementRef<HTMLElement>;
+  @ViewChild('topAnchor') topAnchor?: ElementRef<HTMLElement>;
 
   get hasDisponibilidad(): boolean {
     return !!this.disponibilidad && this.disponibilidad.length > 0;
@@ -42,35 +43,31 @@ export class Turnos {
   onClickConfigurar(): void {
     this.availabilityConfigClosing = false;
     this.availabilityConfigOpen = true;
+    this.afterDom(() => this.scrollToAvailability());
   }
 
   onCancelConfigurar(): void {
-    this.closeAvailabilityConfig();
+    this.closeAvailabilityConfig(true);
   }
 
   onSaveDisponibilidad(data: DisponibilidadDia[]): void {
     this.disponibilidad = data;
-    this.closeAvailabilityConfig();
+    this.closeAvailabilityConfig(true);
   }
 
   onEditDisponibilidad(): void {
     this.availabilityConfigClosing = false;
     this.availabilityConfigOpen = true;
+    this.afterDom(() => this.scrollToAvailability());
   }
 
   onEditDisponibilidadFromHeader(): void {
     this.availabilityConfigClosing = false;
     this.availabilityConfigOpen = true;
-
-    setTimeout(() => {
-      this.availabilityAnchor?.nativeElement?.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start',
-      });
-    }, 50);
+    this.afterDom(() => this.scrollToAvailability());
   }
 
-  private closeAvailabilityConfig(): void {
+  private closeAvailabilityConfig(scrollUp = false): void {
     if (this.availabilityConfigClosing) return;
 
     this.availabilityConfigOpen = false;
@@ -78,7 +75,19 @@ export class Turnos {
 
     setTimeout(() => {
       this.availabilityConfigClosing = false;
-    }, this.configAnimMs);
+
+      // ✅ si al cerrar colapsa altura, a veces el scroll queda “pasado”.
+      // clamp al máximo scroll posible del contenedor real.
+      const scroller = this.getScrollParent(this.topAnchor?.nativeElement || document.body);
+      if (scroller) {
+        const max = Math.max(0, scroller.scrollHeight - scroller.clientHeight);
+        if (scroller.scrollTop > max) scroller.scrollTop = max;
+      }
+
+      if (scrollUp) {
+        this.afterDom(() => this.scrollToTop());
+      }
+    }, this.configAnimMs + 20);
   }
 
   onSelectTurnoFromCalendar(turno: Turno): void {
@@ -121,6 +130,70 @@ export class Turnos {
       this.modalLoading = false;
     }
   }
+
+  // -------------------------
+  // SCROLL (sin tocar App)
+  // -------------------------
+
+  private scrollToAvailability(): void {
+    const el = this.availabilityAnchor?.nativeElement;
+    if (!el) return;
+    this.scrollToElementWithOffset(el, 14);
+  }
+
+  private scrollToTop(): void {
+    const el = this.topAnchor?.nativeElement;
+    if (el) {
+      this.scrollToElementWithOffset(el, 14);
+      return;
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  private scrollToElementWithOffset(target: HTMLElement, offset = 12): void {
+    const scroller = this.getScrollParent(target);
+
+    // ✅ offset dinámico: si hay algo sticky/fijo arriba, esto evita que “se coma” el título
+    const safeOffset = Math.max(0, offset);
+
+    if (!scroller) {
+      const topWin = target.getBoundingClientRect().top + window.scrollY - safeOffset;
+      window.scrollTo({ top: Math.max(0, topWin), behavior: 'smooth' });
+      return;
+    }
+
+    const scrollerRect = scroller.getBoundingClientRect();
+    const targetRect = target.getBoundingClientRect();
+
+    const top = (targetRect.top - scrollerRect.top) + scroller.scrollTop - safeOffset;
+    scroller.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+  }
+
+  private getScrollParent(el: HTMLElement | null): HTMLElement | null {
+    if (!el) return null;
+
+    let parent: HTMLElement | null = el.parentElement;
+    while (parent) {
+      const style = getComputedStyle(parent);
+      const overflowY = style.overflowY;
+      const canScroll =
+        (overflowY === 'auto' || overflowY === 'scroll') && parent.scrollHeight > parent.clientHeight;
+
+      if (canScroll) return parent;
+      parent = parent.parentElement;
+    }
+
+    // fallback: si nadie scrollea, es el window
+    return null;
+  }
+
+  private afterDom(fn: () => void): void {
+    requestAnimationFrame(() => requestAnimationFrame(fn));
+  }
+
+  // -------------------------
+  // RESTO: tu lógica normal
+  // -------------------------
 
   private async executeAccion(accion: AccionTurno, turno: Turno): Promise<void> {
     if (accion === 'REPROGRAMAR') {
