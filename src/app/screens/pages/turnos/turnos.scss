@@ -4,8 +4,6 @@
   margin: 0 auto;
 }
 
-/* ---------- HEADER ---------- */
-
 .header {
   display: flex;
   align-items: flex-start;
@@ -20,13 +18,47 @@
     font-weight: 750;
     letter-spacing: -0.02em;
   }
+}
 
-  p {
-    margin: 8px 0 0;
+.subtitle-row{
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+
+  p{
+    margin: 0;
     color: #5b6b7a;
     font-size: 14.5px;
     line-height: 1.35;
   }
+}
+
+.edit-icon{
+  width: 30px;
+  height: 30px;
+  border-radius: 10px;
+  border: 1px solid #e7edf4;
+  background: #ffffff;
+  color: #1d4ed8;
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: 900;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 120ms ease, transform 100ms ease, box-shadow 120ms ease;
+}
+
+.edit-glyph{
+  display: inline-block;
+  transform: scaleX(-1);
+}
+
+.edit-icon:hover{
+  background: #f8fbff;
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(15,23,42,.08);
 }
 
 .header__right {
@@ -46,8 +78,6 @@
   white-space: nowrap;
 }
 
-/* ---------- ONBOARDING ---------- */
-
 .onboarding {
   border: 1px solid #eef2f6;
   background: #ffffff;
@@ -59,11 +89,9 @@
 .config-inline {
   background: linear-gradient(180deg, #fbfdff 0%, #ffffff 100%);
   overflow: hidden;
-
   max-height: 0;
   padding: 0 18px;
   border-top: 0;
-
   opacity: 0;
   transform: translateY(-6px);
 
@@ -84,21 +112,25 @@
   overflow: auto;
 }
 
-/* ---------- LAYOUT ---------- */
+.turnos-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
 
-.layout {
+.top {
   display: grid;
   grid-template-columns: 1fr;
   gap: 16px;
   align-items: start;
 }
 
-.layout.with-detail {
+.top.with-detail {
   grid-template-columns: 1.6fr 1fr;
 }
 
-.left,
-.right {
+.calendar-col,
+.detail-col {
   min-width: 0;
 }
 
@@ -108,49 +140,16 @@
   font-size: 13px;
 }
 
-/* ---------- EDIT BELOW CALENDAR ---------- */
-
-.edit-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-top: 10px;
+.bottom {
+  min-width: 0;
 }
 
-.edit-hint {
-  font-size: 12.5px;
-  color: #64748b;
-  letter-spacing: -0.01em;
+.availability-anchor{
+  height: 1px;
 }
 
-.edit-link {
-  border: 1px solid #e7edf4;
-  background: #ffffff;
-  color: #1d4ed8;
-  border-radius: 999px;
-  padding: 10px 12px;
-  cursor: pointer;
-  font-family: inherit;
-  font-weight: 850;
-  font-size: 13px;
-  letter-spacing: -0.01em;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.edit-link:hover {
-  background: #f8fbff;
-}
-
-.edit-ic {
-  font-weight: 900;
-}
-
-/* Panel inline: aparece SOLO cuando está abierto/cerrando -> no deja “espacio raro” */
 .availability-panel {
-  margin-top: 10px;
+  margin-top: 12px;
   border: 1px solid #eef2f6;
   border-radius: 18px;
   overflow: hidden;
@@ -170,24 +169,12 @@
 .availability-panel.is-open {
   opacity: 1;
   transform: translateY(0);
-  max-height: 75vh;
-  overflow: auto;
-  overscroll-behavior: contain;
+  max-height: 80vh;
+  overflow: hidden;
 }
-
-.availability-panel > * {
-  min-height: 0;
-}
-
-/* ---------- RESPONSIVE ---------- */
 
 @media (max-width: 980px) {
-  .layout.with-detail {
+  .top.with-detail {
     grid-template-columns: 1fr;
-  }
-
-  .edit-row {
-    justify-content: flex-start;
-    flex-wrap: wrap;
   }
 }

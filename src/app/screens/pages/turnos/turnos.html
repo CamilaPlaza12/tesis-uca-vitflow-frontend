@@ -2,7 +2,20 @@
   <header class="header">
     <div class="header__left">
       <h1>Turnos de donación</h1>
-      <p>Controlá la agenda de donaciones del hospital.</p>
+
+      <div class="subtitle-row">
+        <p>Controlá la agenda de donaciones del hospital.</p>
+
+        <button
+          class="edit-icon"
+          type="button"
+          title="Editar disponibilidad"
+          aria-label="Editar disponibilidad"
+          (click)="onEditDisponibilidadFromHeader()"
+        >
+          <span class="edit-glyph">✎</span>
+        </button>
+      </div>
     </div>
 
     <div class="header__right">
@@ -28,27 +41,33 @@
   </section>
 
   <section *ngIf="hasDisponibilidad">
-    <section class="layout" [class.with-detail]="!!turnoSeleccionado">
-      <div class="left">
-        <app-turnos-calendar
-          [turnos]="turnos"
-          [selectedDate]="today"
-          (selectTurno)="onSelectTurnoFromCalendar($event)"
-        ></app-turnos-calendar>
+    <section class="turnos-shell">
+      <section class="top" [class.with-detail]="!!turnoSeleccionado">
+        <div class="calendar-col">
+          <app-turnos-calendar
+            [turnos]="turnos"
+            [selectedDate]="today"
+            (selectTurno)="onSelectTurnoFromCalendar($event)"
+          ></app-turnos-calendar>
 
-        <div class="empty-detail" *ngIf="!turnoSeleccionado">
-          Seleccioná un turno para ver el detalle.
+          <div class="empty-detail" *ngIf="!turnoSeleccionado">
+            Seleccioná un turno para ver el detalle.
+          </div>
         </div>
 
-        <div class="edit-row">
-          <span class="edit-hint">
-            ¿Querés ajustar los días/horarios?
-          </span>
-
-          <button class="edit-link" type="button" (click)="onEditDisponibilidad()">
-            Editar disponibilidad <span class="edit-ic">✎</span>
-          </button>
+        <div class="detail-col" *ngIf="turnoSeleccionado as t">
+          <app-turno-detail
+            [turno]="t"
+            (close)="turnoSeleccionado = null"
+            (action)="requestAction($event, t)"
+          ></app-turno-detail>
         </div>
+      </section>
+
+      <section class="bottom">
+        <app-turnos-table [turnos]="turnos"></app-turnos-table>
+
+        <div #availabilityAnchor class="availability-anchor"></div>
 
         <div
           class="availability-panel"
@@ -62,17 +81,7 @@
             (cancel)="onCancelConfigurar()"
           ></app-availability-config>
         </div>
-
-        <app-turnos-table [turnos]="turnos"></app-turnos-table>
-      </div>
-
-      <div class="right" *ngIf="turnoSeleccionado as t">
-        <app-turno-detail
-          [turno]="t"
-          (close)="turnoSeleccionado = null"
-          (action)="requestAction($event, t)"
-        ></app-turno-detail>
-      </div>
+      </section>
     </section>
   </section>
 </div>

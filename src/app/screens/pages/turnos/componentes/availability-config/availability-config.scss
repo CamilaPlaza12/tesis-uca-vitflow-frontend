@@ -3,6 +3,10 @@
   border: 1px solid #eef2f6;
   border-radius: 18px;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 78vh;
+  max-height: 78vh;
 }
 
 .card__head {
@@ -13,6 +17,16 @@
   padding: 16px 16px 14px;
   border-bottom: 1px solid #eef2f6;
   background: #fbfdff;
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+
+.card__body{
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
 }
 
 .title__row {
@@ -36,8 +50,6 @@
   letter-spacing: -0.01em;
 }
 
-/* -------- TOOLTIP INFO -------- */
-
 .info,
 .mini-info {
   position: relative;
@@ -59,10 +71,7 @@
 .tooltip {
   position: absolute;
   top: calc(100% + 10px);
-
-  /* antes: right: 0;  -> esto lo sacamos */
   left: 0;
-
   width: min(340px, 72vw);
   background: #0f172a;
   color: #ffffff;
@@ -75,7 +84,7 @@
   transform: translateY(-6px);
   pointer-events: none;
   transition: 160ms ease;
-  z-index: 9999; /* para que no lo tape nada */
+  z-index: 9999;
 }
 
 @media (max-width: 520px) {
@@ -92,7 +101,6 @@
   }
 }
 
-
 .info:hover .tooltip,
 .info:focus .tooltip,
 .mini-info:hover .tooltip,
@@ -108,8 +116,6 @@
   flex-wrap: wrap;
   justify-content: flex-end;
 }
-
-/* -------- BOTONES: MISMA TIPOGRAFÍA PARA TODO -------- */
 
 .btn {
   border: 1px solid transparent;
@@ -153,26 +159,29 @@
   color: #1d4ed8;
 }
 
-/* -------- TABLA (menos corrimiento) -------- */
-
 .table {
-  padding: 10px 10px 14px;
+  padding: 10px 10px 10px;
 }
 
 .thead {
   display: grid;
-  grid-template-columns: 140px 1fr 160px; /* más pegado */
+  grid-template-columns: 140px 1fr 160px;
   gap: 10px;
   padding: 10px 10px;
   color: #64748b;
   font-size: 12px;
   font-weight: 850;
   letter-spacing: -0.01em;
+  position: sticky;
+  top: 0;
+  background: #ffffff;
+  z-index: 4;
+  border-bottom: 1px solid #f1f5f9;
 }
 
 .row {
   display: grid;
-  grid-template-columns: 140px 1fr 160px; /* más pegado */
+  grid-template-columns: 140px 1fr 160px;
   gap: 10px;
   align-items: start;
   padding: 10px;
@@ -192,8 +201,6 @@
   gap: 10px;
   min-width: 0;
 }
-
-/* -------- CAMPOS (la “letra fea” venía de los inputs/selects) -------- */
 
 .field {
   border: 1px solid #e7edf4;
@@ -239,8 +246,6 @@
   letter-spacing: -0.01em;
 }
 
-/* -------- RANGO RÁPIDO -------- */
-
 .range {
   border: 1px solid #eef2f6;
   background: #fbfdff;
@@ -283,8 +288,6 @@
   letter-spacing: -0.01em;
 }
 
-/* -------- MANUAL -------- */
-
 .labels {
   display: grid;
   grid-template-columns: 120px 140px 44px;
@@ -316,13 +319,6 @@
   font-weight: 900;
   cursor: pointer;
 }
-
-.x:disabled {
-  cursor: not-allowed;
-  opacity: 0.6;
-}
-
-/* -------- TOGGLE (chau pill fea) -------- */
 
 .toggle {
   display: flex;
@@ -383,30 +379,6 @@
   transform: translateX(14px);
 }
 
-@media (max-width: 980px) {
-  .thead,
-  .row {
-    grid-template-columns: 1fr;
-  }
-
-  .toggle {
-    justify-content: flex-start;
-  }
-
-  .labels {
-    display: none;
-  }
-}
-
-.field:disabled,
-.btn:disabled,
-.x:disabled,
-.add:disabled {
-  cursor: default !important;
-}
-
-/* -------- BANNER INLINE (sin alert/popup) -------- */
-
 .row-error {
   display: flex;
   align-items: flex-start;
@@ -448,4 +420,24 @@
   justify-content: center;
   font-weight: 900;
   cursor: pointer;
+}
+
+@media (max-width: 980px) {
+  .card {
+    height: auto;
+    max-height: none;
+  }
+
+  .thead,
+  .row {
+    grid-template-columns: 1fr;
+  }
+
+  .toggle {
+    justify-content: flex-start;
+  }
+
+  .labels {
+    display: none;
+  }
 }

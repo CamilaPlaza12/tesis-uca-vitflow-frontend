@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { Turno } from '../../../models/turno';
 import { AccionTurno } from './turno-actions.policy';
 import { DisponibilidadDia } from '../../../models/disponibilidad';
@@ -33,6 +33,8 @@ export class Turnos {
 
   private accionPendiente: AccionTurno | null = null;
 
+  @ViewChild('availabilityAnchor') availabilityAnchor?: ElementRef<HTMLElement>;
+
   get hasDisponibilidad(): boolean {
     return !!this.disponibilidad && this.disponibilidad.length > 0;
   }
@@ -54,6 +56,18 @@ export class Turnos {
   onEditDisponibilidad(): void {
     this.availabilityConfigClosing = false;
     this.availabilityConfigOpen = true;
+  }
+
+  onEditDisponibilidadFromHeader(): void {
+    this.availabilityConfigClosing = false;
+    this.availabilityConfigOpen = true;
+
+    setTimeout(() => {
+      this.availabilityAnchor?.nativeElement?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      });
+    }, 50);
   }
 
   private closeAvailabilityConfig(): void {
