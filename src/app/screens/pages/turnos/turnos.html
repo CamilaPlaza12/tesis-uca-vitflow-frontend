@@ -63,18 +63,14 @@
           ></app-availability-config>
         </div>
 
-        <app-turnos-table
-          [turnos]="turnos"
-          [turnoSeleccionadoId]="turnoSeleccionado?.id || null"
-          (selectTurno)="onSelectTurnoFromHistory($event)"
-        ></app-turnos-table>
+        <app-turnos-table [turnos]="turnos"></app-turnos-table>
       </div>
 
       <div class="right" *ngIf="turnoSeleccionado as t">
         <app-turno-detail
           [turno]="t"
           (close)="turnoSeleccionado = null"
-          (action)="onDetailAction($event, t)"
+          (action)="requestAction($event, t)"
         ></app-turno-detail>
       </div>
     </section>

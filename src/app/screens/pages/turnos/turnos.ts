@@ -3,8 +3,6 @@ import { Turno } from '../../../models/turno';
 import { AccionTurno } from './turno-actions.policy';
 import { DisponibilidadDia } from '../../../models/disponibilidad';
 
-type TurnoContext = 'AGENDA' | 'HISTORICO';
-
 @Component({
   selector: 'app-turnos',
   standalone: false,
@@ -25,8 +23,6 @@ export class Turnos {
 
   turnos: Turno[] = this.buildMockTurnos();
   turnoSeleccionado: Turno | null = null;
-
-  private turnoContext: TurnoContext = 'AGENDA';
 
   modalOpen = false;
   modalTitle = '';
@@ -72,18 +68,7 @@ export class Turnos {
   }
 
   onSelectTurnoFromCalendar(turno: Turno): void {
-    this.turnoContext = 'AGENDA';
     this.turnoSeleccionado = turno;
-  }
-
-  onSelectTurnoFromHistory(turno: Turno): void {
-    this.turnoContext = 'HISTORICO';
-    this.turnoSeleccionado = turno;
-  }
-
-  onDetailAction(accion: AccionTurno, turno: Turno): void {
-    if (this.turnoContext === 'HISTORICO') return;
-    this.requestAction(accion, turno);
   }
 
   requestAction(accion: AccionTurno, turno: Turno): void {

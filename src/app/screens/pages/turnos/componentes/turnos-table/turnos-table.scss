@@ -36,6 +36,12 @@
   font-weight: 650;
 }
 
+.header-actions{
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .hint{
   font-size: 12.5px;
   color: #7b8a99;
@@ -45,6 +51,39 @@
   border-radius: 999px;
   white-space: nowrap;
 }
+
+.excel-btn{
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  border: 1px solid #d1fae5;
+  background: #ecfdf5;
+  color: #047857;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 120ms ease, transform 100ms ease, box-shadow 120ms ease;
+}
+
+.excel-btn:hover{
+  background: #d1fae5;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(16, 185, 129, 0.25);
+}
+
+.excel-btn:disabled{
+  opacity: 0.45;
+  cursor: default;
+  transform: none;
+  box-shadow: none;
+}
+
+.excel-ic{
+  width: 18px;
+  height: 18px;
+}
+
 
 .filters{
   padding: 14px 18px;
@@ -150,17 +189,7 @@ label{
 }
 
 .row{
-  cursor: pointer;
-  transition: background 120ms ease;
-}
-
-.row:hover{
-  background: #fbfdff;
-}
-
-.row.selected{
-  background: rgba(59, 130, 246, 0.08);
-  box-shadow: inset 3px 0 0 rgba(59, 130, 246, 0.55);
+  cursor: default;
 }
 
 .mono{
@@ -233,3 +262,4 @@ label{
     width: 100%;
   }
 }
+

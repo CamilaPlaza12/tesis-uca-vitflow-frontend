@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { Turno, DonationType, AppointmentStatus } from '../../../../../models/turno';
 
 type TipoFiltro = 'TODOS' | DonationType;
@@ -11,24 +11,67 @@ type TipoFiltro = 'TODOS' | DonationType;
 })
 export class TurnosTable {
   @Input() turnos: Turno[] = [];
-  @Input() turnoSeleccionadoId: string | null = null;
 
-  @Output() selectTurno = new EventEmitter<Turno>();
+  todayStr = this.toISODate(new Date());
 
-  desde = '';
-  hasta = '';
+  desde = this.todayStr;
+  hasta = this.todayStr;
   donante = '';
   tipo: TipoFiltro = 'TODOS';
 
-  onRowClick(turno: Turno): void {
-    this.selectTurno.emit(turno);
+  onDesdeChange(v: string): void {
+    const next = this.clampToToday(v);
+    this.desde = next;
+    if (this.hasta < this.desde) this.hasta = this.desde;
+  }
+
+  onHastaChange(v: string): void {
+    const next = this.clampToToday(v);
+    this.hasta = next;
+    if (this.hasta < this.desde) this.desde = this.hasta;
   }
 
   clear(): void {
-    this.desde = '';
-    this.hasta = '';
+    this.desde = this.todayStr;
+    this.hasta = this.todayStr;
     this.donante = '';
     this.tipo = 'TODOS';
+  }
+
+  exportCSV(): void {
+    const headers = [
+      'Fecha',
+      'Hora',
+      'Donante',
+      'Tipo de donación',
+      'Estado',
+      'Pedido'
+    ];
+
+    const rows = this.turnosProcesados.map(t => ([
+      t.fecha,
+      t.hora,
+      t.nombreDonante ?? '',
+      this.tipoHuman(t.tipoDonacion),
+      this.estadoHuman(t.estado),
+      t.pedidoId ?? '',
+    ]));
+
+    const csv = this.toCSV([headers, ...rows], ';');
+
+    const blob = new Blob(
+      [this.withUtf8Bom(csv)],
+      { type: 'text/csv;charset=utf-8;' }
+    );
+
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `historico_turnos_${this.desde}_a_${this.hasta}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
   }
 
   tipoHuman(t: DonationType): string {
@@ -50,38 +93,49 @@ export class TurnosTable {
   }
 
   private inRange(fecha: string): boolean {
-    const d = this.desde.trim();
-    const h = this.hasta.trim();
-
-    if (d && fecha < d) return false;
-    if (h && fecha > h) return false;
-
+    if (fecha > this.todayStr) return false;
+    if (this.desde && fecha < this.desde) return false;
+    if (this.hasta && fecha > this.hasta) return false;
     return true;
+  }
+
+  private clampToToday(v: string): string {
+    return v > this.todayStr ? this.todayStr : v;
+  }
+
+  private toISODate(d: Date): string {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${dd}`;
+  }
+
+  private toCSV(rows: string[][], sep: string): string {
+    return rows
+      .map(r => r.map(c => this.csvCell(c)).join(sep))
+      .join('\r\n');
+  }
+
+  private csvCell(v: string): string {
+    const s = String(v ?? '');
+    const escaped = s.replace(/"/g, '""');
+    return /[;"\r\n]/.test(escaped) ? `"${escaped}"` : escaped;
+  }
+
+  private withUtf8Bom(s: string): string {
+    return '\uFEFF' + s;
   }
 
   get turnosProcesados(): Turno[] {
     const qDon = this.donante.trim().toLowerCase();
 
-    const filtered = this.turnos.filter(t => {
-      const okRango = this.inRange(t.fecha);
-      const okDon = !qDon || (t.nombreDonante || '').toLowerCase().includes(qDon);
-      const okTipo = this.tipo === 'TODOS' || t.tipoDonacion === this.tipo;
-      return okRango && okDon && okTipo;
-    });
-
-    const now = Date.now();
-    const upcoming: Turno[] = [];
-    const past: Turno[] = [];
-
-    for (const t of filtered) {
-      const tt = this.turnoDateTime(t);
-      if (tt >= now) upcoming.push(t);
-      else past.push(t);
-    }
-
-    upcoming.sort((a, b) => this.turnoDateTime(a) - this.turnoDateTime(b));
-    past.sort((a, b) => this.turnoDateTime(b) - this.turnoDateTime(a));
-
-    return [...past, ...upcoming];
+    return this.turnos
+      .filter(t => {
+        const okFecha = this.inRange(t.fecha);
+        const okDon = !qDon || (t.nombreDonante || '').toLowerCase().includes(qDon);
+        const okTipo = this.tipo === 'TODOS' || t.tipoDonacion === this.tipo;
+        return okFecha && okDon && okTipo;
+      })
+      .sort((a, b) => this.turnoDateTime(b) - this.turnoDateTime(a));
   }
 }

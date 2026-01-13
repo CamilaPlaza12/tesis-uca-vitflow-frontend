@@ -2,21 +2,54 @@
   <div class="card__header">
     <div class="title">
       <h2>Histórico de turnos</h2>
-      <div class="sub">Consultá turnos por período y filtros básicos.</div>
+      <div class="sub">Consultá turnos desde hoy hacia atrás.</div>
     </div>
 
-    <span class="hint">{{ turnosProcesados.length }} resultados</span>
+    <div class="header-actions">
+      <span class="hint">{{ turnosProcesados.length }} resultados</span>
+
+       <button
+          class="excel-btn"
+          type="button"
+          (click)="exportCSV()"
+          [disabled]="turnosProcesados.length === 0"
+          aria-label="Exportar a Excel"
+        >
+          <svg viewBox="0 0 24 24" class="excel-ic" fill="none">
+            <path
+              d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9l-5-6Z"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linejoin="round"
+            />
+            <path
+              d="M14 3v6h6"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linejoin="round"
+            />
+            <path
+              d="M9 12l3 4m0-4-3 4"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+            />
+          </svg>
+        </button>
+
+
+    </div>
   </div>
 
   <div class="filters">
     <div class="field">
       <label>Desde</label>
-      <input class="input" type="date" [(ngModel)]="desde" />
+      <input class="input" type="date" [(ngModel)]="desde" (ngModelChange)="onDesdeChange($event)" [max]="todayStr" />
     </div>
 
     <div class="field">
       <label>Hasta</label>
-      <input class="input" type="date" [(ngModel)]="hasta" />
+      <input class="input" type="date" [(ngModel)]="hasta" (ngModelChange)="onHastaChange($event)" [max]="todayStr" />
     </div>
 
     <div class="field grow">
@@ -53,12 +86,7 @@
       </thead>
 
       <tbody>
-        <tr
-          *ngFor="let t of turnosProcesados"
-          class="row"
-          [class.selected]="t.id === turnoSeleccionadoId"
-          (click)="onRowClick(t)"
-        >
+        <tr *ngFor="let t of turnosProcesados" class="row">
           <td class="mono">{{ t.fecha }}</td>
           <td class="mono">{{ t.hora }}</td>
           <td class="name">{{ t.nombreDonante }}</td>
