@@ -94,6 +94,14 @@
   [confirmText]="modalConfirmText"
   [loading]="modalLoading"
   [error]="modalError"
+  [reprogram]="isReprogramAction"
+  [reprogramDate]="reprogramDate"
+  [reprogramTime]="reprogramTime"
+  [reprogramMinDate]="reprogramMinDate"
+  (reprogramDateChange)="reprogramDate = $event"
+  (reprogramTimeChange)="reprogramTime = $event"
   (confirm)="confirmModal()"
   (cancel)="closeModal()"
 ></app-confirm-modal>
+
+

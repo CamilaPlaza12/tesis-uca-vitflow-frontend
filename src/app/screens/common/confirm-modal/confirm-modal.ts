@@ -15,8 +15,18 @@ export class ConfirmModal implements OnChanges {
   @Input() loading = false;
   @Input() error: string | null = null;
 
+  // ✅ NUEVO: modo reprogramar + bindings
+  @Input() reprogram = false;
+  @Input() reprogramDate = '';
+  @Input() reprogramTime = '';
+  @Input() reprogramMinDate = '';
+
   @Output() confirm = new EventEmitter<void>();
   @Output() cancel = new EventEmitter<void>();
+
+  // ✅ NUEVO: emitir cambios hacia el padre
+  @Output() reprogramDateChange = new EventEmitter<string>();
+  @Output() reprogramTimeChange = new EventEmitter<string>();
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['open']) {
@@ -42,5 +52,15 @@ export class ConfirmModal implements OnChanges {
   onCancel(): void {
     if (this.loading) return;
     this.cancel.emit();
+  }
+
+  onReprogramDateInput(v: string): void {
+    this.reprogramDate = v;
+    this.reprogramDateChange.emit(v);
+  }
+
+  onReprogramTimeInput(v: string): void {
+    this.reprogramTime = v;
+    this.reprogramTimeChange.emit(v);
   }
 }

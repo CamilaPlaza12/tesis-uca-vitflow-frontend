@@ -23,7 +23,10 @@ export class Turnos {
 
   turnos: Turno[] = this.buildMockTurnos();
   turnoSeleccionado: Turno | null = null;
-
+   reprogramOpen = false;
+  reprogramDate = '';
+  reprogramTime = '';
+  reprogramMinDate = '';
   modalOpen = false;
   modalTitle = '';
   modalMessage = '';
@@ -39,6 +42,11 @@ export class Turnos {
   get hasDisponibilidad(): boolean {
     return !!this.disponibilidad && this.disponibilidad.length > 0;
   }
+
+    get isReprogramAction(): boolean {
+    return this.accionPendiente === 'REPROGRAMAR';
+  }
+
 
   onClickConfigurar(): void {
     this.availabilityConfigClosing = false;
@@ -97,6 +105,7 @@ export class Turnos {
   requestAction(accion: AccionTurno, turno: Turno): void {
     this.turnoSeleccionado = turno;
     this.accionPendiente = accion;
+
     this.modalError = null;
     this.modalLoading = false;
 
@@ -104,14 +113,36 @@ export class Turnos {
     this.modalConfirmText = this.getModalConfirmText(accion);
     this.modalMessage = this.getModalMessage(accion, turno);
 
+    // --- reset reprogram UI ---
+    this.reprogramOpen = false;
+    this.reprogramDate = '';
+    this.reprogramTime = '';
+    this.reprogramMinDate = '';
+
+    if (accion === 'REPROGRAMAR') {
+      this.reprogramOpen = true;
+
+      const tomorrow = this.addDays(new Date(), 1);
+      this.reprogramMinDate = this.toDateStr(tomorrow);
+
+      this.reprogramDate = this.reprogramMinDate;
+      this.reprogramTime = turno.hora || '09:00';
+    }
+
     this.modalOpen = true;
   }
 
   closeModal(): void {
     if (this.modalLoading) return;
+
     this.modalOpen = false;
     this.modalError = null;
     this.accionPendiente = null;
+
+    this.reprogramOpen = false;
+    this.reprogramDate = '';
+    this.reprogramTime = '';
+    this.reprogramMinDate = '';
   }
 
   async confirmModal(): Promise<void> {
@@ -122,8 +153,14 @@ export class Turnos {
 
     try {
       await this.executeAccion(this.accionPendiente, this.turnoSeleccionado);
+
       this.modalOpen = false;
       this.accionPendiente = null;
+
+      this.reprogramOpen = false;
+      this.reprogramDate = '';
+      this.reprogramTime = '';
+      this.reprogramMinDate = '';
     } catch (e) {
       this.modalError = this.getErrorMessage(e);
     } finally {
@@ -131,9 +168,7 @@ export class Turnos {
     }
   }
 
-  // -------------------------
-  // SCROLL (sin tocar App)
-  // -------------------------
+
 
   private scrollToAvailability(): void {
     const el = this.availabilityAnchor?.nativeElement;
@@ -197,7 +232,29 @@ export class Turnos {
 
   private async executeAccion(accion: AccionTurno, turno: Turno): Promise<void> {
     if (accion === 'REPROGRAMAR') {
-      throw new Error('Reprogramar todavía no está implementado en el mock.');
+      const date = (this.reprogramDate || '').trim();
+      const time = (this.reprogramTime || '').trim();
+
+      if (!date) throw new Error('Elegí una fecha.');
+      if (!time) throw new Error('Elegí una hora.');
+
+      // Debe ser desde mañana (no hoy)
+      const min = new Date(`${this.reprogramMinDate}T00:00`);
+      const chosen = new Date(`${date}T${time}`);
+
+      if (Number.isNaN(chosen.getTime())) {
+        throw new Error('Fecha u hora inválida.');
+      }
+
+      if (chosen.getTime() < min.getTime()) {
+        throw new Error('La reprogramación debe ser desde mañana en adelante.');
+      }
+
+      // ✅ mock update (in-place)
+      turno.fecha = date;
+      turno.hora = time;
+
+      return;
     }
 
     if (accion === 'CONFIRMAR') turno.estado = 'CONFIRMADO';
@@ -205,6 +262,7 @@ export class Turnos {
     if (accion === 'COMPLETAR') turno.estado = 'COMPLETADO';
     if (accion === 'NO_PRESENTADO') turno.estado = 'NO_PRESENTADO';
   }
+
 
   private getErrorMessage(e: unknown): string {
     if (e instanceof Error && e.message) return e.message;

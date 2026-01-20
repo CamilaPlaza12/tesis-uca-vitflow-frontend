@@ -11,7 +11,34 @@
     </div>
 
     <div class="modal-body">
-      <p class="message">{{ message }}</p>
+      <!-- ✅ mensaje normal -->
+      <p class="message" *ngIf="!reprogram">{{ message }}</p>
+
+      <!-- ✅ modo reprogramar -->
+      <div class="reprogram-form" *ngIf="reprogram">
+        <p class="message">{{ message }}</p>
+
+        <label class="rf-label">Nueva fecha</label>
+        <input
+          class="rf-input"
+          type="date"
+          [min]="reprogramMinDate"
+          [value]="reprogramDate"
+          (input)="onReprogramDateInput(($any($event.target)).value)"
+        />
+
+        <label class="rf-label">Nueva hora</label>
+        <input
+          class="rf-input"
+          type="time"
+          [value]="reprogramTime"
+          (input)="onReprogramTimeInput(($any($event.target)).value)"
+        />
+
+        <div class="rf-hint">
+          * Por ahora podés elegir cualquier hora. Después lo conectamos con disponibilidad real.
+        </div>
+      </div>
 
       <div class="error" *ngIf="error">
         {{ error }}
