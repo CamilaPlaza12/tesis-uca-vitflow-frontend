@@ -1,160 +1,161 @@
-<div class="card" *ngIf="pedido">
-  <div class="top">
-    <h3>Detalle del pedido</h3>
-    <button class="icon-btn" type="button" (click)="close()">✕</button>
-  </div>
-
-  <div class="body">
-    <!-- VIEW MODE -->
-    <div class="meta" *ngIf="!editMode">
-      <div class="row">
-        <span class="k">Fecha y hora</span>
-        <span class="v"> {{ pedido.datetime_local | date:'dd/MM/yyyy · HH:mm' }}
-</span>
-
-      </div>
-
-      <div class="row">
-        <span class="k">Servicio</span>
-        <span class="v">{{ pedido.hospital_unit }}</span>
-      </div>
-
-      <div class="row">
-        <span class="k">Componente</span>
-        <span class="v">{{ pedido.component }} {{ pedido.blood_group }}</span>
-      </div>
-
-      <div class="row">
-        <span class="k">Cantidad solicitada</span>
-        <span class="v">{{ pedido.requested_liters }} unidades</span>
-      </div>
-
-      <div class="row">
-        <span class="k">Cantidad obtenida</span>
-        <span class="v">{{ pedido.collected_liters }} unidades</span>
-      </div>
-
-      <div class="row">
-        <span class="k">Prioridad</span>
-        <span class="v">{{ prioridadLabel(pedido.priority) }}</span>
-      </div>
-
-      <div class="row">
-        <span class="k">Estado actual</span>
-        <span class="v">{{ estadoLabel(pedido.status) }}</span>
-      </div>
-
-      <div class="row">
-        <span class="k">Solicitado por</span>
-        <span class="v">{{ pedido.requested_by }}</span>
-      </div>
-
-      <div class="row" *ngIf="pedido.comments">
-        <span class="k">Comentarios</span>
-        <span class="v">{{ pedido.comments }}</span>
-      </div>
+<div class="detalle-wrap" *ngIf="pedido">
+  <div class="card">
+    <div class="top">
+      <h3>Detalle del pedido</h3>
+      <button class="icon-btn" type="button" (click)="close()">✕</button>
     </div>
 
-    <!-- EDIT MODE -->
-    <div class="meta" *ngIf="editMode && draft">
-      <div class="row">
-        <span class="k">Servicio</span>
-        <div class="v">
-          <input
-            class="field"
-            list="serviciosList"
-            [(ngModel)]="draft.hospital_unit"
-          />
-          <datalist id="serviciosList">
-            <option *ngFor="let s of servicios" [value]="s"></option>
-          </datalist>
+    <div class="body">
+      <!-- VIEW MODE -->
+      <div class="meta" *ngIf="!editMode">
+        <div class="row">
+          <span class="k">Fecha y hora</span>
+          <span class="v">{{ pedido.datetime_local | date:'dd/MM/yyyy · HH:mm' }}</span>
+        </div>
+
+        <div class="row">
+          <span class="k">Servicio</span>
+          <span class="v">{{ pedido.hospital_unit }}</span>
+        </div>
+
+        <div class="row">
+          <span class="k">Componente</span>
+          <span class="v">{{ pedido.component }} {{ pedido.blood_group }}</span>
+        </div>
+
+        <div class="row">
+          <span class="k">Cantidad solicitada</span>
+          <span class="v">{{ pedido.requested_liters }} unidades</span>
+        </div>
+
+        <div class="row">
+          <span class="k">Cantidad obtenida</span>
+          <span class="v">{{ pedido.collected_liters }} unidades</span>
+        </div>
+
+        <div class="row">
+          <span class="k">Prioridad</span>
+          <span class="v">{{ prioridadLabel(pedido.priority) }}</span>
+        </div>
+
+        <div class="row">
+          <span class="k">Estado actual</span>
+          <span class="v">{{ estadoLabel(pedido.status) }}</span>
+        </div>
+
+        <div class="row">
+          <span class="k">Solicitado por</span>
+          <span class="v">{{ pedido.requested_by }}</span>
+        </div>
+
+        <div class="row" *ngIf="pedido.comments">
+          <span class="k">Comentarios</span>
+          <span class="v">{{ pedido.comments }}</span>
         </div>
       </div>
-      <div class="row">
-        <span class="k">Cantidad solicitada</span>
-        <div class="v readonly">{{ draft.requested_liters }} unidades</div>
-      </div>
 
-      <div class="row">
-        <span class="k">Cantidad obtenida</span>
-        <div class="v readonly">{{ draft.collected_liters }} unidades</div>
-      </div>
+      <!-- EDIT MODE -->
+      <div class="meta" *ngIf="editMode && draft">
+        <div class="row">
+          <span class="k">Servicio</span>
+          <div class="v">
+            <input
+              class="field"
+              list="serviciosList"
+              [(ngModel)]="draft.hospital_unit"
+            />
+            <datalist id="serviciosList">
+              <option *ngFor="let s of servicios" [value]="s"></option>
+            </datalist>
+          </div>
+        </div>
 
-      <!-- PRIORIDAD -->
-      <div class="row">
-        <span class="k">Prioridad</span>
-        <div class="v">
-          <div class="dropdown">
-            <button
-              class="drop-btn"
-              type="button"
-              (click)="toggleDropdown('prioridad')"
-            >
-              {{ prioridadLabel(draft.priority) }} ▾
-            </button>
+        <div class="row">
+          <span class="k">Cantidad solicitada</span>
+          <div class="v readonly">{{ draft.requested_liters }} unidades</div>
+        </div>
 
-            <div class="menu" *ngIf="dropdownOpen.prioridad">
+        <div class="row">
+          <span class="k">Cantidad obtenida</span>
+          <div class="v readonly">{{ draft.collected_liters }} unidades</div>
+        </div>
+
+        <!-- PRIORIDAD -->
+        <div class="row">
+          <span class="k">Prioridad</span>
+          <div class="v">
+            <div class="dropdown">
               <button
-                class="opt"
-                *ngFor="let p of prioridades"
-                (click)="selectPrioridad(p)"
+                class="drop-btn"
+                type="button"
+                (click)="toggleDropdown('prioridad')"
               >
-                {{ prioridadLabel(p) }}
+                {{ prioridadLabel(draft.priority) }} ▾
               </button>
+
+              <div class="menu" *ngIf="dropdownOpen.prioridad">
+                <button
+                  class="opt"
+                  *ngFor="let p of prioridades"
+                  (click)="selectPrioridad(p)"
+                >
+                  {{ prioridadLabel(p) }}
+                </button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- ESTADO -->
-      <div class="row">
-        <span class="k">Estado actual</span>
-        <div class="v">
-          <div class="dropdown">
-            <button
-              class="drop-btn"
-              type="button"
-              (click)="toggleDropdown('estado')"
-            >
-              {{ estadoLabel(draft.status) }} ▾
-            </button>
-
-            <div class="menu" *ngIf="dropdownOpen.estado">
+        <!-- ESTADO -->
+        <div class="row">
+          <span class="k">Estado actual</span>
+          <div class="v">
+            <div class="dropdown">
               <button
-                class="opt"
-                *ngFor="let e of estados"
-                (click)="selectEstado(e)"
+                class="drop-btn"
+                type="button"
+                (click)="toggleDropdown('estado')"
               >
-                {{ estadoLabel(e) }}
+                {{ estadoLabel(draft.status) }} ▾
               </button>
+
+              <div class="menu" *ngIf="dropdownOpen.estado">
+                <button
+                  class="opt"
+                  *ngFor="let e of estados"
+                  (click)="selectEstado(e)"
+                >
+                  {{ estadoLabel(e) }}
+                </button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <div class="row">
-        <span class="k">Comentarios</span>
-        <div class="v">
-          <textarea
-            class="field textarea"
-            rows="3"
-            [(ngModel)]="draft.comments"
-          ></textarea>
+        <div class="row">
+          <span class="k">Comentarios</span>
+          <div class="v">
+            <textarea
+              class="field textarea"
+              rows="3"
+              [(ngModel)]="draft.comments"
+            ></textarea>
+          </div>
         </div>
-      </div>
 
-      <div class="error" *ngIf="errorMsg">{{ errorMsg }}</div>
+        <div class="error" *ngIf="errorMsg">{{ errorMsg }}</div>
+      </div>
     </div>
   </div>
 
-  <!-- Solo mostrar botón de editar si el pedido está ACTIVO -->
-  <div class="actions" *ngIf="!editMode && pedido.status === 'ACTIVO'">
-    <button class="btn-ghost" type="button" (click)="empezarEdicion()">
+  <!-- ✅ Acciones FUERA del card (mismo ancho, abajo) -->
+  <div class="below-actions" *ngIf="!editMode && pedido.status === 'ACTIVO'">
+    <button class="btn-primary" type="button" (click)="empezarEdicion()">
       Editar
     </button>
   </div>
 
-  <div class="actions edit-actions" *ngIf="editMode">
+  <div class="below-actions edit-actions" *ngIf="editMode">
     <button class="btn-soft" type="button" (click)="guardar()">Guardar</button>
     <button class="btn-ghost" type="button" (click)="cancelarEdicion()">
       Cancelar

@@ -22,7 +22,6 @@ const routes: Routes = [
   { path: 'bancos', component: Bancos, canActivate: [AuthGuard] },
   { path: 'turnos', component: Turnos },
   { path: 'pedidos-alertas', component: PedidosAlertas },
-  { path: 'donantes', component: Donantes, canActivate: [AuthGuard] },
   { path: 'configuracion', component: Configuracion, canActivate: [AuthGuard] },
 
   { path: '**', redirectTo: 'signin' },
