@@ -5,6 +5,58 @@
   margin: 0.25rem 0 0.25rem;
 }
 
+/* Igual que hospital */
+.label-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.label-row label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #4b5563;
+}
+
+.label-error {
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: #e02424;
+  white-space: nowrap;
+  margin-right: 22%;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.field input[type='text'],
+.field input[type='email'],
+.field input[type='password'],
+.field input[type='tel'] {
+  width: 75%;
+  padding: 0.1rem 0.85rem;
+  font-size: 0.92rem;
+  min-height: 36px;
+  border-radius: 999px;
+  border: 1px solid #d1d5db;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  background: #ffffff;
+}
+
+.field input:focus {
+  border-color: #f2543f;
+  box-shadow: 0 0 0 2px rgba(242, 84, 63, 0.18);
+}
+
+.field input.ng-touched.ng-invalid {
+  border-color: #e02424;
+}
+
 .grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
@@ -12,41 +64,13 @@
 }
 
 @media (max-width: 520px) {
-  .grid {
-    grid-template-columns: 1fr;
+  .grid { grid-template-columns: 1fr; }
+  .field input[type='text'],
+  .field input[type='email'],
+  .field input[type='password'],
+  .field input[type='tel'] {
+    width: 100%;
   }
-}
-
-.form-field {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-}
-
-.form-field label {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: #4b5563;
-}
-
-.form-field input {
-  width: 100%;
-  padding: 0.62rem 0.9rem;
-  border-radius: 14px;
-  border: 1px solid #d1d5db;
-  font-size: 0.92rem;
-  outline: none;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
-  background: #ffffff;
-}
-
-.form-field input:focus {
-  border-color: #f2543f;
-  box-shadow: 0 0 0 2px rgba(242, 84, 63, 0.18);
-}
-
-.form-field--error input {
-  border-color: #e02424;
 }
 
 .error-space {
@@ -57,4 +81,10 @@
   font-size: 0.76rem;
   color: #e02424;
   line-height: 1.2;
+}
+
+.hint {
+  margin-top: 0.15rem;
+  font-size: 0.78rem;
+  color: #6b7280;
 }

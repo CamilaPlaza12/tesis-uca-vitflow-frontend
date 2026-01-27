@@ -1,59 +1,112 @@
 <div class="step-title">Usuario administrador</div>
 
-<div
-  class="form-field"
-  [class.form-field--error]="group.get('fullName')?.touched && group.get('fullName')?.invalid"
->
-  <label>Nombre y apellido</label>
-  <input type="text" formControlName="fullName" placeholder="Nombre Apellido" />
+<div class="field">
+  <div class="label-row">
+    <label>Nombre y apellido</label>
+    <span class="label-error" *ngIf="group.get('fullName')?.touched && group.get('fullName')?.invalid">
+      Obligatorio
+    </span>
+  </div>
+
+  <input
+    type="text"
+    formControlName="fullName"
+    placeholder="Nombre Apellido"
+    maxlength="80"
+    autocomplete="name"
+  />
 
   <div class="error-space">
-    <div class="form-error" *ngIf="group.get('fullName')?.touched && group.get('fullName')?.invalid">
-      Obligatorio.
+    <div class="form-error" *ngIf="group.get('fullName')?.touched && group.get('fullName')?.errors?.['minlength']">
+      Mínimo 3 caracteres.
     </div>
   </div>
 </div>
 
-<div
-  class="form-field"
-  [class.form-field--error]="group.get('email')?.touched && group.get('email')?.invalid"
->
-  <label>Email institucional</label>
-  <input type="email" formControlName="email" placeholder="admin@hospital.com" />
-
-  <div class="error-space">
-    <div class="form-error" *ngIf="group.get('email')?.touched && group.get('email')?.invalid">
-      Ingresá un email válido.
-    </div>
+<div class="field">
+  <div class="label-row">
+    <label>Email institucional</label>
+    <span class="label-error" *ngIf="group.get('email')?.touched && group.get('email')?.invalid">
+      Email inválido
+    </span>
   </div>
+
+  <input
+    type="email"
+    formControlName="email"
+    placeholder="admin@hospital.com"
+    maxlength="120"
+    autocomplete="email"
+  />
+
+  <div class="error-space"></div>
+</div>
+
+<!-- Teléfono admin (opcional) -->
+<div class="field">
+  <div class="label-row">
+    <label>Teléfono (opcional)</label>
+    <span class="label-error" *ngIf="group.get('phone')?.touched && group.get('phone')?.invalid">
+      Teléfono inválido
+    </span>
+  </div>
+
+  <input
+    type="tel"
+    formControlName="phone"
+    placeholder="+5491112345678"
+    maxlength="20"
+    inputmode="tel"
+    autocomplete="tel"
+    (input)="onAdminPhoneInput($event)"
+  />
+
+  <div class="hint">Acepta dígitos y opcional “+” al inicio.</div>
 </div>
 
 <div class="grid">
-  <div
-    class="form-field"
-    [class.form-field--error]="group.get('password')?.touched && group.get('password')?.invalid"
-  >
-    <label>Contraseña</label>
-    <input type="password" formControlName="password" placeholder="Mínimo 8 caracteres" />
+  <div class="field">
+    <div class="label-row">
+      <label>Contraseña</label>
+      <span class="label-error" *ngIf="group.get('password')?.touched && group.get('password')?.invalid">
+        Inválida
+      </span>
+    </div>
+
+    <input
+      type="password"
+      formControlName="password"
+      placeholder="Mínimo 8 caracteres"
+      maxlength="64"
+      autocomplete="new-password"
+    />
 
     <div class="error-space">
-      <div class="form-error" *ngIf="group.get('password')?.touched && group.get('password')?.invalid">
+      <div class="form-error" *ngIf="group.get('password')?.touched && group.get('password')?.errors?.['minlength']">
         Mínimo 8 caracteres.
       </div>
     </div>
   </div>
 
-  <div
-    class="form-field"
-    [class.form-field--error]="(group.get('confirmPassword')?.touched && group.get('confirmPassword')?.invalid) || (group.get('confirmPassword')?.touched && pwMismatch)"
-  >
-    <label>Confirmar contraseña</label>
-    <input type="password" formControlName="confirmPassword" placeholder="Repetí la contraseña" />
+  <div class="field">
+    <div class="label-row">
+      <label>Confirmar contraseña</label>
+      <span class="label-error" *ngIf="group.get('confirmPassword')?.touched && (group.get('confirmPassword')?.invalid || pwMismatch)">
+        {{ pwMismatch ? 'No coincide' : 'Obligatorio' }}
+      </span>
+    </div>
+
+    <input
+      type="password"
+      formControlName="confirmPassword"
+      placeholder="Repetí la contraseña"
+      maxlength="64"
+      autocomplete="new-password"
+    />
 
     <div class="error-space">
-      <div class="form-error" *ngIf="group.get('confirmPassword')?.touched && (group.get('confirmPassword')?.invalid || pwMismatch)">
-        <span *ngIf="group.get('confirmPassword')?.errors?.['required']">Obligatorio.</span>
-        <span *ngIf="!group.get('confirmPassword')?.errors && pwMismatch">No coincide con la contraseña.</span>
+      <div class="form-error" *ngIf="group.get('confirmPassword')?.touched && pwMismatch">
+        No coincide con la contraseña.
       </div>
     </div>
   </div>

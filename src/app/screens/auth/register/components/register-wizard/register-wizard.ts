@@ -36,12 +36,12 @@ export class RegisterWizard {
       }),
 
       admin: this.fb.group({
-        fullName: ['', [Validators.required, Validators.minLength(3)]],
-        email: ['', [Validators.required, Validators.email]],
-        password: ['', [Validators.required, Validators.minLength(8)]],
-        confirmPassword: ['', [Validators.required]],
+        fullName: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(80)]],
+        email: ['', [Validators.required, Validators.email, Validators.maxLength(120)]],
+        phone: ['', [Validators.maxLength(20)]], // opcional, validación real la hacemos limpiando input
+        password: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(64)]],
+        confirmPassword: ['', [Validators.required, Validators.maxLength(64)]],
       }),
-
       plan: this.fb.group({
         planId: ['FREE', [Validators.required]],
       }),
@@ -54,11 +54,11 @@ export class RegisterWizard {
 
   goNext(): void {
     this.errorMsg = '';
-    if (!this.isStepValid(this.currentStep)) {
+    /*if (!this.isStepValid(this.currentStep)) {
       this.markStepTouched(this.currentStep);
       this.errorMsg = 'Revisá los campos del paso actual.';
       return;
-    }
+    }*/
     if (this.stepIndex < this.stepOrder.length - 1) this.stepIndex += 1;
   }
 

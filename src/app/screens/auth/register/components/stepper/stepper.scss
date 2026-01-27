@@ -1,31 +1,27 @@
 .stepper {
-  width: 100%;
-}
-
-.stepper-track {
   display: flex;
   align-items: center;
-  gap: 0.65rem;
+  gap: 0.55rem;
   flex-wrap: wrap;
 }
 
-/* Paso como “pill” NO interactivo */
 .step {
   display: inline-flex;
   align-items: center;
-  gap: 0.55rem;
-  padding: 0.42rem 0.75rem;
+  gap: 0.5rem;
+  padding: 0.4rem 0.7rem;
   border-radius: 999px;
   border: 1px solid #e5e7eb;
   background: #ffffff;
-  user-select: none;
-
-  /* ✅ que no parezca clickeable */
-  cursor: default;
-  pointer-events: none;
 }
 
-/* Dot */
+.arrow {
+  font-size: 1.15rem;
+  font-weight: 900;
+  color: #9ca3af;
+  user-select: none;
+}
+
 .dot {
   width: 24px;
   height: 24px;
@@ -33,30 +29,18 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 800;
+  font-weight: 900;
   font-size: 0.85rem;
   border: 1px solid #d1d5db;
   color: #374151;
 }
 
-/* Label */
 .label {
   font-size: 0.85rem;
-  font-weight: 700;
+  font-weight: 800;
   color: #374151;
-  white-space: nowrap;
 }
 
-/* Flechita */
-.arrow {
-  color: #9ca3af;
-  font-weight: 900;
-  line-height: 1;
-  user-select: none;
-  pointer-events: none;
-}
-
-/* Estado: active */
 .step--active {
   border-color: #f2543f;
   box-shadow: 0 0 0 2px rgba(242, 84, 63, 0.14);
@@ -67,25 +51,6 @@
   color: #f2543f;
 }
 
-.step--active .label {
-  color: #1f2933;
-}
-
-/* Estado: done */
 .step--done {
-  opacity: 0.9;
-}
-
-.step--done .dot {
-  border-color: #9ca3af;
-}
-
-@media (max-width: 520px) {
-  .stepper-track {
-    gap: 0.5rem;
-  }
-
-  .label {
-    font-size: 0.82rem;
-  }
+  opacity: 0.85;
 }
