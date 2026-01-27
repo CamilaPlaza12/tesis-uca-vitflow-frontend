@@ -1,0 +1,61 @@
+.step-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #1f2933;
+  margin: 0.5rem 0 0.25rem;
+}
+
+.plan-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.9rem;
+}
+
+@media (max-width: 520px) {
+  .plan-grid { grid-template-columns: 1fr; }
+}
+
+.plan-card {
+  text-align: left;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 1rem;
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.05s ease;
+}
+
+.plan-card:hover {
+  border-color: #f2543f;
+  box-shadow: 0 0 0 2px rgba(242, 84, 63, 0.12);
+  transform: translateY(-1px);
+}
+
+.plan-card--active {
+  border-color: #f2543f;
+  box-shadow: 0 0 0 2px rgba(242, 84, 63, 0.18);
+}
+
+.plan-name {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #1f2933;
+}
+
+.plan-desc {
+  margin-top: 0.25rem;
+  color: #4b5563;
+  font-size: 0.9rem;
+}
+
+.plan-list {
+  margin: 0.75rem 0 0;
+  padding-left: 1.1rem;
+  color: #374151;
+  font-size: 0.88rem;
+}
+
+.hint {
+  font-size: 0.78rem;
+  color: #6b7280;
+}

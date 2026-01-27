@@ -1,0 +1,33 @@
+<div class="step-title">Elegí un plan</div>
+
+<div class="plan-grid">
+  <button type="button" class="plan-card" [class.plan-card--active]="isSelected('FREE')" (click)="select('FREE')">
+    <div class="plan-name">Free</div>
+    <div class="plan-desc">
+      Operación completa para empezar.
+    </div>
+    <ul class="plan-list">
+      <li>Turnos, pedidos, donantes, chatbot</li>
+      <li>Alertas básicas</li>
+      <li>Sin dashboards avanzados</li>
+      <li>Sin exportaciones</li>
+    </ul>
+  </button>
+
+  <button type="button" class="plan-card" [class.plan-card--active]="isSelected('PRO')" (click)="select('PRO')">
+    <div class="plan-name">Pro</div>
+    <div class="plan-desc">
+      Gestión profesional para escalar.
+    </div>
+    <ul class="plan-list">
+      <li>Dashboards completos</li>
+      <li>Exportaciones (CSV/Excel)</li>
+      <li>Auditoría y trazabilidad</li>
+      <li>Soporte prioritario</li>
+    </ul>
+  </button>
+</div>
+
+<div class="hint">
+  Podés empezar con Free y pasar a Pro cuando quieras.
+</div>

@@ -1,0 +1,58 @@
+<form class="wizard-form" [formGroup]="form" novalidate>
+  <app-stepper
+    [steps]="[
+      { key: 'hospital', label: 'Hospital' },
+      { key: 'admin', label: 'Administrador' },
+      { key: 'plan', label: 'Plan' },
+      { key: 'review', label: 'Confirmación' }
+    ]"
+    [activeIndex]="stepIndex" 
+  ></app-stepper>
+
+  <div class="wizard-body">
+    <div class="page-error" *ngIf="errorMsg">{{ errorMsg }}</div>
+
+    <app-hospital-step
+      *ngIf="currentStep === 'hospital'"
+      [group]="hospitalGroup"
+    ></app-hospital-step>
+
+    <app-admin-step
+      *ngIf="currentStep === 'admin'"
+      [group]="adminGroup"
+    ></app-admin-step>
+
+    <app-plan-step
+      *ngIf="currentStep === 'plan'"
+      [group]="planGroup"
+    ></app-plan-step>
+
+    <app-review-step
+      *ngIf="currentStep === 'review'"
+      [form]="form"
+    ></app-review-step>
+
+    <div class="wizard-actions">
+      <button
+        *ngIf="currentStep !== 'hospital'"
+        class="btn btn-secondary"
+        type="button"
+        (click)="goBack()"
+        [disabled]="loading"
+      >
+        <span class="btn-text">Volver</span>
+      </button>
+
+      <button
+        class="btn btn-primary"
+        type="button"
+        (click)="currentStep === 'review' ? submit() : goNext()"
+        [disabled]="loading"
+      >
+        <span class="btn-text">
+          {{ currentStep === 'review' ? 'Confirmar registro' : 'Continuar' }}
+        </span>
+      </button>
+    </div>
+  </div>
+</form>

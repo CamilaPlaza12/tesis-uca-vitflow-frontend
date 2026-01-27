@@ -1,0 +1,150 @@
+<div class="two-col" [formGroup]="group">
+  <!-- COLUMNA 1 -->
+  <section class="panel">
+    <div class="panel-title">Datos del hospital</div>
+
+    <div class="field">
+      <div class="label-row">
+        <label>Nombre del hospital</label>
+        <span class="label-error" *ngIf="group.get('name')?.touched && group.get('name')?.invalid">
+          Obligatorio
+        </span>
+      </div>
+      <input type="text" formControlName="name" placeholder="Hospital Italiano, etc." />
+    </div>
+
+    <div class="field">
+      <div class="label-row">
+        <label>Email del hospital</label>
+        <span class="label-error" *ngIf="group.get('email')?.touched && group.get('email')?.invalid">
+          Email inválido
+        </span>
+      </div>
+      <input type="email" formControlName="email" placeholder="contacto@hospital.com" />
+    </div>
+
+    <!-- TELÉFONO AR -->
+    <div class="field">
+      <div class="label-row">
+        <label>Teléfono</label>
+        <span class="label-error" *ngIf="group.get('phone')?.touched && group.get('phone')?.invalid">
+          Teléfono inválido
+        </span>
+      </div>
+
+      <div class="phone-row">
+        <div class="phone-prefix" aria-hidden="true">+54</div>
+        <input
+          class="phone-input"
+          type="tel"
+          formControlName="phone"
+          inputmode="numeric"
+          autocomplete="tel-national"
+          placeholder="11 1234 5678"
+          (input)="onlyPhoneDigits($event)"
+        />
+      </div>
+
+      <div class="hint">
+        Solo Argentina. Ingresá solo números (sin 0, sin 15).
+      </div>
+    </div>
+
+    <!-- LOGO -->
+    <div class="field">
+      <div class="label-row">
+        <label>Logo del hospital (opcional)</label>
+      </div>
+
+      <div class="file-row">
+        <input
+          #logoInput
+          id="logoFile"
+          class="file-input"
+          type="file"
+          accept="image/*"
+          (change)="onLogoSelected($event)"
+        />
+
+        <label class="file-btn" for="logoFile">Elegir archivo</label>
+
+        <span class="file-name">
+          {{ fileName || 'Ningún archivo seleccionado' }}
+        </span>
+
+        <button
+          type="button"
+          class="file-clear"
+          *ngIf="fileName"
+          (click)="clearLogo(logoInput)"
+          aria-label="Quitar logo"
+        >
+          ✕
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- COLUMNA 2 -->
+  <section class="panel" formGroupName="address">
+    <div class="panel-title">Dirección</div>
+
+    <!-- ✅ Orden pedido: Provincia → Localidad → Ciudad → Calle → Número -->
+
+    <div class="field">
+      <div class="label-row">
+        <label>Provincia</label>
+        <span class="label-error" *ngIf="group.get('address.province')?.touched && group.get('address.province')?.invalid">
+          Obligatorio
+        </span>
+      </div>
+      <input type="text" formControlName="province" placeholder="Buenos Aires" />
+    </div>
+
+    <div class="field">
+      <div class="label-row">
+        <label>Localidad</label>
+        <span class="label-error" *ngIf="group.get('address.localidad')?.touched && group.get('address.localidad')?.invalid">
+          Obligatorio
+        </span>
+      </div>
+      <input type="text" formControlName="localidad" placeholder="San Isidro" />
+    </div>
+
+    <div class="field">
+      <div class="label-row">
+        <label>Ciudad</label>
+        <span class="label-error" *ngIf="group.get('address.city')?.touched && group.get('address.city')?.invalid">
+          Obligatorio
+        </span>
+      </div>
+      <input type="text" formControlName="city" placeholder="CABA / La Plata / etc." />
+    </div>
+
+    <div class="field">
+      <div class="label-row">
+        <label>Calle</label>
+        <span class="label-error" *ngIf="group.get('address.street')?.touched && group.get('address.street')?.invalid">
+          Obligatorio
+        </span>
+      </div>
+      <input type="text" formControlName="street" placeholder="Av. Santa Fe" />
+    </div>
+
+    <div class="field">
+      <div class="label-row">
+        <label>Número</label>
+        <span class="label-error" *ngIf="group.get('address.number')?.touched && group.get('address.number')?.invalid">
+          Obligatorio
+        </span>
+      </div>
+      <input
+        type="text"
+        formControlName="number"
+        placeholder="1234"
+        inputmode="numeric"
+        (input)="onlyDigits($event)"
+      />
+    </div>
+  </section>
+</div>

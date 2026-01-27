@@ -1,0 +1,60 @@
+<div class="step-title">Usuario administrador</div>
+
+<div
+  class="form-field"
+  [class.form-field--error]="group.get('fullName')?.touched && group.get('fullName')?.invalid"
+>
+  <label>Nombre y apellido</label>
+  <input type="text" formControlName="fullName" placeholder="Nombre Apellido" />
+
+  <div class="error-space">
+    <div class="form-error" *ngIf="group.get('fullName')?.touched && group.get('fullName')?.invalid">
+      Obligatorio.
+    </div>
+  </div>
+</div>
+
+<div
+  class="form-field"
+  [class.form-field--error]="group.get('email')?.touched && group.get('email')?.invalid"
+>
+  <label>Email institucional</label>
+  <input type="email" formControlName="email" placeholder="admin@hospital.com" />
+
+  <div class="error-space">
+    <div class="form-error" *ngIf="group.get('email')?.touched && group.get('email')?.invalid">
+      Ingresá un email válido.
+    </div>
+  </div>
+</div>
+
+<div class="grid">
+  <div
+    class="form-field"
+    [class.form-field--error]="group.get('password')?.touched && group.get('password')?.invalid"
+  >
+    <label>Contraseña</label>
+    <input type="password" formControlName="password" placeholder="Mínimo 8 caracteres" />
+
+    <div class="error-space">
+      <div class="form-error" *ngIf="group.get('password')?.touched && group.get('password')?.invalid">
+        Mínimo 8 caracteres.
+      </div>
+    </div>
+  </div>
+
+  <div
+    class="form-field"
+    [class.form-field--error]="(group.get('confirmPassword')?.touched && group.get('confirmPassword')?.invalid) || (group.get('confirmPassword')?.touched && pwMismatch)"
+  >
+    <label>Confirmar contraseña</label>
+    <input type="password" formControlName="confirmPassword" placeholder="Repetí la contraseña" />
+
+    <div class="error-space">
+      <div class="form-error" *ngIf="group.get('confirmPassword')?.touched && (group.get('confirmPassword')?.invalid || pwMismatch)">
+        <span *ngIf="group.get('confirmPassword')?.errors?.['required']">Obligatorio.</span>
+        <span *ngIf="!group.get('confirmPassword')?.errors && pwMismatch">No coincide con la contraseña.</span>
+      </div>
+    </div>
+  </div>
+</div>

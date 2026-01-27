@@ -1,0 +1,32 @@
+<div class="step-title">Confirmación</div>
+
+<div class="card">
+  <div class="card-title">Hospital</div>
+  <div class="row"><span>Nombre:</span> <b>{{ hospital?.name }}</b></div>
+  <div class="row"><span>Teléfono:</span> <b>{{ hospital?.phone }}</b></div>
+  <div class="row">
+    <span>Dirección:</span>
+    <b>
+      {{ hospital?.address?.street }} {{ hospital?.address?.number }},
+      {{ hospital?.address?.localidad }}, {{ hospital?.address?.city }},
+      {{ hospital?.address?.province }}
+    </b>
+  </div>
+  <div class="row" *ngIf="hospital?.logoFile"><span>Logo:</span> <b>{{ hospital?.logoFile?.name }}</b></div>
+</div>
+
+<div class="card">
+  <div class="card-title">Administrador</div>
+  <div class="row"><span>Nombre:</span> <b>{{ admin?.fullName }}</b></div>
+  <div class="row"><span>Email:</span> <b>{{ admin?.email }}</b></div>
+</div>
+
+<div class="card">
+  <div class="card-title">Plan</div>
+  <div class="row"><span>Seleccionado:</span> <b>{{ plan?.planId }}</b></div>
+</div>
+
+<div class="hint">
+  Al confirmar, por ahora lo vamos a loguear en consola y te llevamos al Sign In.
+  Después conectamos backend + Mercado Pago.
+</div>

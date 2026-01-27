@@ -33,6 +33,14 @@ import { TurnoDetail } from './screens/pages/turnos/componentes/turno-detail/tur
 import { AccionTurno } from './screens/pages/turnos/turno-actions.policy';
 import { AvailabilityEmptyState } from './screens/pages/turnos/componentes/availability-empty-state/availability-empty-state';
 import { AvailabilityConfig } from './screens/pages/turnos/componentes/availability-config/availability-config';
+import { RegisterWizard } from './screens/auth/register/components/register-wizard/register-wizard';
+import { Stepper } from './screens/auth/register/components/stepper/stepper';
+import { HospitalStep } from './screens/auth/register/components/steps/hospital-step/hospital-step';
+import { AdminStep } from './screens/auth/register/components/steps/admin-step/admin-step';
+import { PlanStep } from './screens/auth/register/components/steps/plan-step/plan-step';
+import { ReviewStep } from './screens/auth/register/components/steps/review-step/review-step';
+import { HttpClientModule } from '@angular/common/http';
+import { RouterModule } from '@angular/router';
 
 @NgModule({
   declarations: [
@@ -54,7 +62,13 @@ import { AvailabilityConfig } from './screens/pages/turnos/componentes/availabil
     ConfirmModal,
     TurnoDetail,
     AvailabilityEmptyState,
-    AvailabilityConfig
+    AvailabilityConfig,
+    RegisterWizard,
+    Stepper,
+    HospitalStep,
+    AdminStep,
+    PlanStep,
+    ReviewStep
   ],
   imports: [
     BrowserModule,
@@ -64,7 +78,9 @@ import { AvailabilityConfig } from './screens/pages/turnos/componentes/availabil
     FormsModule,
     DrawerModule,
     ButtonModule,
-    RippleModule
+    RouterModule,
+    RippleModule,
+    HttpClientModule
   ],
   providers: [
     provideBrowserGlobalErrorListeners(),

@@ -61,6 +61,6 @@ export class SignIn {
   }
 
   onRequestAccess(): void {
-    console.log('Solicitar registro clickeado');
+    this.router.navigate(['/register']);
   }
 }

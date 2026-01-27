@@ -1,0 +1,117 @@
+.wizard-body {
+  margin-top: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.page-error {
+  font-size: 0.86rem;
+  color: #e02424;
+  background: rgba(224, 36, 36, 0.06);
+  border: 1px solid rgba(224, 36, 36, 0.25);
+  padding: 0.6rem 0.85rem;
+  border-radius: 14px;
+}
+
+.wizard-actions {
+  margin-top: 0.9rem;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* Base button */
+.btn {
+  border: none;
+  border-radius: 999px;
+  padding: 0.72rem 1.1rem;
+  min-height: 44px;
+  min-width: 200px;
+  font-size: 0.95rem;
+  font-weight: 800;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  /* blindaje */
+  opacity: 1 !important;
+  visibility: visible !important;
+  text-decoration: none !important;
+}
+
+/* ✅ Si algún CSS global rompe los spans, esto lo rescata */
+.btn .btn-text {
+  display: inline-block !important;
+  font-size: 0.95rem !important;
+  font-weight: 600 !important;
+  line-height: 1 !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* ✅ ANTI “texto invisible” (global css asesino) */
+.btn,
+.btn * {
+  color: inherit !important;
+  -webkit-text-fill-color: currentColor !important;
+}
+
+/* Primary */
+.btn-primary {
+  background: #f2543f !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  box-shadow: 0 8px 18px rgba(242, 84, 63, 0.28);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: #e04735 !important;
+  box-shadow: 0 10px 22px rgba(242, 84, 63, 0.35);
+  transform: translateY(-1px);
+}
+
+.btn-primary:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+/* Secondary */
+.btn-secondary {
+  background: #ffffff !important;
+  color: #374151 !important;
+  -webkit-text-fill-color: #374151 !important;
+  border: 1px solid #d1d5db !important;
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.06);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: #f9fafb !important;
+}
+
+.btn:disabled {
+  opacity: 0.6 !important;
+  cursor: default !important;
+  box-shadow: none !important;
+}
+
+.btn:focus {
+  outline: none;
+}
+.btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(242, 84, 63, 0.18);
+}
+
+@media (max-width: 520px) {
+  .wizard-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .btn {
+    width: 100%;
+    min-width: 0;
+  }
+}

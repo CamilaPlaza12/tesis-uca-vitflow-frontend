@@ -1,0 +1,198 @@
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .two-col {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.panel-title {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #1f2933;
+  margin: 0.2rem 0 0.1rem;
+}
+
+/* ✅ Label + error al lado */
+.label-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.label-row label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #4b5563;
+}
+
+.label-error {
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: #e02424;
+  white-space: nowrap;
+  margin-right: 22%;
+}
+
+/* Campo */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.field input[type='text'],
+.field input[type='email'],
+.field input[type='password']
+{
+  width: 75%;
+  padding: 0.1rem 0.85rem; /* más corto */
+  font-size: 0.92rem;
+  min-height: 36px;        /* más corto */
+  border-radius: 999px;
+  border: 1px solid #d1d5db;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  background: #ffffff;
+}
+
+.field input[type='tel'] {
+  width: 63.5%;
+  padding: 0.1rem 0.85rem; /* más corto */
+  font-size: 0.92rem;
+  min-height: 36px;        /* más corto */
+  border-radius: 999px;
+  border: 1px solid #d1d5db;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  background: #ffffff;
+}
+
+
+.field input:focus {
+  border-color: #f2543f;
+  box-shadow: 0 0 0 2px rgba(242, 84, 63, 0.18);
+}
+
+/* Borde rojo si invalido y tocado */
+.field input.ng-touched.ng-invalid {
+  border-color: #e02424;
+}
+
+/* File input */
+.file-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.file-input {
+  display: none;
+}
+
+.file-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 0.1rem 0.85rem;
+  min-height: 40px;
+  font-size: 0.86rem;
+  font-weight: 800;
+  cursor: pointer;
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  color: #374151;
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.06);
+  user-select: none;
+}
+
+.file-btn:hover {
+  background: #f9fafb;
+  border-color: #f2543f;
+  box-shadow: 0 0 0 2px rgba(242, 84, 63, 0.12);
+}
+
+.file-name {
+  font-size: 0.86rem;
+  color: #6b7280;
+  max-width: 360px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.file-clear {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  cursor: pointer;
+  font-weight: 900;
+  color: #6b7280;
+}
+
+.file-clear:hover {
+  border-color: #f2543f;
+  color: #f2543f;
+  box-shadow: 0 0 0 2px rgba(242, 84, 63, 0.12);
+}
+
+.phone-row {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.phone-prefix {
+  min-height: 36px;
+  padding: 0.1rem 0.7rem;
+  border-radius: 999px;
+  border: 1px solid #d1d5db;
+  background: #f9fafb;
+  color: #374151;
+  font-weight: 800;
+  font-size: 0.92rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+}
+
+.hint {
+  margin-top: 0.35rem;
+  font-size: 0.78rem;
+  color: #6b7280;
+}
+
+.select-pill {
+  width: 75%;
+  padding: 0.1rem 0.85rem;
+  font-size: 0.92rem;
+  min-height: 36px;
+  border-radius: 999px;
+  border: 1px solid #d1d5db;
+  outline: none;
+  background: #ffffff;
+  color: #374151;
+}
+
+.select-pill:focus {
+  border-color: #f2543f;
+  box-shadow: 0 0 0 2px rgba(242, 84, 63, 0.18);
+}
