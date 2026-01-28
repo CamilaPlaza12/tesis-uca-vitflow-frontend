@@ -21,19 +21,25 @@ export class RegisterWizard {
 
   constructor(private fb: FormBuilder, private router: Router) {
     this.form = this.fb.group({
-        hospital: this.fb.group({
-          name: ['Hospital Italiano', [Validators.required, Validators.minLength(3)]],
-          email: ['contacto@hospital.com', [Validators.required, Validators.email]],
-          phone: ['1112345678', [Validators.required, Validators.minLength(6)]],
-          logoFile: [null],
-          address: this.fb.group({
-            province: ['Buenos Aires', [Validators.required]],
-            localidad: ['San Isidro', [Validators.required]],
-            city: ['San Isidro', [Validators.required]],
-            street: ['Av. Santa Fe', [Validators.required]],
-            number: ['1234', [Validators.required]],
+      hospital: this.fb.group({
+        name: ['', [Validators.required, Validators.minLength(3)]],
+        email: ['', [Validators.required, Validators.email]],
+        phone: ['', [Validators.required, Validators.minLength(6)]],
+        logoFile: [null],
+        address: this.fb.group({
+          // display values
+          province: ['', [Validators.required]],
+          localidad: [{ value: '', disabled: true }, [Validators.required]],
+          city: [{ value: '', disabled: true }, [Validators.required]],
+          street: [{ value: '', disabled: true }, [Validators.required]],
+          number: [{ value: '', disabled: true }, [Validators.required]],
+
+          // “truth” values (selección real)
+          provinceId: ['', [Validators.required]],
+          localidadId: [{ value: '', disabled: true }, [Validators.required]],
         }),
       }),
+
       admin: this.fb.group({
         firstName: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(40)]],
         lastName: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(40)]],
@@ -82,7 +88,6 @@ export class RegisterWizard {
     if (this.stepIndex > 0) this.stepIndex -= 1;
   }
 
-  // Si tu stepper ahora es “solo indicador”, este método puede quedar pero no lo uses desde el template.
   goToStep(index: number): void {
     if (index <= this.stepIndex) {
       this.stepIndex = index;
@@ -116,7 +121,6 @@ export class RegisterWizard {
     const pw = String(admin.get('password')?.value ?? '');
     const cpw = String(admin.get('confirmPassword')?.value ?? '');
 
-    // ✅ además de "admin.valid", exigimos match
     return admin.valid && pw.length >= 8 && cpw.length > 0 && pw === cpw;
   }
 
@@ -158,7 +162,15 @@ export class RegisterWizard {
         name: hospital.name,
         email: hospital.email,
         phone: hospital.phone,
-        address: hospital.address,
+        address: {
+          province: hospital.address.province,
+          localidad: hospital.address.localidad,
+          city: hospital.address.city,
+          street: hospital.address.street,
+          number: hospital.address.number,
+          provinceId: hospital.address.provinceId,
+          localidadId: hospital.address.localidadId,
+        },
       },
       admin: {
         firstName: admin.firstName,

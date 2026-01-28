@@ -23,7 +23,6 @@
       <input type="email" formControlName="email" placeholder="contacto@hospital.com" />
     </div>
 
-    <!-- TELÉFONO AR -->
     <div class="field">
       <div class="label-row">
         <label>Teléfono</label>
@@ -45,12 +44,9 @@
         />
       </div>
 
-      <div class="hint">
-        Solo Argentina. Ingresá solo números (sin 0, sin 15).
-      </div>
+      <div class="hint">Solo Argentina. Ingresá solo números (sin 0, sin 15).</div>
     </div>
 
-    <!-- LOGO -->
     <div class="field">
       <div class="label-row">
         <label>Logo del hospital (opcional)</label>
@@ -89,26 +85,86 @@
   <section class="panel" formGroupName="address">
     <div class="panel-title">Dirección</div>
 
-    <!-- ✅ Orden pedido: Provincia → Localidad → Ciudad → Calle → Número -->
-
+    <!-- Provincia -->
     <div class="field">
       <div class="label-row">
         <label>Provincia</label>
-        <span class="label-error" *ngIf="group.get('address.province')?.touched && group.get('address.province')?.invalid">
-          Obligatorio
+        <span
+          class="label-error"
+          *ngIf="group.get('address.provinceId')?.touched && group.get('address.provinceId')?.invalid"
+        >
+          Elegí una opción
         </span>
       </div>
-      <input type="text" formControlName="province" placeholder="Buenos Aires" />
+
+      <div class="typeahead">
+        <input
+          type="text"
+          formControlName="province"
+          placeholder="Escribí para buscar…"
+          (focus)="onProvinceFocus()"
+          (input)="onProvinceInput($event)"
+          (blur)="onProvinceBlur()"
+          autocomplete="off"
+        />
+
+        <div class="dropdown" *ngIf="provOpen">
+          <div class="dd-state" *ngIf="provLoading">Cargando provincias…</div>
+          <div class="dd-state" *ngIf="!provLoading && provinces.length === 0">No hay resultados</div>
+
+          <button
+            type="button"
+            class="dd-item"
+            *ngFor="let p of provinces"
+            (mousedown)="selectProvince(p)"
+          >
+            {{ p.nombre }}
+          </button>
+        </div>
+      </div>
+
+      <input type="hidden" formControlName="provinceId" />
     </div>
 
+    <!-- Localidad -->
     <div class="field">
       <div class="label-row">
         <label>Localidad</label>
-        <span class="label-error" *ngIf="group.get('address.localidad')?.touched && group.get('address.localidad')?.invalid">
-          Obligatorio
+        <span
+          class="label-error"
+          *ngIf="group.get('address.localidadId')?.touched && group.get('address.localidadId')?.invalid"
+        >
+          Elegí una opción
         </span>
       </div>
-      <input type="text" formControlName="localidad" placeholder="San Isidro" />
+
+      <div class="typeahead">
+        <input
+          type="text"
+          formControlName="localidad"
+          placeholder="Seleccioná provincia primero"
+          (focus)="onLocalidadFocus()"
+          (input)="onLocalidadInput($event)"
+          (blur)="onLocalidadBlur()"
+          autocomplete="off"
+        />
+
+        <div class="dropdown" *ngIf="locOpen">
+          <div class="dd-state" *ngIf="locLoading">Cargando localidades…</div>
+          <div class="dd-state" *ngIf="!locLoading && localidades.length === 0">No hay resultados</div>
+
+          <button
+            type="button"
+            class="dd-item"
+            *ngFor="let l of localidades"
+            (mousedown)="selectLocalidad(l)"
+          >
+            {{ l.nombre }}
+          </button>
+        </div>
+      </div>
+
+      <input type="hidden" formControlName="localidadId" />
     </div>
 
     <div class="field">

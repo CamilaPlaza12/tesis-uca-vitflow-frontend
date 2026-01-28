@@ -33,7 +33,7 @@ export class ReviewStep {
     if (!a) return '—';
 
     const street = [a.street, a.number].filter(Boolean).join(' ');
-    const place = [a.localidad, a.city, a.province].filter(Boolean).join(', ');
+    const place = [a.city, a.localidad, a.province].filter(Boolean).join(', ');
 
     if (!street && !place) return '—';
     if (!street) return place;
