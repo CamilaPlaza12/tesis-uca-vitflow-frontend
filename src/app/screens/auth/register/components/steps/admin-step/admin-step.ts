@@ -34,5 +34,6 @@ export class AdminStep {
 
     input.value = v;
     this.group.get('phone')?.setValue(v, { emitEvent: true });
+    this.group.get('phone')?.markAsTouched();
   }
 }

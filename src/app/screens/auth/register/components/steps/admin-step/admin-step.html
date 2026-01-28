@@ -1,110 +1,132 @@
 <div class="step-title">Usuario administrador</div>
 
-<div class="field">
-  <div class="label-row">
-    <label>Nombre y apellido</label>
-    <span class="label-error" *ngIf="group.get('fullName')?.touched && group.get('fullName')?.invalid">
-      Obligatorio
-    </span>
-  </div>
-
-  <input
-    class="pill-input"
-    type="text"
-    formControlName="fullName"
-    placeholder="Nombre Apellido"
-    maxlength="80"
-  />
-</div>
-
-<div class="grid section-gap">
-  <div class="field">
-    <div class="label-row">
-      <label>Email institucional</label>
-      <span class="label-error" *ngIf="group.get('email')?.touched && group.get('email')?.invalid">
-        Email inválido
-      </span>
+<form class="admin-form" [formGroup]="group">
+  <!-- fila 1: Nombre / Apellido -->
+  <div class="grid">
+    <div class="field">
+      <div class="label-row">
+        <label>Nombre</label>
+        <span class="label-error" *ngIf="group.get('firstName')?.touched && group.get('firstName')?.invalid">
+          Obligatorio
+        </span>
+      </div>
+      <input class="pill-input" type="text" formControlName="firstName" placeholder="Camila" maxlength="40" />
     </div>
 
-    <input
-      class="pill-input"
-      type="email"
-      formControlName="email"
-      placeholder="admin@hospital.com"
-      maxlength="120"
-    />
+    <div class="field">
+      <div class="label-row">
+        <label>Apellido</label>
+        <span class="label-error" *ngIf="group.get('lastName')?.touched && group.get('lastName')?.invalid">
+          Obligatorio
+        </span>
+      </div>
+      <input class="pill-input" type="text" formControlName="lastName" placeholder="Plaza" maxlength="40" />
+    </div>
   </div>
 
-  <div class="field">
-    <div class="label-row">
-      <label>Teléfono</label>
-      <span class="label-error" *ngIf="group.get('phone')?.touched && group.get('phone')?.invalid">
-        Teléfono inválido
-      </span>
+  <!-- fila 2: Email / Teléfono -->
+  <div class="grid section-gap">
+    <div class="field">
+      <div class="label-row">
+        <label>Email institucional</label>
+        <span class="label-error" *ngIf="group.get('email')?.touched && group.get('email')?.invalid">
+          Email inválido
+        </span>
+      </div>
+      <input class="pill-input" type="email" formControlName="email" placeholder="admin@hospital.com" maxlength="120" />
     </div>
 
-    <input
-      class="pill-input"
-      type="tel"
-      formControlName="phone"
-      placeholder="+54 11 1234 5678"
-      maxlength="20"
-      (input)="onPhoneInput($event)"
-    />
-  </div>
-</div>
+    <div class="field">
+      <div class="label-row">
+        <label>Teléfono</label>
+        <span class="label-error" *ngIf="group.get('phone')?.touched && group.get('phone')?.invalid">
+          Teléfono inválido
+        </span>
+      </div>
 
-<div class="grid section-gap">
-  <div class="field">
-    <div class="label-row">
-      <label>Contraseña</label>
-      <span class="label-error" *ngIf="group.get('password')?.touched && group.get('password')?.invalid">
-        Mínimo 8
-      </span>
-    </div>
-
-    <div class="pw-row">
       <input
         class="pill-input"
-        [type]="showPw ? 'text' : 'password'"
-        formControlName="password"
-        placeholder="Mínimo 8 caracteres"
-        maxlength="64"
+        type="tel"
+        formControlName="phone"
+        placeholder="+54 11 1234 5678"
+        maxlength="20"
+        inputmode="tel"
+        (input)="onPhoneInput($event)"
       />
-
-      <button type="button" class="eye" (click)="togglePw()" aria-label="Ver u ocultar contraseña">
-        <span class="eye-icon" [class.eye-icon--off]="showPw">&#128065;</span>
-      </button>
     </div>
   </div>
 
-  <div class="field">
-    <div class="label-row">
-      <label>Confirmar contraseña</label>
-      <span class="label-error" *ngIf="group.get('confirmPassword')?.touched && group.get('confirmPassword')?.invalid">
-        Obligatorio
-      </span>
+  <!-- fila 3: Password / Confirm -->
+  <div class="grid section-gap">
+    <div class="field">
+      <div class="label-row">
+        <label>Contraseña</label>
+        <span class="label-error" *ngIf="group.get('password')?.touched && group.get('password')?.invalid">
+          Mínimo 8
+        </span>
+      </div>
+
+      <div class="pw-row">
+        <input
+          class="pill-input"
+          [type]="showPw ? 'text' : 'password'"
+          formControlName="password"
+          placeholder="Mínimo 8 caracteres"
+          maxlength="64"
+        />
+
+        <button type="button" class="eye" (click)="togglePw()" aria-label="Ver u ocultar contraseña">
+          <svg *ngIf="!showPw" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"
+               stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+
+          <svg *ngIf="showPw" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"
+               stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M3 3l18 18"></path>
+          </svg>
+        </button>
+      </div>
     </div>
 
-    <div class="pw-row">
-      <input
-        class="pill-input"
-        [type]="showCpw ? 'text' : 'password'"
-        formControlName="confirmPassword"
-        placeholder="Repetí la contraseña"
-        maxlength="64"
-      />
+    <div class="field">
+      <div class="label-row">
+        <label>Confirmar contraseña</label>
+        <span class="label-error" *ngIf="group.get('confirmPassword')?.touched && group.get('confirmPassword')?.invalid">
+          Obligatorio
+        </span>
+      </div>
 
-      <button type="button" class="eye" (click)="toggleCpw()" aria-label="Ver u ocultar contraseña">
-        <span class="eye-icon" [class.eye-icon--off]="showCpw">&#128065;</span>
-      </button>
-    </div>
+      <div class="pw-row">
+        <input
+          class="pill-input"
+          [type]="showCpw ? 'text' : 'password'"
+          formControlName="confirmPassword"
+          placeholder="Repetí la contraseña"
+          maxlength="64"
+        />
 
-    <div class="match ok" *ngIf="group.get('confirmPassword')?.touched && pwMatch">
-      Las contraseñas coinciden
-    </div>
-    <div class="match bad" *ngIf="group.get('confirmPassword')?.touched && pwMismatch">
-      Las contraseñas no coinciden
+        <button type="button" class="eye" (click)="toggleCpw()" aria-label="Ver u ocultar contraseña">
+          <svg *ngIf="!showCpw" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"
+               stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+
+          <svg *ngIf="showCpw" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"
+               stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M3 3l18 18"></path>
+          </svg>
+        </button>
+      </div>
+
+      <div class="match ok" *ngIf="group.get('confirmPassword')?.touched && pwMatch">Las contraseñas coinciden</div>
+      <div class="match bad" *ngIf="group.get('confirmPassword')?.touched && pwMismatch">Las contraseñas no coinciden</div>
     </div>
   </div>
-</div>
+</form>

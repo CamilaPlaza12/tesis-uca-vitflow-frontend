@@ -1,4 +1,4 @@
-import { Component, ChangeDetectorRef, NgZone } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 
@@ -19,41 +19,26 @@ export class RegisterWizard {
   loading = false;
   errorMsg = '';
 
-  /** ✅ hardcode para test (ponelo en false cuando quieras) */
-  private readonly DEV_PREFILL = true;
-
-  constructor(
-    private fb: FormBuilder,
-    private router: Router,
-    private cdr: ChangeDetectorRef,
-    private zone: NgZone
-  ) {
+  constructor(private fb: FormBuilder, private router: Router) {
     this.form = this.fb.group({
-      hospital: this.fb.group({
-        name: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(120)]],
-        email: ['', [Validators.required, Validators.email, Validators.maxLength(120)]],
-        phone: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(14)]], // sin +54 (lo tenés fijo en UI)
-        logoFile: [null],
-        address: this.fb.group({
-          province: ['', [Validators.required, Validators.maxLength(60)]],
-          localidad: ['', [Validators.required, Validators.maxLength(60)]],
-          city: ['', [Validators.required, Validators.maxLength(60)]],
-          street: ['', [Validators.required, Validators.maxLength(80)]],
-          number: ['', [Validators.required, Validators.maxLength(10)]],
+        hospital: this.fb.group({
+          name: ['Hospital Italiano', [Validators.required, Validators.minLength(3)]],
+          email: ['contacto@hospital.com', [Validators.required, Validators.email]],
+          phone: ['1112345678', [Validators.required, Validators.minLength(6)]],
+          logoFile: [null],
+          address: this.fb.group({
+            province: ['Buenos Aires', [Validators.required]],
+            localidad: ['San Isidro', [Validators.required]],
+            city: ['San Isidro', [Validators.required]],
+            street: ['Av. Santa Fe', [Validators.required]],
+            number: ['1234', [Validators.required]],
         }),
       }),
-
       admin: this.fb.group({
-        fullName: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(80)]],
+        firstName: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(40)]],
+        lastName: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(40)]],
         email: ['', [Validators.required, Validators.email, Validators.maxLength(120)]],
-        phone: [
-          '',
-          [
-            Validators.required,
-            Validators.maxLength(20),
-            Validators.pattern(/^\+?[0-9\s()-]{8,20}$/),
-          ],
-        ],
+        phone: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(20)]],
         password: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(64)]],
         confirmPassword: ['', [Validators.required, Validators.maxLength(64)]],
       }),
@@ -62,37 +47,6 @@ export class RegisterWizard {
         planId: ['FREE', [Validators.required]],
       }),
     });
-
-    if (this.DEV_PREFILL) this.prefill();
-  }
-
-  private prefill(): void {
-    this.form.patchValue({
-      hospital: {
-        name: 'Hospital Demo',
-        email: 'contacto@hospital.com',
-        phone: '1112345678',
-        address: {
-          province: 'Buenos Aires',
-          localidad: 'San Isidro',
-          city: 'San Isidro',
-          street: 'Av. Santa Fe',
-          number: '1234',
-        },
-      },
-      admin: {
-        fullName: 'Admin Demo',
-        email: 'admin@hospital.com',
-        phone: '+54 11 1234 5678',
-        password: 'Vitflow123',
-        confirmPassword: 'Vitflow123',
-      },
-      plan: { planId: 'FREE' },
-    });
-
-    // para que no salten errores rojos apenas cargás
-    this.form.markAsPristine();
-    this.form.markAsUntouched();
   }
 
   get currentStep(): RegisterStep {
@@ -102,11 +56,9 @@ export class RegisterWizard {
   get hospitalGroup(): FormGroup {
     return this.form.get('hospital') as FormGroup;
   }
-
   get adminGroup(): FormGroup {
     return this.form.get('admin') as FormGroup;
   }
-
   get planGroup(): FormGroup {
     return this.form.get('plan') as FormGroup;
   }
@@ -122,24 +74,32 @@ export class RegisterWizard {
 
     if (this.stepIndex < this.stepOrder.length - 1) {
       this.stepIndex += 1;
-
-      this.cdr.markForCheck();
-      this.cdr.detectChanges();
     }
   }
 
-
   goBack(): void {
     this.errorMsg = '';
-    if (this.stepIndex > 0) {
-      this.stepIndex -= 1;
+    if (this.stepIndex > 0) this.stepIndex -= 1;
+  }
 
-      this.zone.run(() => {
-        setTimeout(() => {
-          this.cdr.detectChanges();
-        }, 0);
-      });
+  // Si tu stepper ahora es “solo indicador”, este método puede quedar pero no lo uses desde el template.
+  goToStep(index: number): void {
+    if (index <= this.stepIndex) {
+      this.stepIndex = index;
+      return;
     }
+
+    for (let i = 0; i < index; i++) {
+      const step = this.stepOrder[i];
+      if (!this.isStepValid(step)) {
+        this.markStepTouched(step);
+        this.stepIndex = i;
+        this.errorMsg = 'Completá este paso antes de avanzar.';
+        return;
+      }
+    }
+
+    this.stepIndex = index;
   }
 
   private isStepValid(step: RegisterStep): boolean {
@@ -156,7 +116,8 @@ export class RegisterWizard {
     const pw = String(admin.get('password')?.value ?? '');
     const cpw = String(admin.get('confirmPassword')?.value ?? '');
 
-    return admin.valid && pw.length > 0 && cpw.length > 0 && pw === cpw;
+    // ✅ además de "admin.valid", exigimos match
+    return admin.valid && pw.length >= 8 && cpw.length > 0 && pw === cpw;
   }
 
   private markStepTouched(step: RegisterStep): void {
@@ -171,6 +132,7 @@ export class RegisterWizard {
 
   async submit(): Promise<void> {
     this.errorMsg = '';
+
     if (!this.form.valid || !this.isAdminValid()) {
       this.form.markAllAsTouched();
       this.errorMsg = 'Hay campos inválidos. Revisá antes de confirmar.';
@@ -178,9 +140,36 @@ export class RegisterWizard {
     }
 
     this.loading = true;
-    console.log('REGISTER PAYLOAD (draft):', this.form.value);
-    this.loading = false;
 
+    const payload = this.buildPayload();
+    console.log('REGISTER PAYLOAD (draft):', payload);
+
+    this.loading = false;
     this.router.navigate(['/signin'], { replaceUrl: true });
+  }
+
+  private buildPayload(): any {
+    const hospital = this.form.get('hospital')?.value;
+    const admin = this.form.get('admin')?.value;
+    const plan = this.form.get('plan')?.value;
+
+    return {
+      hospital: {
+        name: hospital.name,
+        email: hospital.email,
+        phone: hospital.phone,
+        address: hospital.address,
+      },
+      admin: {
+        firstName: admin.firstName,
+        lastName: admin.lastName,
+        email: admin.email,
+        phone: admin.phone,
+        password: admin.password,
+      },
+      plan: {
+        planId: plan.planId,
+      },
+    };
   }
 }

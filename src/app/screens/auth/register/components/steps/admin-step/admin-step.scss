@@ -2,7 +2,12 @@
   font-size: 0.95rem;
   font-weight: 800;
   color: #1f2933;
-  margin: 0.25rem 0 0.35rem;
+  margin: 0.25rem 0 0.90rem;
+}
+
+.admin-form {
+  display: flex;
+  flex-direction: column;
 }
 
 .section-gap {
@@ -15,15 +20,14 @@
   gap: 0.95rem;
 }
 
-@media (max-width: 520px) {
+@media (max-width: 900px) {
   .grid { grid-template-columns: 1fr; }
-  .pill-input, .pw-row { width: 100%; }
 }
 
 .field {
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: 0.18rem;
 }
 
 .label-row {
@@ -44,13 +48,12 @@
   font-weight: 800;
   color: #e02424;
   white-space: nowrap;
-  margin-right: 22%;
+  margin-right: 10%;
 }
 
 .pill-input {
-  width: 75%;
+  width: 85%;
   padding: 0.1rem 0.85rem;
-  font-size: 0.92rem;
   min-height: 36px;
   border-radius: 999px;
   border: 1px solid #d1d5db;
@@ -69,15 +72,16 @@
 }
 
 .pw-row {
-  width: 75%;
+  width: 95%;
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
 
-.pw-row .pill-input { width: 100%; }
+.pw-row .pill-input {
+  width: 100%;
+}
 
-/* Botón ojo */
 .eye {
   width: 36px;
   height: 36px;
@@ -98,28 +102,10 @@
   box-shadow: 0 0 0 2px rgba(242, 84, 63, 0.12);
 }
 
-.eye-icon {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+.eye > svg {
+  display: block;
   width: 18px;
   height: 18px;
-  font-size: 16px;
-  line-height: 1;
-}
-
-/* “tachado” sin deformar nada */
-.eye-icon--off::after {
-  content: '';
-  position: absolute;
-  left: -2px;
-  right: -2px;
-  top: 50%;
-  height: 2px;
-  background: currentColor;
-  transform: rotate(35deg);
-  transform-origin: center;
 }
 
 .match {
