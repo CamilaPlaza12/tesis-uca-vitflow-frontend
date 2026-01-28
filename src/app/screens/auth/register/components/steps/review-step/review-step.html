@@ -1,32 +1,78 @@
 <div class="step-title">Confirmación</div>
+<div class="step-subtitle">Revisá que todo esté correcto antes de crear la cuenta.</div>
 
-<div class="card">
-  <div class="card-title">Hospital</div>
-  <div class="row"><span>Nombre:</span> <b>{{ hospital?.name }}</b></div>
-  <div class="row"><span>Teléfono:</span> <b>{{ hospital?.phone }}</b></div>
-  <div class="row">
-    <span>Dirección:</span>
-    <b>
-      {{ hospital?.address?.street }} {{ hospital?.address?.number }},
-      {{ hospital?.address?.localidad }}, {{ hospital?.address?.city }},
-      {{ hospital?.address?.province }}
-    </b>
-  </div>
-  <div class="row" *ngIf="hospital?.logoFile"><span>Logo:</span> <b>{{ hospital?.logoFile?.name }}</b></div>
-</div>
+<div class="grid">
+  <!-- HOSPITAL -->
+  <section class="card">
+    <div class="card-head">
+      <div class="card-title">Hospital</div>
+      <div class="pill" *ngIf="hospital?.name">{{ hospital?.name }}</div>
+    </div>
 
-<div class="card">
-  <div class="card-title">Administrador</div>
-  <div class="row"><span>Nombre:</span> <b>{{ admin?.fullName }}</b></div>
-  <div class="row"><span>Email:</span> <b>{{ admin?.email }}</b></div>
-</div>
+    <div class="rows">
+      <div class="row">
+        <div class="k">Email</div>
+        <div class="v">{{ hospital?.email || '—' }}</div>
+      </div>
 
-<div class="card">
-  <div class="card-title">Plan</div>
-  <div class="row"><span>Seleccionado:</span> <b>{{ plan?.planId }}</b></div>
-</div>
+      <div class="row">
+        <div class="k">Teléfono</div>
+        <div class="v">+54 {{ hospital?.phone || '—' }}</div>
+      </div>
 
-<div class="hint">
-  Al confirmar, por ahora lo vamos a loguear en consola y te llevamos al Sign In.
-  Después conectamos backend + Mercado Pago.
+      <div class="row">
+        <div class="k">Dirección</div>
+        <div class="v">{{ fullAddress }}</div>
+      </div>
+
+      <div class="row">
+        <div class="k">Logo</div>
+        <div class="v" [class.muted]="!hasLogo">{{ logoName }}</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ADMIN -->
+  <section class="card">
+    <div class="card-head">
+      <div class="card-title">Administrador</div>
+      <div class="pill" *ngIf="admin?.fullName">{{ admin?.fullName }}</div>
+    </div>
+
+    <div class="rows">
+      <div class="row">
+        <div class="k">Email institucional</div>
+        <div class="v">{{ admin?.email || '—' }}</div>
+      </div>
+
+      <div class="row">
+        <div class="k">Teléfono</div>
+        <div class="v">{{ admin?.phone || '—' }}</div>
+      </div>
+    </div>
+
+    <div class="note">
+      Este usuario será el responsable de configurar el sistema y gestionar permisos.
+    </div>
+  </section>
+
+  <!-- PLAN -->
+  <section class="card card--plan">
+    <div class="card-head">
+      <div class="card-title">Plan</div>
+
+      <div class="plan-chip" [class.plan-chip--pro]="plan?.planId === 'PRO'">
+        <span class="dot"></span>
+        <span>{{ planLabel }}</span>
+      </div>
+    </div>
+
+    <div class="plan-sub">
+      {{ planSubtitle }}
+    </div>
+
+    <div class="hint">
+      Al confirmar, se crea la cuenta institucional y vas a poder iniciar sesión.
+    </div>
+  </section>
 </div>
