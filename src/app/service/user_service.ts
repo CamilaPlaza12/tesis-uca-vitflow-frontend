@@ -4,6 +4,7 @@ import { BehaviorSubject, firstValueFrom } from 'rxjs';
 import { signInWithEmailAndPassword, User } from 'firebase/auth';
 import { auth } from './firebaseconfig';
 import { AuthService } from './auth_service';
+type LoginResult = { ok: true } | { ok: false; message: string };
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
@@ -16,7 +17,7 @@ export class UserService {
 
   constructor(private http: HttpClient, private authService: AuthService) {}
 
-  async login(email: string, password: string): Promise<boolean> {
+  async login(email: string, password: string): Promise<LoginResult> {
     try {
       const cred = await signInWithEmailAndPassword(auth, email, password);
       this.currentUser = cred.user;
@@ -25,16 +26,29 @@ export class UserService {
       localStorage.setItem('token', token);
 
       const uid = cred.user.uid;
-      const userData = await this.fetchUserData(uid); // ahora va con Bearer
+      const userData = await this.fetchUserData(uid);
       userData.uid = uid;
 
       this.currentUserData = userData;
       this.currentUserData$.next(userData);
 
-      return true;
-    } catch (e) {
+      return { ok: true };
+    } catch (e: any) {
       console.error('Login error:', e);
-      return false;
+
+      // Firebase suele venir con e.code
+      const code = String(e?.code ?? '');
+
+      // Mensajes “humanos”
+      const message =
+        code === 'auth/invalid-credential' ? 'Email o contraseña incorrectos.' :
+        code === 'auth/user-not-found' ? 'No existe una cuenta con ese email.' :
+        code === 'auth/wrong-password' ? 'Email o contraseña incorrectos.' :
+        code === 'auth/too-many-requests' ? 'Demasiados intentos. Probá de nuevo más tarde.' :
+        code === 'auth/network-request-failed' ? 'Problema de conexión. Revisá tu internet.' :
+        'No pudimos iniciar sesión. Revisá tus datos e intentá de nuevo.';
+
+      return { ok: false, message };
     }
   }
 

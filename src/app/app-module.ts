@@ -41,6 +41,7 @@ import { PlanStep } from './screens/auth/register/components/steps/plan-step/pla
 import { ReviewStep } from './screens/auth/register/components/steps/review-step/review-step';
 import { HttpClientModule } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
+import { ErrorModal } from './screens/common/error-modal/error-modal';
 
 @NgModule({
   declarations: [
@@ -68,7 +69,8 @@ import { RouterModule } from '@angular/router';
     HospitalStep,
     AdminStep,
     PlanStep,
-    ReviewStep
+    ReviewStep,
+    ErrorModal
   ],
   imports: [
     BrowserModule,

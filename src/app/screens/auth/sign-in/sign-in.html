@@ -146,3 +146,12 @@
     </div>
   </div>
 </div>
+
+<app-error-modal
+  [open]="modalOpen"
+  kind="error"
+  [title]="modalTitle"
+  [message]="modalMessage"
+  confirmText="Entendido"
+  (closed)="onModalClosed()"
+></app-error-modal>

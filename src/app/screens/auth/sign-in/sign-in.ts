@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { UserService } from '../../../service/user_service';
@@ -12,9 +12,17 @@ import { UserService } from '../../../service/user_service';
 export class SignIn {
   form: FormGroup;
   loading = false;
-  errorMsg = '';
 
-  constructor(private fb: FormBuilder, private userService: UserService, private router: Router) {
+  modalOpen = false;
+  modalTitle = '';
+  modalMessage = '';
+
+  constructor(
+    private fb: FormBuilder,
+    private userService: UserService,
+    private router: Router,
+    private cdr: ChangeDetectorRef
+  ) {
     this.form = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
@@ -23,12 +31,21 @@ export class SignIn {
     localStorage.removeItem('token');
   }
 
-  get email() {
-    return this.form.get('email');
+  get email() { return this.form.get('email'); }
+  get password() { return this.form.get('password'); }
+
+  private showError(title: string, message: string) {
+    this.modalTitle = title;
+    this.modalMessage = message;
+    this.modalOpen = true;
+
+    // Fuerza el render aunque estés “zoneless” o fuera de zone
+    this.cdr.detectChanges();
   }
 
-  get password() {
-    return this.form.get('password');
+  onModalClosed(): void {
+    this.modalOpen = false;
+    this.cdr.detectChanges();
   }
 
   async onSubmit(): Promise<void> {
@@ -38,29 +55,29 @@ export class SignIn {
     }
 
     this.loading = true;
-    this.errorMsg = '';
+    this.cdr.detectChanges();
 
-    const { email, password } = this.form.value;
+    try {
+      const { email, password } = this.form.value;
 
-    const ok = await this.userService.login(String(email), String(password));
-    this.loading = false;
+      const result = await this.userService.login(String(email), String(password));
 
-    if (ok) {
-      this.router.navigate(['/home'], { replaceUrl: true });
-    } else {
-      this.errorMsg = 'Email o contraseña incorrectos.';
+      if (result.ok) {
+        this.router.navigate(['/home'], { replaceUrl: true });
+        return;
+      }
+
+      this.showError('No se pudo iniciar sesión', result.message);
+    } catch (e) {
+      console.error(e);
+      this.showError('Ups…', 'Ocurrió un error inesperado. Probá de nuevo en unos segundos.');
+    } finally {
+      this.loading = false;
+      this.cdr.detectChanges();
     }
   }
 
-  onGoogleSignIn(): void {
-    console.log('Google sign in clickeado');
-  }
-
-  onForgotPassword(): void {
-    console.log('Olvidé mi contraseña clickeado');
-  }
-
-  onRequestAccess(): void {
-    this.router.navigate(['/register']);
-  }
+  onGoogleSignIn(): void { console.log('Google sign in clickeado'); }
+  onForgotPassword(): void { console.log('Olvidé mi contraseña clickeado'); }
+  onRequestAccess(): void { this.router.navigate(['/register']); }
 }
