@@ -1,30 +1,84 @@
 <div class="step-title">Elegí un plan</div>
 
 <div class="plan-grid">
-  <button type="button" class="plan-card" [class.plan-card--active]="isSelected('FREE')" (click)="select('FREE')">
-    <div class="plan-name">Free</div>
-    <div class="plan-desc">
-      Operación completa para empezar.
+  <!-- FREE -->
+  <button
+    type="button"
+    class="plan-card"
+    [class.plan-card--active]="isSelected('FREE')"
+    (click)="select('FREE')"
+  >
+    <div class="plan-head">
+      <div class="plan-title">
+        <div class="plan-name">Free</div>
+        <div class="plan-tag">Para empezar</div>
+      </div>
+
+      <div class="plan-price">
+        <div class="price-main">$0</div>
+        <div class="price-sub">Gratis para siempre</div>
+      </div>
     </div>
+
+    <div class="plan-desc">
+      Operación base para arrancar con turnos y donantes.
+    </div>
+
     <ul class="plan-list">
-      <li>Turnos, pedidos, donantes, chatbot</li>
-      <li>Alertas básicas</li>
-      <li>Sin dashboards avanzados</li>
-      <li>Sin exportaciones</li>
+      <li class="ok">Turnos, pedidos, donantes, chatbot</li>
+      <li class="ok">Alertas básicas</li>
+      <li class="off">Dashboards completos</li>
+      <li class="off">Exportaciones (CSV/Excel)</li>
+      <li class="off">Auditoría y trazabilidad</li>
+      <li class="off">Soporte prioritario</li>
     </ul>
+
+    <div class="plan-footer">
+      <span *ngIf="!isSelected('FREE')">Seleccionar plan</span>
+      <span *ngIf="isSelected('FREE')" class="selected">Seleccionado</span>
+    </div>
   </button>
 
-  <button type="button" class="plan-card" [class.plan-card--active]="isSelected('PRO')" (click)="select('PRO')">
-    <div class="plan-name">Pro</div>
-    <div class="plan-desc">
-      Gestión profesional para escalar.
+  <!-- PRO -->
+  <button
+    type="button"
+    class="plan-card plan-card--pro"
+    [class.plan-card--active]="isSelected('PRO')"
+    (click)="select('PRO')"
+  >
+    <div class="plan-head">
+      <div class="plan-title">
+        <div class="plan-name-row">
+          <div class="plan-name">Pro</div>
+          <div class="badge">Recomendado</div>
+        </div>
+        <div class="plan-tag">Para escalar</div>
+      </div>
+
+      <div class="plan-price">
+        <div class="price-main">USD 20</div>
+        <div class="price-sub">por mes</div>
+        <div class="price-alt">o USD 200 / año</div>
+      </div>
     </div>
+
+    <div class="plan-desc">
+      Gestión profesional con métricas, exportación y soporte.
+    </div>
+
     <ul class="plan-list">
-      <li>Dashboards completos</li>
-      <li>Exportaciones (CSV/Excel)</li>
-      <li>Auditoría y trazabilidad</li>
-      <li>Soporte prioritario</li>
+      <li class="ok">Turnos, pedidos, donantes, chatbot</li>
+      <li class="ok">Alertas básicas</li>
+           <li class="ok">Dashboards completos</li>
+      <li class="ok">Exportaciones (CSV/Excel)</li>
+      <li class="ok">Auditoría y trazabilidad</li>
+      <li class="ok">Soporte prioritario</li>
     </ul>
+
+    <div class="plan-footer">
+      <span *ngIf="!isSelected('PRO')">Seleccionar plan</span>
+      <span *ngIf="isSelected('PRO')" class="selected">Seleccionado</span>
+    </div>
   </button>
 </div>
 
