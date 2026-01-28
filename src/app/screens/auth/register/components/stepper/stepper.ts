@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 
 @Component({
   selector: 'app-stepper',
@@ -6,7 +6,15 @@ import { Component, Input } from '@angular/core';
   templateUrl: './stepper.html',
   styleUrl: './stepper.scss',
 })
-export class Stepper {
+export class Stepper implements OnChanges {
   @Input() steps: { key: string; label: string }[] = [];
   @Input() activeIndex = 0;
+
+  constructor(private cdr: ChangeDetectorRef) {}
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['activeIndex']) {
+      this.cdr.detectChanges();
+    }
+  }
 }

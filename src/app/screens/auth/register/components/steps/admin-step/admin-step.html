@@ -9,105 +9,102 @@
   </div>
 
   <input
+    class="pill-input"
     type="text"
     formControlName="fullName"
     placeholder="Nombre Apellido"
     maxlength="80"
-    autocomplete="name"
   />
-
-  <div class="error-space">
-    <div class="form-error" *ngIf="group.get('fullName')?.touched && group.get('fullName')?.errors?.['minlength']">
-      Mínimo 3 caracteres.
-    </div>
-  </div>
 </div>
 
-<div class="field">
-  <div class="label-row">
-    <label>Email institucional</label>
-    <span class="label-error" *ngIf="group.get('email')?.touched && group.get('email')?.invalid">
-      Email inválido
-    </span>
-  </div>
-
-  <input
-    type="email"
-    formControlName="email"
-    placeholder="admin@hospital.com"
-    maxlength="120"
-    autocomplete="email"
-  />
-
-  <div class="error-space"></div>
-</div>
-
-<!-- Teléfono admin (opcional) -->
-<div class="field">
-  <div class="label-row">
-    <label>Teléfono (opcional)</label>
-    <span class="label-error" *ngIf="group.get('phone')?.touched && group.get('phone')?.invalid">
-      Teléfono inválido
-    </span>
-  </div>
-
-  <input
-    type="tel"
-    formControlName="phone"
-    placeholder="+5491112345678"
-    maxlength="20"
-    inputmode="tel"
-    autocomplete="tel"
-    (input)="onAdminPhoneInput($event)"
-  />
-
-  <div class="hint">Acepta dígitos y opcional “+” al inicio.</div>
-</div>
-
-<div class="grid">
+<div class="grid section-gap">
   <div class="field">
     <div class="label-row">
-      <label>Contraseña</label>
-      <span class="label-error" *ngIf="group.get('password')?.touched && group.get('password')?.invalid">
-        Inválida
+      <label>Email institucional</label>
+      <span class="label-error" *ngIf="group.get('email')?.touched && group.get('email')?.invalid">
+        Email inválido
       </span>
     </div>
 
     <input
-      type="password"
-      formControlName="password"
-      placeholder="Mínimo 8 caracteres"
-      maxlength="64"
-      autocomplete="new-password"
+      class="pill-input"
+      type="email"
+      formControlName="email"
+      placeholder="admin@hospital.com"
+      maxlength="120"
     />
+  </div>
 
-    <div class="error-space">
-      <div class="form-error" *ngIf="group.get('password')?.touched && group.get('password')?.errors?.['minlength']">
-        Mínimo 8 caracteres.
-      </div>
+  <div class="field">
+    <div class="label-row">
+      <label>Teléfono</label>
+      <span class="label-error" *ngIf="group.get('phone')?.touched && group.get('phone')?.invalid">
+        Teléfono inválido
+      </span>
+    </div>
+
+    <input
+      class="pill-input"
+      type="tel"
+      formControlName="phone"
+      placeholder="+54 11 1234 5678"
+      maxlength="20"
+      (input)="onPhoneInput($event)"
+    />
+  </div>
+</div>
+
+<div class="grid section-gap">
+  <div class="field">
+    <div class="label-row">
+      <label>Contraseña</label>
+      <span class="label-error" *ngIf="group.get('password')?.touched && group.get('password')?.invalid">
+        Mínimo 8
+      </span>
+    </div>
+
+    <div class="pw-row">
+      <input
+        class="pill-input"
+        [type]="showPw ? 'text' : 'password'"
+        formControlName="password"
+        placeholder="Mínimo 8 caracteres"
+        maxlength="64"
+      />
+
+      <button type="button" class="eye" (click)="togglePw()" aria-label="Ver u ocultar contraseña">
+        <span class="eye-icon" [class.eye-icon--off]="showPw">&#128065;</span>
+      </button>
     </div>
   </div>
 
   <div class="field">
     <div class="label-row">
       <label>Confirmar contraseña</label>
-      <span class="label-error" *ngIf="group.get('confirmPassword')?.touched && (group.get('confirmPassword')?.invalid || pwMismatch)">
-        {{ pwMismatch ? 'No coincide' : 'Obligatorio' }}
+      <span class="label-error" *ngIf="group.get('confirmPassword')?.touched && group.get('confirmPassword')?.invalid">
+        Obligatorio
       </span>
     </div>
 
-    <input
-      type="password"
-      formControlName="confirmPassword"
-      placeholder="Repetí la contraseña"
-      maxlength="64"
-      autocomplete="new-password"
-    />
+    <div class="pw-row">
+      <input
+        class="pill-input"
+        [type]="showCpw ? 'text' : 'password'"
+        formControlName="confirmPassword"
+        placeholder="Repetí la contraseña"
+        maxlength="64"
+      />
 
-    <div class="error-space">
-      <div class="form-error" *ngIf="group.get('confirmPassword')?.touched && pwMismatch">
-        No coincide con la contraseña.
-      </div>
+      <button type="button" class="eye" (click)="toggleCpw()" aria-label="Ver u ocultar contraseña">
+        <span class="eye-icon" [class.eye-icon--off]="showCpw">&#128065;</span>
+      </button>
+    </div>
+
+    <div class="match ok" *ngIf="group.get('confirmPassword')?.touched && pwMatch">
+      Las contraseñas coinciden
+    </div>
+    <div class="match bad" *ngIf="group.get('confirmPassword')?.touched && pwMismatch">
+      Las contraseñas no coinciden
     </div>
   </div>
 </div>

@@ -2,10 +2,30 @@
   font-size: 0.95rem;
   font-weight: 800;
   color: #1f2933;
-  margin: 0.25rem 0 0.25rem;
+  margin: 0.25rem 0 0.35rem;
 }
 
-/* Igual que hospital */
+.section-gap {
+  margin-top: 0.75rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 0.95rem;
+}
+
+@media (max-width: 520px) {
+  .grid { grid-template-columns: 1fr; }
+  .pill-input, .pw-row { width: 100%; }
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
 .label-row {
   display: flex;
   align-items: baseline;
@@ -27,16 +47,7 @@
   margin-right: 22%;
 }
 
-.field {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-}
-
-.field input[type='text'],
-.field input[type='email'],
-.field input[type='password'],
-.field input[type='tel'] {
+.pill-input {
   width: 75%;
   padding: 0.1rem 0.85rem;
   font-size: 0.92rem;
@@ -48,43 +59,74 @@
   background: #ffffff;
 }
 
-.field input:focus {
+.pill-input:focus {
   border-color: #f2543f;
   box-shadow: 0 0 0 2px rgba(242, 84, 63, 0.18);
 }
 
-.field input.ng-touched.ng-invalid {
+.pill-input.ng-touched.ng-invalid {
   border-color: #e02424;
 }
 
-.grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 0.85rem;
+.pw-row {
+  width: 75%;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
-@media (max-width: 520px) {
-  .grid { grid-template-columns: 1fr; }
-  .field input[type='text'],
-  .field input[type='email'],
-  .field input[type='password'],
-  .field input[type='tel'] {
-    width: 100%;
-  }
+.pw-row .pill-input { width: 100%; }
+
+/* Botón ojo */
+.eye {
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  flex: 0 0 36px;
+  color: #374151;
 }
 
-.error-space {
-  min-height: 16px;
+.eye:hover {
+  border-color: #f2543f;
+  box-shadow: 0 0 0 2px rgba(242, 84, 63, 0.12);
 }
 
-.form-error {
+.eye-icon {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  font-size: 16px;
+  line-height: 1;
+}
+
+/* “tachado” sin deformar nada */
+.eye-icon--off::after {
+  content: '';
+  position: absolute;
+  left: -2px;
+  right: -2px;
+  top: 50%;
+  height: 2px;
+  background: currentColor;
+  transform: rotate(35deg);
+  transform-origin: center;
+}
+
+.match {
+  margin-top: 0.25rem;
   font-size: 0.76rem;
-  color: #e02424;
-  line-height: 1.2;
+  font-weight: 800;
 }
 
-.hint {
-  margin-top: 0.15rem;
-  font-size: 0.78rem;
-  color: #6b7280;
-}
+.match.ok { color: #15803d; }
+.match.bad { color: #e02424; }

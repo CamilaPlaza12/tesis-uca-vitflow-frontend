@@ -26,23 +26,19 @@
 .btn {
   border: none;
   border-radius: 999px;
-  padding: 0.72rem 1.1rem;
-  min-height: 44px;
-  min-width: 200px;
-  font-size: 0.95rem;
-  font-weight: 800;
+  padding: 0.55rem 0.95rem;
+  font-size: 0.88rem;
+  font-weight: 700;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-
-  /* blindaje */
-  opacity: 1 !important;
-  visibility: visible !important;
-  text-decoration: none !important;
+  gap: 0.5rem;
+  min-height: 38px;
+  transition: background-color 0.15s ease, box-shadow 0.15s ease,
+    transform 0.05s ease, opacity 0.15s ease;
 }
 
-/* ✅ Si algún CSS global rompe los spans, esto lo rescata */
 .btn .btn-text {
   display: inline-block !important;
   font-size: 0.95rem !important;
@@ -52,23 +48,16 @@
   visibility: visible !important;
 }
 
-/* ✅ ANTI “texto invisible” (global css asesino) */
-.btn,
-.btn * {
-  color: inherit !important;
-  -webkit-text-fill-color: currentColor !important;
-}
 
-/* Primary */
+
 .btn-primary {
-  background: #f2543f !important;
-  color: #ffffff !important;
-  -webkit-text-fill-color: #ffffff !important;
+  background: #f2543f;
+  color: #ffffff;
   box-shadow: 0 8px 18px rgba(242, 84, 63, 0.28);
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: #e04735 !important;
+  background: #e04735;
   box-shadow: 0 10px 22px rgba(242, 84, 63, 0.35);
   transform: translateY(-1px);
 }
@@ -102,6 +91,17 @@
 .btn:focus-visible {
   outline: none;
   box-shadow: 0 0 0 2px rgba(242, 84, 63, 0.18);
+}
+
+.btn-google {
+  background: #ffffff;
+  color: #374151;
+  border: 1px solid #d1d5db;
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.06);
+}
+
+.btn-google:hover {
+  background: #f9fafb;
 }
 
 @media (max-width: 520px) {

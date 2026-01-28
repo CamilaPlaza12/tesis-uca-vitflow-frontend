@@ -10,29 +10,29 @@ import { FormGroup } from '@angular/forms';
 export class AdminStep {
   @Input() group!: FormGroup;
 
-  get pwMismatch(): boolean {
-    const pw = String(this.group.get('password')?.value ?? '');
-    const cpw = String(this.group.get('confirmPassword')?.value ?? '');
-    return !!pw && !!cpw && pw !== cpw;
-  }
+  showPw = false;
+  showCpw = false;
 
-  /** Teléfono: permitimos + al inicio y dígitos. También dejamos espacios/guiones pero los limpiamos. */
-  onAdminPhoneInput(ev: Event): void {
+  togglePw(): void { this.showPw = !this.showPw; }
+  toggleCpw(): void { this.showCpw = !this.showCpw; }
+
+  get pw(): string { return String(this.group.get('password')?.value ?? ''); }
+  get cpw(): string { return String(this.group.get('confirmPassword')?.value ?? ''); }
+
+  get pwMismatch(): boolean { return !!this.pw && !!this.cpw && this.pw !== this.cpw; }
+  get pwMatch(): boolean { return !!this.pw && !!this.cpw && this.pw === this.cpw; }
+
+  onPhoneInput(ev: Event): void {
     const input = ev.target as HTMLInputElement;
     let v = input.value ?? '';
 
-    // Permitimos + solo si está al principio
-    const hasPlus = v.trim().startsWith('+');
+    v = v.replace(/[^0-9+\s()-]/g, '');
 
-    // Limpiamos todo lo que no sea dígito
-    const digits = v.replace(/\D+/g, '');
+    const startsWithPlus = v.trim().startsWith('+');
+    v = v.replace(/\+/g, '');
+    if (startsWithPlus) v = `+${v}`;
 
-    // Reconstruimos
-    const rebuilt = hasPlus ? `+${digits}` : digits;
-
-    if (input.value !== rebuilt) input.value = rebuilt;
-
-    this.group.get('phone')?.setValue(rebuilt, { emitEvent: true });
-    this.group.get('phone')?.markAsTouched();
+    input.value = v;
+    this.group.get('phone')?.setValue(v, { emitEvent: true });
   }
 }
