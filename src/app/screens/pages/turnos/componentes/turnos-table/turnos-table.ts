@@ -49,12 +49,12 @@ export class TurnosTable {
     ];
 
     const rows = this.turnosProcesados.map(t => ([
-      t.fecha,
-      t.hora,
-      t.nombreDonante ?? '',
-      this.tipoHuman(t.tipoDonacion),
-      this.estadoHuman(t.estado),
-      t.pedidoId ?? '',
+      t.date_local,
+      t.time_local,
+      t.donor?.full_name ?? '',
+      this.tipoHuman(t.donation_type),
+      this.estadoHuman(t.status),
+      t.hospital_request_id ?? '',
     ]));
 
     const csv = this.toCSV([headers, ...rows], ';');
@@ -89,7 +89,7 @@ export class TurnosTable {
   }
 
   private turnoDateTime(t: Turno): number {
-    return new Date(`${t.fecha}T${t.hora}:00`).getTime();
+    return new Date(`${t.date_local}T${t.time_local}:00`).getTime();
   }
 
   private inRange(fecha: string): boolean {
@@ -131,9 +131,9 @@ export class TurnosTable {
 
     return this.turnos
       .filter(t => {
-        const okFecha = this.inRange(t.fecha);
-        const okDon = !qDon || (t.nombreDonante || '').toLowerCase().includes(qDon);
-        const okTipo = this.tipo === 'TODOS' || t.tipoDonacion === this.tipo;
+        const okFecha = this.inRange(t.date_local);
+        const okDon = !qDon || (t.donor?.full_name || '').toLowerCase().includes(qDon);
+        const okTipo = this.tipo === 'TODOS' || t.donation_type === this.tipo;
         return okFecha && okDon && okTipo;
       })
       .sort((a, b) => this.turnoDateTime(b) - this.turnoDateTime(a));

@@ -36,7 +36,7 @@
       </div>
 
       <div class="row" *ngFor="let r of rows">
-        <div class="day">{{ r.dia }}</div>
+        <div class="day">{{ r.day }}</div>
 
         <div class="slots">
           <div class="row-error" *ngIf="r.error">
@@ -110,11 +110,21 @@
                 </div>
               </label>
 
-              <button class="btn btn--mini btn--primary-soft" type="button" [disabled]="!r.enabled" (click)="generateFromRange(r)">
+              <button
+                class="btn btn--mini btn--primary-soft"
+                type="button"
+                [disabled]="!r.enabled"
+                (click)="generateFromRange(r)"
+              >
                 Generar
               </button>
 
-              <button class="btn btn--mini btn--ghost" type="button" [disabled]="!r.enabled" (click)="clearHorarios(r)">
+              <button
+                class="btn btn--mini btn--ghost"
+                type="button"
+                [disabled]="!r.enabled"
+                (click)="clearTimeSlots(r)"
+              >
                 Limpiar
               </button>
             </div>
@@ -126,13 +136,13 @@
             <div></div>
           </div>
 
-          <div class="slot" *ngFor="let h of r.horarios; let i = index">
+          <div class="slot" *ngFor="let h of r.timeSlots; let i = index">
             <input
               class="field"
               type="time"
-              [value]="h.hora"
+              [value]="h.time"
               [disabled]="!r.enabled"
-              (input)="updateHora(r, i, $any($event.target).value)"
+              (input)="updateTime(r, i, $any($event.target).value)"
             />
 
             <div class="capwrap">
@@ -141,19 +151,19 @@
                 type="number"
                 min="1"
                 max="999"
-                [value]="h.capacidad"
+                [value]="h.capacity"
                 [disabled]="!r.enabled"
-                (input)="updateCapacidad(r, i, $any($event.target).value)"
+                (input)="updateCapacity(r, i, $any($event.target).value)"
               />
               <span class="capunit">pers.</span>
             </div>
 
-            <button class="x" type="button" [disabled]="!r.enabled" (click)="removeHorario(r, i)" aria-label="Eliminar">
+            <button class="x" type="button" [disabled]="!r.enabled" (click)="removeTimeSlot(r, i)" aria-label="Eliminar">
               ✕
             </button>
           </div>
 
-          <button class="btn btn--mini btn--add" type="button" [disabled]="!r.enabled" (click)="addHorario(r)">
+          <button class="btn btn--mini btn--add" type="button" [disabled]="!r.enabled" (click)="addTimeSlot(r)">
             + Agregar horario manual
           </button>
         </div>

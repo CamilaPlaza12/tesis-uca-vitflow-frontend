@@ -47,15 +47,15 @@
           class="turno"
           *ngFor="let t of turnosPorHora(hour)"
           (click)="onSelect(t)"
-          [class.confirmado]="t.estado === 'CONFIRMADO'"
-          [class.programado]="t.estado === 'PROGRAMADO'"
-          [class.cancelado]="t.estado === 'CANCELADO'"
-          [class.completado]="t.estado === 'COMPLETADO'"
-          [class.no_presentado]="t.estado === 'NO_PRESENTADO'"
+          [class.confirmado]="t.status === 'CONFIRMADO'"
+          [class.programado]="t.status === 'PROGRAMADO'"
+          [class.cancelado]="t.status === 'CANCELADO'"
+          [class.completado]="t.status === 'COMPLETADO'"
+          [class.no_presentado]="t.status === 'NO_PRESENTADO'"
         >
-          <div class="turno__hora">{{ t.hora }}</div>
-          <div class="turno__nombre">{{ t.nombreDonante }}</div>
-          <div class="turno__tipo">{{ t.tipoDonacion }}</div>
+          <div class="turno__hora">{{ t.time_local }}</div>
+          <div class="turno__nombre">{{ t.donor.full_name }}</div>
+          <div class="turno__tipo">{{ t.donation_type }}</div>
         </div>
 
         <div class="empty-hour" *ngIf="turnosPorHora(hour).length === 0"></div>
@@ -79,8 +79,8 @@
             *ngFor="let t of turnosDeFecha(d)"
             (click)="onSelect(t)"
           >
-            <span class="chip__time">{{ t.hora }}</span>
-            <span class="chip__name">{{ t.nombreDonante }}</span>
+            <span class="chip__time">{{ t.time_local }}</span>
+            <span class="chip__name">{{ t.donor.full_name }}</span>
           </button>
 
           <div class="week__empty" *ngIf="turnosDeFecha(d).length === 0">
@@ -118,7 +118,7 @@
             *ngFor="let t of previewTurnos(c.key, 2)"
             (click)="onSelect(t)"
           >
-            {{ t.hora }} · {{ t.nombreDonante }}
+            {{ t.time_local }} · {{ t.donor.full_name }}
           </button>
 
           <div class="more" *ngIf="countTurnos(c.key) > 2">

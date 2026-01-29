@@ -6,12 +6,12 @@
   <h3>Detalle del turno</h3>
 
   <div class="kv">
-    <div><span>Donante</span><b>{{ turno.nombreDonante }}</b></div>
-    <div><span>Tipo de donación</span><b>{{ turno.tipoDonacion }}</b></div>
-    <div><span>Fecha</span><b>{{ turno.fecha }}</b></div>
-    <div><span>Hora</span><b>{{ turno.hora }}</b></div>
-    <div><span>Estado</span><b>{{ turno.estado }}</b></div>
-    <div><span>Pedido asociado</span><b>#{{ turno.pedidoId }}</b></div>
+    <div><span>Donante</span><b>{{ turno.donor.full_name }}</b></div>
+    <div><span>Tipo de donación</span><b>{{ turno.donation_type }}</b></div>
+    <div><span>Fecha</span><b>{{ turno.date_local }}</b></div>
+    <div><span>Hora</span><b>{{ turno.time_local }}</b></div>
+    <div><span>Estado</span><b>{{ turno.status }}</b></div>
+    <div><span>Pedido asociado</span><b>#{{ turno.hospital_request_id }}</b></div>
   </div>
 
   <div class="actions">

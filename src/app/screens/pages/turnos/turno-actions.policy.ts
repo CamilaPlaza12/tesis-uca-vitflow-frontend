@@ -11,7 +11,8 @@ export type AccionTurno =
   | 'NO_PRESENTADO';
 
 function getTurnoDateTime(turno: Turno): Date {
-  return new Date(`${turno.fecha}T${turno.hora}`);
+  // ✅ alineado al back
+  return new Date(`${turno.date_local}T${turno.time_local}`);
 }
 
 function minutesUntilTurno(turno: Turno): number {
@@ -28,25 +29,30 @@ function withinActionWindow(turno: Turno): boolean {
 }
 
 export function canConfirm(turno: Turno): boolean {
-  return turno.estado === 'PROGRAMADO' && minutesUntilTurno(turno) > 0;
+  // ✅ estado -> status
+  return turno.status === 'PROGRAMADO' && minutesUntilTurno(turno) > 0;
 }
 
 export function canReprogram(turno: Turno): boolean {
-  if (!['PROGRAMADO', 'CONFIRMADO'].includes(turno.estado)) return false;
+  // ✅ estado -> status
+  if (!['PROGRAMADO', 'CONFIRMADO'].includes(turno.status)) return false;
   return minutesUntilTurno(turno) >= MIN_CANCEL_MINUTES;
 }
 
 export function canCancel(turno: Turno): boolean {
-  if (!['PROGRAMADO', 'CONFIRMADO'].includes(turno.estado)) return false;
+  // ✅ estado -> status
+  if (!['PROGRAMADO', 'CONFIRMADO'].includes(turno.status)) return false;
   return minutesUntilTurno(turno) >= MIN_CANCEL_MINUTES;
 }
 
 export function canMarkCompleted(turno: Turno): boolean {
-  if (!['PROGRAMADO', 'CONFIRMADO'].includes(turno.estado)) return false;
+  // ✅ estado -> status
+  if (!['PROGRAMADO', 'CONFIRMADO'].includes(turno.status)) return false;
   return withinActionWindow(turno);
 }
 
 export function canMarkNoShow(turno: Turno): boolean {
-  if (!['PROGRAMADO', 'CONFIRMADO'].includes(turno.estado)) return false;
+  // ✅ estado -> status
+  if (!['PROGRAMADO', 'CONFIRMADO'].includes(turno.status)) return false;
   return withinActionWindow(turno);
 }

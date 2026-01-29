@@ -70,14 +70,14 @@ export class TurnosCalendar implements OnChanges {
 
   turnosDelDia(key: string = this.activeKey): Turno[] {
     return this.turnos
-      .filter(t => t.fecha === key)
+      .filter(t => t.date_local === key)
       .slice()
-      .sort((a, b) => (a.hora || '').localeCompare(b.hora || ''));
+      .sort((a, b) => (a.time_local || '').localeCompare(b.time_local || ''));
   }
 
   turnosPorHora(hour: string): Turno[] {
     const hh = hour.slice(0, 2);
-    return this.turnosDelDia().filter(t => (t.hora || '').startsWith(hh));
+    return this.turnosDelDia().filter(t => (t.time_local || '').startsWith(hh));
   }
 
   // ---------- WEEK (LUN-DOM) ----------
@@ -126,7 +126,7 @@ export class TurnosCalendar implements OnChanges {
   }
 
   countTurnos(key: string): number {
-    return this.turnos.filter(t => t.fecha === key).length;
+    return this.turnos.filter(t => t.date_local === key).length;
   }
 
   previewTurnos(key: string, max: number): Turno[] {

@@ -1,19 +1,24 @@
-export type DiaSemana =
+export type Weekday =
   | 'Lunes'
   | 'Martes'
-  | 'Miércoles'
+  | 'Miercoles'
   | 'Jueves'
   | 'Viernes'
-  | 'Sábado'
+  | 'Sabado'
   | 'Domingo';
 
-export interface HorarioCapacidad {
-  hora: string; // "HH:mm"
-  capacidad: number;
+export interface TimeSlot {
+  time: string;     // "HH:mm"
+  capacity: number; // 1..999
 }
 
-export interface DisponibilidadDia {
-  id_hospital: number | string;
-  dia: DiaSemana;
-  horarios: HorarioCapacidad[];
+export interface AvailabilityDay {
+  day: Weekday;
+  enabled: boolean;
+  timeSlots: TimeSlot[];
+}
+
+export interface HospitalAvailability {
+  id_hospital?: number | string;
+  days: AvailabilityDay[]; // idealmente 7, uno por día
 }

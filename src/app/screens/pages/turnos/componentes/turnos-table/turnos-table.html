@@ -87,25 +87,25 @@
 
       <tbody>
         <tr *ngFor="let t of turnosProcesados" class="row">
-          <td class="mono">{{ t.fecha }}</td>
-          <td class="mono">{{ t.hora }}</td>
-          <td class="name">{{ t.nombreDonante }}</td>
-          <td>{{ tipoHuman(t.tipoDonacion) }}</td>
+          <td class="mono">{{ t.date_local }}</td>
+          <td class="mono">{{ t.time_local }}</td>
+          <td class="name">{{ t.donor.full_name }}</td>
+          <td>{{ tipoHuman(t.donation_type) }}</td>
 
           <td>
             <span
               class="status"
-              [class.status--programado]="t.estado === 'PROGRAMADO'"
-              [class.status--confirmado]="t.estado === 'CONFIRMADO'"
-              [class.status--completado]="t.estado === 'COMPLETADO'"
-              [class.status--no-presentado]="t.estado === 'NO_PRESENTADO'"
-              [class.status--cancelado]="t.estado === 'CANCELADO'"
+              [class.status--programado]="t.status === 'PROGRAMADO'"
+              [class.status--confirmado]="t.status === 'CONFIRMADO'"
+              [class.status--completado]="t.status === 'COMPLETADO'"
+              [class.status--no-presentado]="t.status === 'NO_PRESENTADO'"
+              [class.status--cancelado]="t.status === 'CANCELADO'"
             >
-              {{ estadoHuman(t.estado) }}
+              {{ estadoHuman(t.status) }}
             </span>
           </td>
 
-          <td class="mono">#{{ t.pedidoId }}</td>
+          <td class="mono">#{{ t.hospital_request_id }}</td>
         </tr>
 
         <tr *ngIf="turnosProcesados.length === 0">
