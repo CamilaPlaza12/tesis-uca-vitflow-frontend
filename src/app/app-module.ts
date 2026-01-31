@@ -42,6 +42,8 @@ import { ReviewStep } from './screens/auth/register/components/steps/review-step
 import { HttpClientModule } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 import { ErrorModal } from './screens/common/error-modal/error-modal';
+import { EquipoRoles } from './screens/pages/equipos-roles/equipos-roles';
+import { MiembrosTable } from './screens/pages/equipos-roles/components/miembros-table/miembros-table';
 
 @NgModule({
   declarations: [
@@ -70,7 +72,9 @@ import { ErrorModal } from './screens/common/error-modal/error-modal';
     AdminStep,
     PlanStep,
     ReviewStep,
-    ErrorModal
+    ErrorModal,
+    EquipoRoles,
+    MiembrosTable
   ],
   imports: [
     BrowserModule,

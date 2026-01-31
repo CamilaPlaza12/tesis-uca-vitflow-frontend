@@ -9,7 +9,7 @@ import { Turnos } from './screens/pages/turnos/turnos';
 import { PedidosAlertas } from './screens/pages/pedidos-alertas/pedidos-alertas';
 import { Donantes } from './screens/pages/donantes/donantes';
 import { Configuracion } from './screens/pages/configuracion/configuracion';
-
+import { EquipoRoles } from './screens/pages/equipos-roles/equipos-roles';
 import { AuthGuard } from './service/auth_guard';
 
 const routes: Routes = [
@@ -23,6 +23,8 @@ const routes: Routes = [
   { path: 'turnos', component: Turnos },
   { path: 'pedidos-alertas', component: PedidosAlertas },
   { path: 'configuracion', component: Configuracion, canActivate: [AuthGuard] },
+  { path: 'equipo-roles', component: EquipoRoles },
+
 
   { path: '**', redirectTo: 'signin' },
 ];

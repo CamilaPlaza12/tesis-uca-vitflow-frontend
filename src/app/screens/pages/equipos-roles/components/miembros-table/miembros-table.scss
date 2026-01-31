@@ -1,0 +1,364 @@
+.card {
+  background: #fff;
+  border-radius: 18px;
+  border: 1px solid #eef2f6;
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.06);
+  overflow: hidden;
+}
+
+.card__header {
+  padding: 16px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid #f1f4f8;
+
+  h2 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 750;
+    letter-spacing: -0.01em;
+  }
+
+  .hint {
+    font-size: 12.5px;
+    color: #7b8a99;
+    background: #f6f8fb;
+    border: 1px solid #eef2f6;
+    padding: 6px 10px;
+    border-radius: 999px;
+  }
+}
+
+.table-wrap {
+  max-height: 470px;
+  overflow-y: auto;
+  overflow-x: auto;
+}
+
+/* =========================
+   DESKTOP/TABLET TABLE
+   ========================= */
+
+.table {
+  width: 100%;
+  min-width: 1040px;
+  border-collapse: separate;
+  border-spacing: 0;
+  table-layout: fixed;
+
+  thead th {
+    position: sticky;
+    top: 0;
+    background: #fbfcfe;
+    z-index: 1;
+    text-align: center;
+    font-size: 12px;
+    letter-spacing: 0.02em;
+    color: #607080;
+    font-weight: 750;
+    padding: 12px 14px;
+    border-bottom: 1px solid #eef2f6;
+    white-space: nowrap;
+  }
+
+  tbody td {
+    padding: 12px 14px;
+    border-bottom: 1px solid #f2f5f9;
+    font-size: 13.5px;
+    color: #1f2a37;
+    text-align: center;
+
+    /* ✅ FIX 1: CENTRADO VERTICAL */
+    vertical-align: middle;
+
+    /* ✅ texto largo baja de línea (sin ellipsis) */
+    white-space: normal;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+}
+
+/* Anchos fijos para estabilidad */
+.table th:nth-child(1),
+.table td:nth-child(1) { width: 16%; }
+
+.table th:nth-child(2),
+.table td:nth-child(2) { width: 18%; }
+
+.table th:nth-child(3),
+.table td:nth-child(3) { width: 10%; }
+
+.table th:nth-child(4),
+.table td:nth-child(4) { width: 14%; }
+
+.table th:nth-child(5),
+.table td:nth-child(5) { width: 10%; }
+
+.table th:nth-child(6),
+.table td:nth-child(6) { width: 14%; }
+
+.table th:nth-child(7),
+.table td:nth-child(7) { width: 9%; }
+
+.table th:nth-child(8),
+.table td:nth-child(8) { width: 9%; }
+
+.name {
+  font-weight: 750;
+}
+
+/* Ojo: break-all te puede partir feo. Lo dejamos “break-word” */
+.mono {
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere; /* emails largos se parten bien */
+  word-break: break-word;
+}
+
+/* Status */
+.status {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 10px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 750;
+  border: 1px solid transparent;
+
+  &.status--activo {
+    background: #eef6ff;
+    color: #1d4ed8;
+    border-color: #dbeafe;
+  }
+
+  &.status--invitado {
+    background: #fff7ed;
+    color: #9a4b00;
+    border-color: #ffedd5;
+  }
+
+  &.status--suspendido {
+    background: #f6f8fb;
+    color: #526274;
+    border-color: #eef2f6;
+  }
+}
+
+/* Dropdown rol */
+.dd {
+  position: relative;
+  display: inline-block;
+  max-width: 100%;
+}
+
+.dd__btn {
+  height: 34px;
+  width: 190px;
+  max-width: 100%;
+  border-radius: 12px;
+  border: 1px solid #e7edf5;
+  background: #fff;
+  padding: 0 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+
+  &:hover {
+    background: #fbfcfe;
+  }
+}
+
+.dd__value {
+  font-size: 12.5px;
+  font-weight: 750;
+  color: #1f2a37;
+}
+
+.chev {
+  color: #6b7b8b;
+  font-weight: 900;
+}
+
+.dd__menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  width: 190px;
+  background: #fff;
+  border: 1px solid #eef2f6;
+  border-radius: 14px;
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.10);
+  overflow: hidden;
+  z-index: 9999;
+}
+
+.dd__item {
+  width: 100%;
+  text-align: left;
+  padding: 10px 12px;
+  background: #fff;
+  border: none;
+  cursor: pointer;
+  font-weight: 750;
+  font-size: 13.5px;
+  color: #1f2a37;
+
+  &:hover {
+    background: #fbfcfe;
+  }
+}
+
+/* Buttons */
+.mini {
+  border: 1px solid #e7edf5;
+  background: #fff;
+  color: #1f2a37;
+  padding: 7px 10px;
+  border-radius: 10px;
+  font-weight: 750;
+  font-size: 11px;
+  cursor: pointer;
+  transition: background 120ms ease;
+
+  &:hover {
+    background: #fbfcfe;
+  }
+
+  &:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+}
+
+.mini--danger {
+  background: #fff1f2;
+  border-color: #fee2e2;
+  color: #b91c1c;
+}
+
+.mini--success {
+  background: #ecfdf5;
+  border-color: #d1fae5;
+  color: #047857;
+}
+
+/* Row states */
+.row {
+  cursor: pointer;
+  transition: background 120ms ease;
+
+  &:hover {
+    background: #fbfdff;
+  }
+
+  &.selected {
+    background: rgba(59, 130, 246, 0.08);
+    box-shadow: inset 3px 0 0 rgba(59, 130, 246, 0.55);
+  }
+}
+
+.empty {
+  text-align: center;
+  color: #7b8a99;
+  padding: 22px 14px;
+}
+/* =========================
+   NUCLEAR MOBILE FIX
+   Pegar AL FINAL del archivo
+   ========================= */
+
+@media (max-width: 860px) {
+  :host ::ng-deep .table-wrap {
+    max-height: none !important;
+    overflow: visible !important;
+  }
+
+  :host ::ng-deep table.table {
+    min-width: 0 !important;
+    width: 100% !important;
+    display: block !important;
+    table-layout: auto !important;
+  }
+
+  :host ::ng-deep table.table thead {
+    display: none !important;
+  }
+
+  :host ::ng-deep table.table tbody {
+    display: block !important;
+    padding: 12px !important;
+  }
+
+  :host ::ng-deep table.table tr.row {
+    display: block !important;
+    width: 100% !important;
+    margin: 0 0 12px 0 !important;
+    background: #fff !important;
+    border: 1px solid #eef2f6 !important;
+    border-radius: 16px !important;
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06) !important;
+    padding: 6px 0 !important;
+  }
+
+  /* Cada "celda" se vuelve: label arriba + valor abajo */
+  :host ::ng-deep table.table td {
+    display: block !important;
+    width: 100% !important;
+    padding: 10px 14px !important;
+    border: 0 !important;
+    text-align: left !important;
+
+    /* Nada de cortar letra por letra */
+    white-space: normal !important;
+    overflow-wrap: break-word !important;
+    word-break: break-word !important;
+  }
+
+  /* separador suave entre campos */
+  :host ::ng-deep table.table td + td {
+    border-top: 1px dashed rgba(15, 23, 42, 0.10) !important;
+  }
+
+  /* labels */
+  :host ::ng-deep table.table td::before {
+    display: block !important;
+    font-size: 12px !important;
+    font-weight: 750 !important;
+    color: #607080 !important;
+    letter-spacing: 0.02em !important;
+    margin: 0 0 6px 0 !important;
+    white-space: nowrap !important;
+  }
+
+  :host ::ng-deep table.table td:nth-child(1)::before { content: "Nombre"; }
+  :host ::ng-deep table.table td:nth-child(2)::before { content: "Email"; }
+  :host ::ng-deep table.table td:nth-child(3)::before { content: "DNI"; }
+  :host ::ng-deep table.table td:nth-child(4)::before { content: "Rol"; }
+  :host ::ng-deep table.table td:nth-child(5)::before { content: "Estado"; }
+  :host ::ng-deep table.table td:nth-child(6)::before { content: "Alta"; }
+  :host ::ng-deep table.table td:nth-child(7)::before { content: "Acceso"; }
+  :host ::ng-deep table.table td:nth-child(8)::before { content: "Invitación"; }
+
+  /* Dropdown rol a ancho completo */
+  :host ::ng-deep .dd {
+    width: 100% !important;
+    display: block !important;
+  }
+
+  :host ::ng-deep .dd__btn {
+    width: 100% !important;
+    height: 38px !important;
+  }
+
+  :host ::ng-deep .dd__menu {
+    width: 100% !important;
+    left: 0 !important;
+  }
+
+  /* Botones sin ocupar todo el ancho */
+  :host ::ng-deep .mini {
+    width: fit-content !important;
+  }
+}

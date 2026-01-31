@@ -1,0 +1,108 @@
+<div class="card" (click)="closeRoleMenu()">
+  <div class="card__header">
+    <h2>Miembros del hospital</h2>
+    <span class="hint">{{ miembros.length }} en lista</span>
+  </div>
+
+  <div class="table-wrap">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Email</th>
+          <th>DNI</th>
+          <th>Rol</th>
+          <th>Estado</th>
+          <th>Alta</th>
+          <th>Acceso</th>
+          <th>Invitación</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngIf="cargando && miembros.length === 0">
+          <td class="empty" colspan="8">
+            <div style="text-align: center; padding: 20px;">
+              <span>Cargando miembros...</span>
+            </div>
+          </td>
+        </tr>
+
+        <tr *ngIf="!cargando && miembros.length === 0">
+          <td class="empty" colspan="8">
+            No hay miembros para mostrar.
+          </td>
+        </tr>
+
+        <tr
+          *ngFor="let m of miembros"
+          class="row"
+          [class.selected]="m.id === miembroSeleccionadoId"
+          (click)="onRowClick(m)"
+        >
+          <td class="name">{{ m.full_name }}</td>
+          <td class="mono">{{ m.email }}</td>
+          <td class="mono">{{ m.dni }}</td>
+
+          <!-- ROL: dropdown lindo -->
+          <td (click)="$event.stopPropagation()">
+            <div class="dd" [class.dd--open]="roleOpenId === m.id">
+             <button type="button" class="dd__btn" (click)="toggleRoleMenu(m)">
+              <span class="dd__value">{{ roleLabel(m.role) }}</span>
+              <span class="chev">▾</span>
+            </button>
+              <div class="dd__menu" *ngIf="roleOpenId === m.id">
+                <button type="button" class="dd__item" (click)="setRole(m, 'OPERADOR')">
+                  Operador
+                </button>
+                <button type="button" class="dd__item" (click)="setRole(m, 'LECTURA')">
+                  Lectura
+                </button>
+                <button type="button" class="dd__item" (click)="setRole(m, 'ADMIN')">
+                  Administrador
+                </button>
+              </div>
+            </div>
+          </td>
+
+          <td>
+            <span
+              class="status"
+              [class.status--activo]="m.status === 'ACTIVE'"
+              [class.status--invitado]="m.status === 'INVITED'"
+              [class.status--suspendido]="m.status === 'SUSPENDED'"
+            >
+              {{ statusLabel(m.status) }}
+            </span>
+          </td>
+
+          <td class="mono">{{ formatFechaHora(m.created_at) }}</td>
+
+          <!-- Acceso: suspender/reactivar -->
+          <td (click)="$event.stopPropagation()">
+            <button
+              class="mini"
+              [class.mini--danger]="m.status !== 'SUSPENDED'"
+              [class.mini--success]="m.status === 'SUSPENDED'"
+              (click)="toggleEstado.emit(m)"
+            >
+              {{ m.status === 'SUSPENDED' ? 'Reactivar' : 'Suspender' }}
+            </button>
+          </td>
+
+          <!-- Invitación: reenviar solo si INVITED -->
+          <td (click)="$event.stopPropagation()">
+            <button
+              class="mini"
+              (click)="reenviarInvitacion.emit(m)"
+              [disabled]="m.status !== 'INVITED'"
+              title="Reenviar invitación"
+            >
+              Reenviar
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
