@@ -56,77 +56,28 @@
     </div>
   </div>
 
-  <!-- fila 3: Password / Confirm -->
+  <!-- fila 3: DNI -->
   <div class="grid section-gap">
     <div class="field">
       <div class="label-row">
-        <label>Contraseña</label>
-        <span class="label-error" *ngIf="group.get('password')?.touched && group.get('password')?.invalid">
-          Mínimo 8
+        <label>DNI</label>
+        <span class="label-error" *ngIf="group.get('dni')?.touched && group.get('dni')?.invalid">
+          DNI inválido
         </span>
       </div>
 
-      <div class="pw-row">
-        <input
-          class="pill-input"
-          [type]="showPw ? 'text' : 'password'"
-          formControlName="password"
-          placeholder="Mínimo 8 caracteres"
-          maxlength="64"
-        />
-
-        <button type="button" class="eye" (click)="togglePw()" aria-label="Ver u ocultar contraseña">
-          <svg *ngIf="!showPw" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"
-               stroke-linecap="round" stroke-linejoin="round">
-            <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"></path>
-            <circle cx="12" cy="12" r="3"></circle>
-          </svg>
-
-          <svg *ngIf="showPw" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"
-               stroke-linecap="round" stroke-linejoin="round">
-            <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"></path>
-            <circle cx="12" cy="12" r="3"></circle>
-            <path d="M3 3l18 18"></path>
-          </svg>
-        </button>
-      </div>
+      <input
+        class="pill-input"
+        type="text"
+        formControlName="dni"
+        placeholder="12345678"
+        maxlength="8"
+        inputmode="numeric"
+        (input)="onDniInput($event)"
+      />
     </div>
 
-    <div class="field">
-      <div class="label-row">
-        <label>Confirmar contraseña</label>
-        <span class="label-error" *ngIf="group.get('confirmPassword')?.touched && group.get('confirmPassword')?.invalid">
-          Obligatorio
-        </span>
-      </div>
-
-      <div class="pw-row">
-        <input
-          class="pill-input"
-          [type]="showCpw ? 'text' : 'password'"
-          formControlName="confirmPassword"
-          placeholder="Repetí la contraseña"
-          maxlength="64"
-        />
-
-        <button type="button" class="eye" (click)="toggleCpw()" aria-label="Ver u ocultar contraseña">
-          <svg *ngIf="!showCpw" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"
-               stroke-linecap="round" stroke-linejoin="round">
-            <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"></path>
-            <circle cx="12" cy="12" r="3"></circle>
-          </svg>
-
-          <svg *ngIf="showCpw" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"
-               stroke-linecap="round" stroke-linejoin="round">
-            <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"></path>
-            <circle cx="12" cy="12" r="3"></circle>
-            <path d="M3 3l18 18"></path>
-          </svg>
-        </button>
-      </div>
-
-      <div class="match ok" *ngIf="group.get('confirmPassword')?.touched && pwMatch">Las contraseñas coinciden</div>
-      <div class="match bad" *ngIf="group.get('confirmPassword')?.touched && pwMismatch">Las contraseñas no coinciden</div>
-    </div>
+    <!-- Columna vacía para mantener la grilla -->
+    <div class="field"></div>
   </div>
 </form>

@@ -1,6 +1,8 @@
 import { Component, Input } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 
+type PlanId = 0 | 1; // 0 = FREE, 1 = PRO
+
 @Component({
   selector: 'app-plan-step',
   standalone: false,
@@ -10,12 +12,12 @@ import { FormGroup } from '@angular/forms';
 export class PlanStep {
   @Input() group!: FormGroup;
 
-  select(planId: 'FREE' | 'PRO'): void {
+  select(planId: PlanId): void {
     this.group.get('planId')?.setValue(planId);
     this.group.get('planId')?.markAsTouched();
   }
 
-  isSelected(planId: 'FREE' | 'PRO'): boolean {
+  isSelected(planId: PlanId): boolean {
     return this.group.get('planId')?.value === planId;
   }
 }

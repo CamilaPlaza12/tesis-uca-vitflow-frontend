@@ -1,12 +1,12 @@
 <div class="step-title">Elegí un plan</div>
 
 <div class="plan-grid">
-  <!-- FREE -->
+  <!-- FREE (0) -->
   <button
     type="button"
     class="plan-card"
-    [class.plan-card--active]="isSelected('FREE')"
-    (click)="select('FREE')"
+    [class.plan-card--active]="isSelected(0)"
+    (click)="select(0)"
   >
     <div class="plan-head">
       <div class="plan-title">
@@ -34,17 +34,17 @@
     </ul>
 
     <div class="plan-footer">
-      <span *ngIf="!isSelected('FREE')">Seleccionar plan</span>
-      <span *ngIf="isSelected('FREE')" class="selected">Seleccionado</span>
+      <span *ngIf="!isSelected(0)">Seleccionar plan</span>
+      <span *ngIf="isSelected(0)" class="selected">Seleccionado</span>
     </div>
   </button>
 
-  <!-- PRO -->
+  <!-- PRO (1) -->
   <button
     type="button"
     class="plan-card plan-card--pro"
-    [class.plan-card--active]="isSelected('PRO')"
-    (click)="select('PRO')"
+    [class.plan-card--active]="isSelected(1)"
+    (click)="select(1)"
   >
     <div class="plan-head">
       <div class="plan-title">
@@ -69,15 +69,15 @@
     <ul class="plan-list">
       <li class="ok">Turnos, pedidos, donantes, chatbot</li>
       <li class="ok">Alertas básicas</li>
-           <li class="ok">Dashboards completos</li>
+      <li class="ok">Dashboards completos</li>
       <li class="ok">Exportaciones (CSV/Excel)</li>
       <li class="ok">Auditoría y trazabilidad</li>
       <li class="ok">Soporte prioritario</li>
     </ul>
 
     <div class="plan-footer">
-      <span *ngIf="!isSelected('PRO')">Seleccionar plan</span>
-      <span *ngIf="isSelected('PRO')" class="selected">Seleccionado</span>
+      <span *ngIf="!isSelected(1)">Seleccionar plan</span>
+      <span *ngIf="isSelected(1)" class="selected">Seleccionado</span>
     </div>
   </button>
 </div>

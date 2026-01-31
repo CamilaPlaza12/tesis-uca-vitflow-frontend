@@ -4,6 +4,33 @@ import { Router } from '@angular/router';
 
 type RegisterStep = 'hospital' | 'admin' | 'plan' | 'review';
 
+// 0 = FREE, 1 = PRO
+type PlanId = 0 | 1;
+
+type OnboardingStatus = 'SUBMITTED' | 'APPROVED' | 'REJECTED';
+
+interface HospitalOnboardingRequest {
+  admin: {
+    email: string;
+    firstName: string;
+    lastName: string;
+    phone: string;
+    dni: string;
+  };
+  hospital: {
+    name: string;
+    email: string;
+    phone: string;
+    address: any;
+  };
+  plan: {
+    planId: PlanId;
+  };
+  status: OnboardingStatus;
+  createdAt: string;
+  updatedAt: string;
+}
+
 @Component({
   selector: 'app-register-wizard',
   standalone: false,
@@ -19,6 +46,9 @@ export class RegisterWizard {
   loading = false;
   errorMsg = '';
 
+  // ✅ Modal
+  sendValidationOpen = false;
+
   constructor(private fb: FormBuilder, private router: Router) {
     this.form = this.fb.group({
       hospital: this.fb.group({
@@ -27,14 +57,11 @@ export class RegisterWizard {
         phone: ['', [Validators.required, Validators.minLength(6)]],
         logoFile: [null],
         address: this.fb.group({
-          // display values
           province: ['', [Validators.required]],
           localidad: [{ value: '', disabled: true }, [Validators.required]],
           city: [{ value: '', disabled: true }, [Validators.required]],
           street: [{ value: '', disabled: true }, [Validators.required]],
           number: [{ value: '', disabled: true }, [Validators.required]],
-
-          // “truth” values (selección real)
           provinceId: ['', [Validators.required]],
           localidadId: [{ value: '', disabled: true }, [Validators.required]],
         }),
@@ -45,12 +72,11 @@ export class RegisterWizard {
         lastName: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(40)]],
         email: ['', [Validators.required, Validators.email, Validators.maxLength(120)]],
         phone: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(20)]],
-        password: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(64)]],
-        confirmPassword: ['', [Validators.required, Validators.maxLength(64)]],
+        dni: ['', [Validators.required, Validators.pattern(/^\d{7,8}$/)]],
       }),
 
       plan: this.fb.group({
-        planId: ['FREE', [Validators.required]],
+        planId: [null as PlanId | null, [Validators.required]],
       }),
     });
   }
@@ -69,12 +95,16 @@ export class RegisterWizard {
     return this.form.get('plan') as FormGroup;
   }
 
+  get adminEmail(): string {
+    const admin = this.form.get('admin')?.value ?? {};
+    return String(admin.email ?? '').trim();
+  }
+
   goNext(): void {
     this.errorMsg = '';
 
     if (!this.isStepValid(this.currentStep)) {
       this.markStepTouched(this.currentStep);
-      this.errorMsg = 'Revisá los campos del paso actual.';
       return;
     }
 
@@ -118,10 +148,10 @@ export class RegisterWizard {
     const admin = this.form.get('admin') as FormGroup;
     if (!admin) return false;
 
-    const pw = String(admin.get('password')?.value ?? '');
-    const cpw = String(admin.get('confirmPassword')?.value ?? '');
+    const dni = String(admin.get('dni')?.value ?? '').trim();
+    const dniOk = /^\d{7,8}$/.test(dni);
 
-    return admin.valid && pw.length >= 8 && cpw.length > 0 && pw === cpw;
+    return admin.valid && dniOk;
   }
 
   private markStepTouched(step: RegisterStep): void {
@@ -134,7 +164,8 @@ export class RegisterWizard {
     ctrl?.markAllAsTouched();
   }
 
-  async submit(): Promise<void> {
+  // ✅ Botón rojo: ahora abre modal (no envía directo)
+  submit(): void {
     this.errorMsg = '';
 
     if (!this.form.valid || !this.isAdminValid()) {
@@ -143,45 +174,61 @@ export class RegisterWizard {
       return;
     }
 
-    this.loading = true;
-
-    const payload = this.buildPayload();
-    console.log('REGISTER PAYLOAD (draft):', payload);
-
-    this.loading = false;
-    this.router.navigate(['/signin'], { replaceUrl: true });
+    this.sendValidationOpen = true;
   }
 
-  private buildPayload(): any {
-    const hospital = this.form.get('hospital')?.value;
-    const admin = this.form.get('admin')?.value;
-    const plan = this.form.get('plan')?.value;
+  onModalCancel(): void {
+    if (this.loading) return;
+    this.sendValidationOpen = false;
+  }
+
+async onModalConfirm(): Promise<void> {
+  this.loading = true;
+
+  try {
+    const payload = this.buildOnboardingRequest();
+    console.log('[hospital_onboarding_request] payload:', payload);
+
+    // TODO Firestore:
+    // await this.onboardingRequestsService.create(payload);
+
+    this.sendValidationOpen = false;
+
+    // ✅ Al confirmar, ir al login
+    this.router.navigate(['/signin'], { replaceUrl: true });
+  } finally {
+    this.loading = false;
+  }
+}
+
+
+  private buildOnboardingRequest(): HospitalOnboardingRequest {
+    const now = new Date().toISOString();
+
+    const hospital = this.form.get('hospital')?.value ?? {};
+    const admin = this.form.get('admin')?.value ?? {};
+    const plan = this.form.get('plan')?.value ?? {};
 
     return {
-      hospital: {
-        name: hospital.name,
-        email: hospital.email,
-        phone: hospital.phone,
-        address: {
-          province: hospital.address.province,
-          localidad: hospital.address.localidad,
-          city: hospital.address.city,
-          street: hospital.address.street,
-          number: hospital.address.number,
-          provinceId: hospital.address.provinceId,
-          localidadId: hospital.address.localidadId,
-        },
-      },
       admin: {
-        firstName: admin.firstName,
-        lastName: admin.lastName,
-        email: admin.email,
-        phone: admin.phone,
-        password: admin.password,
+        email: String(admin.email ?? '').trim(),
+        firstName: String(admin.firstName ?? '').trim(),
+        lastName: String(admin.lastName ?? '').trim(),
+        phone: String(admin.phone ?? '').trim(),
+        dni: String(admin.dni ?? '').trim(),
+      },
+      hospital: {
+        name: String(hospital.name ?? '').trim(),
+        email: String(hospital.email ?? '').trim(),
+        phone: String(hospital.phone ?? '').trim(),
+        address: hospital.address ?? null,
       },
       plan: {
-        planId: plan.planId,
+        planId: (plan.planId as PlanId),
       },
+      status: 'SUBMITTED',
+      createdAt: now,
+      updatedAt: now,
     };
   }
 }

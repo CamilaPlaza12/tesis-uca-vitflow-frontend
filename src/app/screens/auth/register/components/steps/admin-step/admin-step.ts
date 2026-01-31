@@ -10,18 +10,6 @@ import { FormGroup } from '@angular/forms';
 export class AdminStep {
   @Input() group!: FormGroup;
 
-  showPw = false;
-  showCpw = false;
-
-  togglePw(): void { this.showPw = !this.showPw; }
-  toggleCpw(): void { this.showCpw = !this.showCpw; }
-
-  get pw(): string { return String(this.group.get('password')?.value ?? ''); }
-  get cpw(): string { return String(this.group.get('confirmPassword')?.value ?? ''); }
-
-  get pwMismatch(): boolean { return !!this.pw && !!this.cpw && this.pw !== this.cpw; }
-  get pwMatch(): boolean { return !!this.pw && !!this.cpw && this.pw === this.cpw; }
-
   onPhoneInput(ev: Event): void {
     const input = ev.target as HTMLInputElement;
     let v = input.value ?? '';
@@ -35,5 +23,20 @@ export class AdminStep {
     input.value = v;
     this.group.get('phone')?.setValue(v, { emitEvent: true });
     this.group.get('phone')?.markAsTouched();
+  }
+
+  onDniInput(ev: Event): void {
+    const input = ev.target as HTMLInputElement;
+    let v = input.value ?? '';
+
+    // Solo números
+    v = v.replace(/\D/g, '');
+
+    // DNI AR suele ser 7-8 dígitos; acá solo limpiamos y limitamos
+    v = v.slice(0, 8);
+
+    input.value = v;
+    this.group.get('dni')?.setValue(v, { emitEvent: true });
+    this.group.get('dni')?.markAsTouched();
   }
 }

@@ -1,0 +1,43 @@
+<div
+  class="vf-modal-backdrop"
+  *ngIf="open"
+  (click)="onBackdropClick($event)"
+>
+  <div class="vf-modal" role="dialog" aria-modal="true" aria-label="Validación de datos">
+    <div class="vf-modal-head">
+      <div class="vf-modal-title">Validación de datos</div>
+      <button
+        type="button"
+        class="vf-close"
+        aria-label="Cerrar"
+        (click)="cancel.emit()"
+        [disabled]="loading"
+      >
+        ✕
+      </button>
+    </div>
+
+    <div class="vf-modal-body">
+      <div class="vf-msg">
+        Vamos a validar tus datos. Te enviaremos un correo de confirmación a
+        <span class="vf-email">{{ adminEmail || 'tu email' }}</span>
+        dentro de <b>48 hs</b>.
+      </div>
+
+      <div class="vf-sub">
+        Podés cerrar esta ventana. Te avisaremos apenas esté aprobada la solicitud.
+      </div>
+    </div>
+
+    <div class="vf-modal-actions">
+      <button type="button" class="btn btn-google" (click)="cancel.emit()" [disabled]="loading">
+        Cancelar
+      </button>
+
+      <button type="button" class="btn btn-primary" (click)="confirm.emit()" [disabled]="loading">
+        <span *ngIf="!loading">Confirmar</span>
+        <span *ngIf="loading">Enviando…</span>
+      </button>
+    </div>
+  </div>
+</div>

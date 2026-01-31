@@ -56,3 +56,11 @@
     </button>
   </div>
 </div>
+
+<app-send-validation-modal
+  [open]="sendValidationOpen"
+  [adminEmail]="adminEmail"
+  [loading]="loading"
+  (cancel)="onModalCancel()"
+  (confirm)="onModalConfirm()"
+></app-send-validation-modal>

@@ -1,5 +1,5 @@
 <div class="step-title">Confirmación</div>
-<div class="step-subtitle">Revisá que todo esté correcto antes de crear la cuenta.</div>
+<div class="step-subtitle">Revisá que todo esté correcto antes de enviar la solicitud.</div>
 
 <div class="grid">
   <!-- HOSPITAL -->
@@ -36,7 +36,7 @@
   <section class="card">
     <div class="card-head">
       <div class="card-title">Administrador</div>
-      <div class="pill" *ngIf="admin?.fullName">{{ admin?.fullName }}</div>
+      <div class="pill">{{ adminFullName }}</div>
     </div>
 
     <div class="rows">
@@ -48,6 +48,11 @@
       <div class="row">
         <div class="k">Teléfono</div>
         <div class="v">{{ admin?.phone || '—' }}</div>
+      </div>
+
+      <div class="row">
+        <div class="k">DNI</div>
+        <div class="v">{{ admin?.dni || '—' }}</div>
       </div>
     </div>
 
@@ -61,7 +66,7 @@
     <div class="card-head">
       <div class="card-title">Plan</div>
 
-      <div class="plan-chip" [class.plan-chip--pro]="plan?.planId === 'PRO'">
+      <div class="plan-chip" [class.plan-chip--pro]="plan?.planId === 1">
         <span class="dot"></span>
         <span>{{ planLabel }}</span>
       </div>
@@ -72,7 +77,7 @@
     </div>
 
     <div class="hint">
-      Al confirmar, se crea la cuenta institucional y vas a poder iniciar sesión.
+      Al confirmar, vamos a validar la institución. Te avisaremos por email cuando esté aprobada.
     </div>
   </section>
 </div>

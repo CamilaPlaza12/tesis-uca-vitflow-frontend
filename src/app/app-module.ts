@@ -44,6 +44,7 @@ import { RouterModule } from '@angular/router';
 import { ErrorModal } from './screens/common/error-modal/error-modal';
 import { EquipoRoles } from './screens/pages/equipos-roles/equipos-roles';
 import { MiembrosTable } from './screens/pages/equipos-roles/components/miembros-table/miembros-table';
+import { SendValidationModal } from './screens/auth/register/components/send-validation-modal/send-validation-modal';
 
 @NgModule({
   declarations: [
@@ -74,7 +75,8 @@ import { MiembrosTable } from './screens/pages/equipos-roles/components/miembros
     ReviewStep,
     ErrorModal,
     EquipoRoles,
-    MiembrosTable
+    MiembrosTable,
+    SendValidationModal
   ],
   imports: [
     BrowserModule,
