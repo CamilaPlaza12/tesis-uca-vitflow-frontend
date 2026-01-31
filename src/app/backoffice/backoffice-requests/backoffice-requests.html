@@ -1,0 +1,152 @@
+<div class="bo-shell">
+  <!-- Top bar -->
+  <header class="bo-topbar">
+    <div class="bo-brand">
+      <div class="bo-logo">V</div>
+      <div class="bo-brand-text">
+        <div class="bo-brand-title">VitFlow</div>
+        <div class="bo-brand-sub">Backoffice · Validación institucional</div>
+      </div>
+    </div>
+
+    <div class="bo-topbar-right">
+      <span class="bo-chip">
+        {{ pendingRequests.length }} pendientes
+      </span>
+    </div>
+  </header>
+
+  <main class="bo-page">
+    <div class="bo-hero">
+      <div>
+        <div class="bo-title">Solicitudes de alta</div>
+        <div class="bo-sub">
+          Revisá instituciones registradas y aprobá o rechazá la validación.
+        </div>
+      </div>
+    </div>
+
+    <div class="form-error" *ngIf="errorMsg">{{ errorMsg }}</div>
+
+    <!-- List -->
+    <section class="bo-list" *ngIf="pendingRequests.length > 0; else empty">
+      <button
+        type="button"
+        class="bo-row"
+        *ngFor="let r of pendingRequests"
+        (click)="openDetail(r)"
+      >
+        <div class="bo-row-left">
+          <div class="bo-hospital">{{ r.hospital.name }}</div>
+
+          <div class="bo-meta">
+            <span class="bo-tag" [class.bo-tag--pro]="r.plan.planId === 1">
+              {{ planLabel(r.plan.planId) }}
+            </span>
+
+            <span class="bo-dot">•</span>
+            <span class="bo-admin">{{ r.admin.email }}</span>
+          </div>
+        </div>
+
+        <div class="bo-row-right">
+          <div class="bo-date">{{ formatDate(r.createdAt) }}</div>
+          <div class="bo-status">Pendiente</div>
+        </div>
+      </button>
+    </section>
+
+    <ng-template #empty>
+      <div class="bo-empty">
+        <div class="bo-empty-title">No hay solicitudes pendientes</div>
+        <div class="bo-empty-sub">
+          Cuando un hospital complete el registro, va a aparecer acá.
+        </div>
+      </div>
+    </ng-template>
+  </main>
+</div>
+
+<!-- Detail panel -->
+<div class="bo-backdrop" *ngIf="selected" (click)="closeDetail()">
+  <div class="bo-panel" (click)="$event.stopPropagation()">
+    <div class="bo-panel-head">
+      <div>
+        <div class="bo-panel-title">Solicitud</div>
+        <div class="bo-panel-sub">{{ selected?.hospital?.name }}</div>
+      </div>
+
+      <button type="button" class="bo-close" (click)="closeDetail()" [disabled]="loading">✕</button>
+    </div>
+
+    <div class="bo-grid">
+      <section class="bo-card">
+        <div class="bo-card-title">Hospital</div>
+
+        <div class="bo-kv">
+          <div class="k">Email</div>
+          <div class="v">{{ selected?.hospital?.email }}</div>
+
+          <div class="k">Teléfono</div>
+          <div class="v">{{ selected?.hospital?.phone }}</div>
+
+          <div class="k">Dirección</div>
+          <div class="v">{{ selected ? fullAddress(selected) : '—' }}</div>
+        </div>
+      </section>
+
+      <section class="bo-card">
+        <div class="bo-card-title">Administrador</div>
+
+        <div class="bo-kv">
+          <div class="k">Nombre</div>
+          <div class="v">{{ selected?.admin?.firstName }} {{ selected?.admin?.lastName }}</div>
+
+          <div class="k">Email</div>
+          <div class="v">{{ selected?.admin?.email }}</div>
+
+          <div class="k">Teléfono</div>
+          <div class="v">{{ selected?.admin?.phone }}</div>
+
+          <div class="k">DNI</div>
+          <div class="v">{{ selected?.admin?.dni }}</div>
+        </div>
+      </section>
+
+      <section class="bo-card bo-card--plan">
+        <div class="bo-card-title">Plan</div>
+        <div class="bo-plan">
+          <span class="bo-tag" [class.bo-tag--pro]="selected?.plan?.planId === 1">
+            {{ selected?.plan?.planId === 1 ? 'Pro' : 'Free' }}
+          </span>
+          <span class="bo-plan-note">
+            {{ selected?.plan?.planId === 1 ? 'Gestión profesional para escalar' : 'Operación base para empezar' }}
+          </span>
+        </div>
+      </section>
+    </div>
+
+    <div class="bo-actions">
+      <button type="button" class="btn btn-google" (click)="openRejectConfirm()" [disabled]="loading">
+        Rechazar
+      </button>
+
+      <button type="button" class="btn btn-primary" (click)="openApproveConfirm()" [disabled]="loading">
+        Aprobar
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ✅ Tu modal genérico para confirmar acciones -->
+<app-confirm-modal
+  [open]="confirmOpen"
+  [title]="confirmTitle"
+  [message]="confirmMessage"
+  [confirmText]="confirmText"
+  [cancelText]="cancelText"
+  [loading]="loading"
+  [error]="confirmError"
+  (confirm)="onConfirmAction()"
+  (cancel)="closeConfirm()"
+></app-confirm-modal>

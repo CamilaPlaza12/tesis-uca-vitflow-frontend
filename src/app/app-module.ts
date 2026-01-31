@@ -45,6 +45,7 @@ import { ErrorModal } from './screens/common/error-modal/error-modal';
 import { EquipoRoles } from './screens/pages/equipos-roles/equipos-roles';
 import { MiembrosTable } from './screens/pages/equipos-roles/components/miembros-table/miembros-table';
 import { SendValidationModal } from './screens/auth/register/components/send-validation-modal/send-validation-modal';
+import { BackofficeRequests } from './backoffice/backoffice-requests/backoffice-requests';
 
 @NgModule({
   declarations: [
@@ -76,7 +77,8 @@ import { SendValidationModal } from './screens/auth/register/components/send-val
     ErrorModal,
     EquipoRoles,
     MiembrosTable,
-    SendValidationModal
+    SendValidationModal,
+    BackofficeRequests
   ],
   imports: [
     BrowserModule,

@@ -20,7 +20,7 @@ export class App {
       .pipe(filter(e => e instanceof NavigationEnd))
       .subscribe(() => {
         const u = this.router.url.toLowerCase();
-        this.showSidebar = !(u.startsWith('/signin') || u.startsWith('/register'));
+        this.showSidebar = !(u.startsWith('/signin') || u.startsWith('/register') || u.startsWith('/backoffice'));
         if (!this.showSidebar) this.mobileMenuOpen = false;
       });
   }
