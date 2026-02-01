@@ -1,5 +1,6 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Turno, DonationType, AppointmentStatus } from '../../../../../models/turno';
+import { TurnoService } from '../../../../../service/turno_service';
 
 type TipoFiltro = 'TODOS' | DonationType;
 
@@ -10,7 +11,22 @@ type TipoFiltro = 'TODOS' | DonationType;
   styleUrl: './turnos-table.scss',
 })
 export class TurnosTable {
-  @Input() turnos: Turno[] = [];
+  // ✅ dataset propio del histórico (NO mezclamos con calendar)
+
+
+  @Output() search = new EventEmitter<{ desde: string; hasta: string }>();
+  @Output() clearFilters = new EventEmitter<void>();
+
+  private turnosHistorico: Turno[] = [];
+
+  @Input()
+  set turnos(value: Turno[]) {
+    this.turnosHistorico = value ?? [];
+  }
+
+
+  loading = false;
+  errorMsg = '';
 
   todayStr = this.toISODate(new Date());
 
@@ -18,6 +34,8 @@ export class TurnosTable {
   hasta = this.todayStr;
   donante = '';
   tipo: TipoFiltro = 'TODOS';
+
+  constructor(private turnoService: TurnoService) {}
 
   onDesdeChange(v: string): void {
     const next = this.clampToToday(v);
@@ -31,22 +49,30 @@ export class TurnosTable {
     if (this.hasta < this.desde) this.desde = this.hasta;
   }
 
+  // ✅ NUEVO: pega al back
+  buscar(): void {
+  console.log('🟦 HIJO buscar() filtros:', {
+    desde: this.desde,
+    hasta: this.hasta,
+    donante: this.donante,
+    tipo: this.tipo,
+  });
+
+  this.search.emit({ desde: this.desde, hasta: this.hasta });
+}
+
+
   clear(): void {
     this.desde = this.todayStr;
     this.hasta = this.todayStr;
     this.donante = '';
     this.tipo = 'TODOS';
-  }
+    this.clearFilters.emit();
+    }
+
 
   exportCSV(): void {
-    const headers = [
-      'Fecha',
-      'Hora',
-      'Donante',
-      'Tipo de donación',
-      'Estado',
-      'Pedido'
-    ];
+    const headers = ['Fecha', 'Hora', 'Donante', 'Tipo de donación', 'Estado', 'Pedido'];
 
     const rows = this.turnosProcesados.map(t => ([
       t.date_local,
@@ -59,10 +85,7 @@ export class TurnosTable {
 
     const csv = this.toCSV([headers, ...rows], ';');
 
-    const blob = new Blob(
-      [this.withUtf8Bom(csv)],
-      { type: 'text/csv;charset=utf-8;' }
-    );
+    const blob = new Blob([this.withUtf8Bom(csv)], { type: 'text/csv;charset=utf-8;' });
 
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -111,9 +134,7 @@ export class TurnosTable {
   }
 
   private toCSV(rows: string[][], sep: string): string {
-    return rows
-      .map(r => r.map(c => this.csvCell(c)).join(sep))
-      .join('\r\n');
+    return rows.map(r => r.map(c => this.csvCell(c)).join(sep)).join('\r\n');
   }
 
   private csvCell(v: string): string {
@@ -126,10 +147,11 @@ export class TurnosTable {
     return '\uFEFF' + s;
   }
 
+  // ✅ ahora filtra sobre turnosHistorico (respuesta del back)
   get turnosProcesados(): Turno[] {
     const qDon = this.donante.trim().toLowerCase();
 
-    return this.turnos
+    return this.turnosHistorico
       .filter(t => {
         const okFecha = this.inRange(t.date_local);
         const okDon = !qDon || (t.donor?.full_name || '').toLowerCase().includes(qDon);

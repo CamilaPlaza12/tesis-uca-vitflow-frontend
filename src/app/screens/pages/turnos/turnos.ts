@@ -39,6 +39,13 @@ export class Turnos implements OnInit {
 
   private accionPendiente: AccionTurno | null = null;
 
+  turnosCalendar: Turno[] = [];
+  turnosHistorico: Turno[] = [];
+
+  loadingHistorico = false;
+  errorHistorico = '';
+
+
   @ViewChild('availabilityAnchor') availabilityAnchor?: ElementRef<HTMLElement>;
   @ViewChild('topAnchor') topAnchor?: ElementRef<HTMLElement>;
 
@@ -53,15 +60,17 @@ export class Turnos implements OnInit {
   }
 
   private loadTurnos(): void {
-    this.turnoService.getTurnos().subscribe({
+    this.turnoService.getTurnosWindowMonths().subscribe({
       next: (rows) => {
         this.turnos = rows ?? [];
       },
       error: (e) => {
-        console.error('Error al cargar turnos:', e);
+        console.error('Error al cargar turnos (window months):', e);
+        this.turnos = [];
       },
     });
   }
+
 
   private loadDisponibilidad(): void {
     this.availabilityService.getHospitalAvailability().subscribe({
@@ -254,4 +263,27 @@ export class Turnos implements OnInit {
     if (accion === 'NO_PRESENTADO') return `${base}\n¿No se presentó?`;
     return `${base}\n¿Reprogramar?`;
   }
+
+  onSearchHistorico(e: { desde: string; hasta: string }): void {
+  this.loadingHistorico = true;
+  this.errorHistorico = '';
+
+  this.turnoService.getTurnosByRange(e.desde, e.hasta).subscribe({
+    next: (rows) => {
+      this.turnosHistorico = rows ?? [];
+      this.loadingHistorico = false;
+    },
+    error: (err) => {
+      console.error(err);
+      this.turnosHistorico = [];
+      this.errorHistorico = 'No se pudo cargar el histórico';
+      this.loadingHistorico = false;
+    },
+  });
+}
+
+onClearHistorico(): void {
+  this.turnosHistorico = [];
+}
+
 }

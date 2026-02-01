@@ -24,4 +24,14 @@ export class TurnoService {
       time_local,
     });
   }
+
+    getTurnosWindowMonths(): Observable<Turno[]> {
+    return this.http.get<Turno[]>(`${this.endpoint}/window/months`);
+  }
+
+    getTurnosByRange(desde: string, hasta: string): Observable<Turno[]> {
+    return this.http.get<Turno[]>(`${this.endpoint}/search/${desde}/${hasta}`);
+  }
+
+
 }

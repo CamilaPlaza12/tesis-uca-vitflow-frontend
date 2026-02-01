@@ -67,10 +67,18 @@
       </select>
     </div>
 
-    <button class="btn" type="button" (click)="clear()">
+        <button class="btn" type="button" (click)="buscar()" [disabled]="loading">
+      {{ loading ? 'Buscando...' : 'Buscar' }}
+    </button>
+
+    <button class="btn" type="button" (click)="clear()" [disabled]="loading">
       Limpiar
     </button>
+
   </div>
+
+  <div *ngIf="errorMsg" class="error-msg">{{ errorMsg }}</div>
+
 
   <div class="table-wrap">
     <table class="table">

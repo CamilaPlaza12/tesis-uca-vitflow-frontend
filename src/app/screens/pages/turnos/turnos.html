@@ -65,7 +65,11 @@
       </section>
 
       <section class="bottom">
-        <app-turnos-table [turnos]="turnos"></app-turnos-table>
+        <app-turnos-table
+              [turnos]="turnosHistorico"
+              (search)="onSearchHistorico($event)"
+              (clearFilters)="onClearHistorico()"
+            ></app-turnos-table>
 
         <div #availabilityAnchor class="availability-anchor"></div>
 
