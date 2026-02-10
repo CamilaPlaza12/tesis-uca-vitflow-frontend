@@ -2,10 +2,9 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 
-type RegisterStep = 'hospital' | 'admin' | 'plan' | 'review';
+type RegisterStep = 'hospital' | 'admin' | 'review';
 
-// 0 = FREE, 1 = PRO
-type PlanId = 0 | 1;
+//type PlanId = 0 | 1;
 
 type OnboardingStatus = 'SUBMITTED' | 'APPROVED' | 'REJECTED';
 
@@ -23,9 +22,9 @@ interface HospitalOnboardingRequest {
     phone: string;
     address: any;
   };
-  plan: {
+  /*plan: {
     planId: PlanId;
-  };
+  };*/
   status: OnboardingStatus;
   createdAt: string;
   updatedAt: string;
@@ -38,7 +37,7 @@ interface HospitalOnboardingRequest {
   styleUrl: './register-wizard.scss',
 })
 export class RegisterWizard {
-  stepOrder: RegisterStep[] = ['hospital', 'admin', 'plan', 'review'];
+  stepOrder: RegisterStep[] = ['hospital', 'admin', 'review'];
   stepIndex = 0;
 
   form: FormGroup;
@@ -75,9 +74,9 @@ export class RegisterWizard {
         dni: ['', [Validators.required, Validators.pattern(/^\d{7,8}$/)]],
       }),
 
-      plan: this.fb.group({
+      /*plan: this.fb.group({
         planId: [null as PlanId | null, [Validators.required]],
-      }),
+      }),*/
     });
   }
 
@@ -91,9 +90,9 @@ export class RegisterWizard {
   get adminGroup(): FormGroup {
     return this.form.get('admin') as FormGroup;
   }
-  get planGroup(): FormGroup {
+  /*get planGroup(): FormGroup {
     return this.form.get('plan') as FormGroup;
-  }
+  }*/
 
   get adminEmail(): string {
     const admin = this.form.get('admin')?.value ?? {};
@@ -140,7 +139,7 @@ export class RegisterWizard {
   private isStepValid(step: RegisterStep): boolean {
     if (step === 'hospital') return this.form.get('hospital')?.valid ?? false;
     if (step === 'admin') return this.isAdminValid();
-    if (step === 'plan') return this.form.get('plan')?.valid ?? false;
+    //if (step === 'plan') return this.form.get('plan')?.valid ?? false;
     return this.form.valid && this.isAdminValid();
   }
 
@@ -158,7 +157,7 @@ export class RegisterWizard {
     const ctrl =
       step === 'hospital' ? this.form.get('hospital')
       : step === 'admin' ? this.form.get('admin')
-      : step === 'plan' ? this.form.get('plan')
+      //: step === 'plan' ? this.form.get('plan')
       : this.form;
 
     ctrl?.markAllAsTouched();
@@ -207,7 +206,7 @@ async onModalConfirm(): Promise<void> {
 
     const hospital = this.form.get('hospital')?.value ?? {};
     const admin = this.form.get('admin')?.value ?? {};
-    const plan = this.form.get('plan')?.value ?? {};
+   // const plan = this.form.get('plan')?.value ?? {};
 
     return {
       admin: {
@@ -223,9 +222,9 @@ async onModalConfirm(): Promise<void> {
         phone: String(hospital.phone ?? '').trim(),
         address: hospital.address ?? null,
       },
-      plan: {
+      /*plan: {
         planId: (plan.planId as PlanId),
-      },
+      },*/
       status: 'SUBMITTED',
       createdAt: now,
       updatedAt: now,

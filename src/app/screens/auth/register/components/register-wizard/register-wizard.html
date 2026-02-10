@@ -2,7 +2,6 @@
   [steps]="[
     { key: 'hospital', label: 'Hospital' },
     { key: 'admin', label: 'Administrador' },
-    { key: 'plan', label: 'Plan' },
     { key: 'review', label: 'Confirmación' }
   ]"
   [activeIndex]="stepIndex"
@@ -21,10 +20,11 @@
     [group]="adminGroup"
   ></app-admin-step>
 
-  <app-plan-step
+  <!--<app-plan-step
     *ngIf="currentStep === 'plan'"
     [group]="planGroup"
-  ></app-plan-step>
+    ></app-plan-step>
+  -->
 
   <app-review-step
     *ngIf="currentStep === 'review'"

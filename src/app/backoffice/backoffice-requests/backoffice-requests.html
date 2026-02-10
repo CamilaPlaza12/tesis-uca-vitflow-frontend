@@ -73,7 +73,7 @@
     <div class="bo-panel-head">
       <div>
         <div class="bo-panel-title">Solicitud</div>
-        <div class="bo-panel-sub">{{ selected?.hospital?.name }}</div>
+        <div class="bo-panel-sub">{{ selected.hospital.name }}</div>
       </div>
 
       <button type="button" class="bo-close" (click)="closeDetail()" [disabled]="loading">✕</button>
@@ -85,10 +85,10 @@
 
         <div class="bo-kv">
           <div class="k">Email</div>
-          <div class="v">{{ selected?.hospital?.email }}</div>
+          <div class="v">{{ selected.hospital.email }}</div>
 
           <div class="k">Teléfono</div>
-          <div class="v">{{ selected?.hospital?.phone }}</div>
+          <div class="v">{{ selected.hospital.phone }}</div>
 
           <div class="k">Dirección</div>
           <div class="v">{{ selected ? fullAddress(selected) : '—' }}</div>
@@ -100,27 +100,27 @@
 
         <div class="bo-kv">
           <div class="k">Nombre</div>
-          <div class="v">{{ selected?.admin?.firstName }} {{ selected?.admin?.lastName }}</div>
+          <div class="v">{{ selected.admin.firstName }} {{ selected.admin.lastName }}</div>
 
           <div class="k">Email</div>
-          <div class="v">{{ selected?.admin?.email }}</div>
+          <div class="v">{{ selected.admin.email }}</div>
 
           <div class="k">Teléfono</div>
-          <div class="v">{{ selected?.admin?.phone }}</div>
+          <div class="v">{{ selected.admin.phone }}</div>
 
           <div class="k">DNI</div>
-          <div class="v">{{ selected?.admin?.dni }}</div>
+          <div class="v">{{ selected.admin.dni }}</div>
         </div>
       </section>
 
       <section class="bo-card bo-card--plan">
         <div class="bo-card-title">Plan</div>
         <div class="bo-plan">
-          <span class="bo-tag" [class.bo-tag--pro]="selected?.plan?.planId === 1">
-            {{ selected?.plan?.planId === 1 ? 'Pro' : 'Free' }}
+          <span class="bo-tag" [class.bo-tag--pro]="selected.plan.planId === 1">
+            {{ selected.plan.planId === 1 ? 'Pro' : 'Free' }}
           </span>
           <span class="bo-plan-note">
-            {{ selected?.plan?.planId === 1 ? 'Gestión profesional para escalar' : 'Operación base para empezar' }}
+            {{ selected.plan.planId === 1 ? 'Gestión profesional para escalar' : 'Operación base para empezar' }}
           </span>
         </div>
       </section>
