@@ -1,7 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { firstValueFrom } from 'rxjs';
+import { OnboardingRequestsService } from '../../service/onboarding_request_service';
 
-type PlanId = 0 | 1;
 type OnboardingStatus = 'SUBMITTED' | 'APPROVED' | 'REJECTED';
+type PendingAction = 'APPROVE' | 'REJECT';
 
 interface HospitalOnboardingRequest {
   id: string;
@@ -26,102 +28,70 @@ interface HospitalOnboardingRequest {
       localidadId?: string;
     };
   };
-  plan: { planId: PlanId };
   status: OnboardingStatus;
   createdAt: string;
 }
 
-type PendingAction = 'APPROVE' | 'REJECT';
-
 @Component({
   selector: 'app-backoffice-requests',
-  standalone: false,
   templateUrl: './backoffice-requests.html',
   styleUrl: './backoffice-requests.scss',
+  standalone: false
 })
-export class BackofficeRequests {
+export class BackofficeRequests implements OnInit {
+
   loading = false;
+  loaded = false;
   errorMsg = '';
 
-  // ✅ Confirm modal (genérico)
+  requests: HospitalOnboardingRequest[] = [];
+  pendingRequests: HospitalOnboardingRequest[] = [];
+  selected: HospitalOnboardingRequest | null = null;
+
+  // 🔥 Confirm modal
   confirmOpen = false;
   confirmTitle = '';
   confirmMessage = '';
   confirmText = 'Confirmar';
   cancelText = 'Cancelar';
   confirmError: string | null = null;
-
   private pendingAction: PendingAction | null = null;
 
-  // ✅ Mock data
-  requests: HospitalOnboardingRequest[] = [
-    {
-      id: 'req_001',
-      admin: {
-        email: 'camila.test@hospital.com',
-        firstName: 'Camila',
-        lastName: 'Testeando',
-        phone: '+54 11 3281 1555',
-        dni: '12345678',
-      },
-      hospital: {
-        name: 'Hospital Test',
-        email: 'contacto@hospitaltest.com',
-        phone: '1133344455',
-        address: {
-          street: 'Av Santa Fe',
-          number: '1234',
-          city: 'CABA',
-          localidad: 'Recoleta',
-          province: 'Buenos Aires',
-          provinceId: '06',
-          localidadId: '0607',
-        },
-      },
-      plan: { planId: 1 },
-      status: 'SUBMITTED',
-      createdAt: '2026-01-31T15:38:56.030Z',
-    },
-    {
-      id: 'req_002',
-      admin: {
-        email: 'admin@clinicax.com',
-        firstName: 'Juan',
-        lastName: 'Pérez',
-        phone: '+54 11 4444 2222',
-        dni: '33445566',
-      },
-      hospital: {
-        name: 'Clínica X',
-        email: 'info@clinicax.com',
-        phone: '1140099911',
-        address: {
-          street: 'Av Cabildo',
-          number: '999',
-          city: 'CABA',
-          localidad: 'Belgrano',
-          province: 'Buenos Aires',
-          provinceId: '06',
-          localidadId: '0612',
-        },
-      },
-      plan: { planId: 0 },
-      status: 'SUBMITTED',
-      createdAt: '2026-01-30T11:10:00.000Z',
-    },
-  ];
+  constructor(private onboardingRequestsService: OnboardingRequestsService) {}
 
-  selected: HospitalOnboardingRequest | null = null;
-
-  get pendingRequests(): HospitalOnboardingRequest[] {
-    return this.requests
-      .filter(r => r.status === 'SUBMITTED')
-      .sort((a, b) => (b.createdAt > a.createdAt ? 1 : -1));
+  async ngOnInit(): Promise<void> {
+    await this.loadRequests();
   }
 
-  planLabel(planId: PlanId): string {
-    return planId === 1 ? 'Pro' : 'Free';
+ async loadRequests(): Promise<void> {
+  this.loading = true;
+  this.errorMsg = '';
+
+  try {
+    const res = await firstValueFrom(
+      this.onboardingRequestsService.getOnboardingRequests()
+    );
+
+    console.log('RAW RESPONSE:', res);
+
+    this.requests = Array.isArray(res) ? res : [];
+
+    console.log('ANTES DEL FILTER:', this.requests);
+
+    this.pendingRequests = this.requests.filter(r => {
+      console.log('STATUS RAW:', r.status);
+      return String(r.status).trim().toUpperCase() === 'SUBMITTED';
+    });
+
+    console.log('DESPUÉS DEL FILTER:', this.pendingRequests);
+
+  } catch (e) {
+    console.error(e);
+    this.errorMsg = 'No se pudieron cargar las solicitudes.';
+  } finally {
+    this.loading = false;
   }
+}
 
   formatDate(iso: string): string {
     const d = new Date(iso);
@@ -141,7 +111,6 @@ export class BackofficeRequests {
 
   openDetail(r: HospitalOnboardingRequest): void {
     this.selected = r;
-    this.errorMsg = '';
   }
 
   closeDetail(): void {
@@ -149,15 +118,14 @@ export class BackofficeRequests {
     this.closeConfirm();
   }
 
-  // ===== Confirm modal handlers =====
   openApproveConfirm(): void {
     if (!this.selected) return;
 
     this.pendingAction = 'APPROVE';
     this.confirmTitle = 'Aprobar solicitud';
     this.confirmMessage =
-      `Vas a aprobar la solicitud de "${this.selected.hospital.name}". ` +
-      `Esto habilita el alta institucional y el acceso del administrador.\n\n¿Confirmás?`;
+      `Vas a aprobar la solicitud de "${this.selected.hospital.name}".\n\n¿Confirmás?`;
+
     this.confirmText = 'Aprobar';
     this.cancelText = 'Cancelar';
     this.confirmError = null;
@@ -170,8 +138,8 @@ export class BackofficeRequests {
     this.pendingAction = 'REJECT';
     this.confirmTitle = 'Rechazar solicitud';
     this.confirmMessage =
-      `Vas a rechazar la solicitud de "${this.selected.hospital.name}". ` +
-      `El administrador no podrá continuar con el alta.\n\n¿Confirmás?`;
+      `Vas a rechazar la solicitud de "${this.selected.hospital.name}".\n\n¿Confirmás?`;
+
     this.confirmText = 'Rechazar';
     this.cancelText = 'Volver';
     this.confirmError = null;
@@ -194,28 +162,25 @@ export class BackofficeRequests {
     try {
       const id = this.selected.id;
 
-      if (this.pendingAction === 'APPROVE') {
-        // TODO: reemplazar por llamada real (Vicky)
-        // await this.backofficeService.approveRequest(id);
+      await firstValueFrom(
+        this.onboardingRequestsService.reviewOnboardingRequest(id, {
+          status:
+            this.pendingAction === 'APPROVE'
+              ? 'APPROVED'
+              : 'REJECTED',
+          reviewedAt: new Date().toISOString(),
+        })
+      );
 
-        // mock
-        this.selected.status = 'APPROVED';
-      }
+      await this.loadRequests();
 
-      if (this.pendingAction === 'REJECT') {
-        // TODO: reemplazar por llamada real (Vicky)
-        // await this.backofficeService.rejectRequest(id);
-
-        // mock
-        this.selected.status = 'REJECTED';
-      }
-
-      // cerramos todo
       this.confirmOpen = false;
       this.pendingAction = null;
       this.selected = null;
-    } catch (e: any) {
-      this.confirmError = 'No se pudo completar la acción. Probá de nuevo.';
+
+    } catch (e) {
+      console.error(e);
+      this.confirmError = 'No se pudo completar la acción.';
     } finally {
       this.loading = false;
     }

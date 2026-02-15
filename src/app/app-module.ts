@@ -20,7 +20,7 @@ import { Donantes } from './screens/pages/donantes/donantes';
 import { Configuracion } from './screens/pages/configuracion/configuracion';
 
 import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
-import { AuthTokenInterceptor } from './interceptor/auth-token-interceptor';
+import { AuthInterceptor } from './interceptor/auth-token-interceptor';
 
 import { PedidosTable } from './screens/pages/pedidos-alertas/components/pedidos-table/pedidos-table';
 import { PedidoDetalle } from './screens/pages/pedidos-alertas/components/pedido-detalle/pedido-detalle';
@@ -78,7 +78,7 @@ import { BackofficeRequests } from './backoffice/backoffice-requests/backoffice-
     EquipoRoles,
     MiembrosTable,
     SendValidationModal,
-    BackofficeRequests
+    BackofficeRequests,
   ],
   imports: [
     BrowserModule,
@@ -95,7 +95,7 @@ import { BackofficeRequests } from './backoffice/backoffice-requests/backoffice-
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideHttpClient(withInterceptorsFromDi()),
-    { provide: HTTP_INTERCEPTORS, useClass: AuthTokenInterceptor, multi: true }
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }
   ],
   bootstrap: [App]
 })

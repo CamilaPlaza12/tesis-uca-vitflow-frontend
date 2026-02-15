@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { firstValueFrom } from 'rxjs';
+import { OnboardingRequestsService } from '../../../../../service/onboarding_request_service';
+
 
 type RegisterStep = 'hospital' | 'admin' | 'review';
-
-//type PlanId = 0 | 1;
-
 type OnboardingStatus = 'SUBMITTED' | 'APPROVED' | 'REJECTED';
 
 interface HospitalOnboardingRequest {
@@ -22,9 +22,6 @@ interface HospitalOnboardingRequest {
     phone: string;
     address: any;
   };
-  /*plan: {
-    planId: PlanId;
-  };*/
   status: OnboardingStatus;
   createdAt: string;
   updatedAt: string;
@@ -45,10 +42,13 @@ export class RegisterWizard {
   loading = false;
   errorMsg = '';
 
-  // ✅ Modal
   sendValidationOpen = false;
 
-  constructor(private fb: FormBuilder, private router: Router) {
+  constructor(
+    private fb: FormBuilder,
+    private router: Router,
+    private onboardingRequestsService: OnboardingRequestsService
+  ) {
     this.form = this.fb.group({
       hospital: this.fb.group({
         name: ['', [Validators.required, Validators.minLength(3)]],
@@ -65,7 +65,6 @@ export class RegisterWizard {
           localidadId: [{ value: '', disabled: true }, [Validators.required]],
         }),
       }),
-
       admin: this.fb.group({
         firstName: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(40)]],
         lastName: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(40)]],
@@ -73,10 +72,6 @@ export class RegisterWizard {
         phone: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(20)]],
         dni: ['', [Validators.required, Validators.pattern(/^\d{7,8}$/)]],
       }),
-
-      /*plan: this.fb.group({
-        planId: [null as PlanId | null, [Validators.required]],
-      }),*/
     });
   }
 
@@ -87,12 +82,10 @@ export class RegisterWizard {
   get hospitalGroup(): FormGroup {
     return this.form.get('hospital') as FormGroup;
   }
+
   get adminGroup(): FormGroup {
     return this.form.get('admin') as FormGroup;
   }
-  /*get planGroup(): FormGroup {
-    return this.form.get('plan') as FormGroup;
-  }*/
 
   get adminEmail(): string {
     const admin = this.form.get('admin')?.value ?? {};
@@ -139,7 +132,6 @@ export class RegisterWizard {
   private isStepValid(step: RegisterStep): boolean {
     if (step === 'hospital') return this.form.get('hospital')?.valid ?? false;
     if (step === 'admin') return this.isAdminValid();
-    //if (step === 'plan') return this.form.get('plan')?.valid ?? false;
     return this.form.valid && this.isAdminValid();
   }
 
@@ -155,15 +147,15 @@ export class RegisterWizard {
 
   private markStepTouched(step: RegisterStep): void {
     const ctrl =
-      step === 'hospital' ? this.form.get('hospital')
-      : step === 'admin' ? this.form.get('admin')
-      //: step === 'plan' ? this.form.get('plan')
-      : this.form;
+      step === 'hospital'
+        ? this.form.get('hospital')
+        : step === 'admin'
+        ? this.form.get('admin')
+        : this.form;
 
     ctrl?.markAllAsTouched();
   }
 
-  // ✅ Botón rojo: ahora abre modal (no envía directo)
   submit(): void {
     this.errorMsg = '';
 
@@ -181,32 +173,33 @@ export class RegisterWizard {
     this.sendValidationOpen = false;
   }
 
-async onModalConfirm(): Promise<void> {
-  this.loading = true;
+  async onModalConfirm(): Promise<void> {
+    this.loading = true;
+    this.errorMsg = '';
 
-  try {
-    const payload = this.buildOnboardingRequest();
-    console.log('[hospital_onboarding_request] payload:', payload);
+    try {
+      const payload = this.buildOnboardingRequest();
 
-    // TODO Firestore:
-    // await this.onboardingRequestsService.create(payload);
+      await firstValueFrom(
+        this.onboardingRequestsService.createOnboardingRequest(payload)
+      );
 
-    this.sendValidationOpen = false;
+      this.sendValidationOpen = false;
+      this.router.navigate(['/signin'], { replaceUrl: true });
 
-    // ✅ Al confirmar, ir al login
-    this.router.navigate(['/signin'], { replaceUrl: true });
-  } finally {
-    this.loading = false;
+    } catch (error) {
+      console.error(error);
+      this.errorMsg = 'No pudimos enviar la solicitud. Intentá nuevamente.';
+    } finally {
+      this.loading = false;
+    }
   }
-}
-
 
   private buildOnboardingRequest(): HospitalOnboardingRequest {
     const now = new Date().toISOString();
 
     const hospital = this.form.get('hospital')?.value ?? {};
     const admin = this.form.get('admin')?.value ?? {};
-   // const plan = this.form.get('plan')?.value ?? {};
 
     return {
       admin: {
@@ -222,9 +215,6 @@ async onModalConfirm(): Promise<void> {
         phone: String(hospital.phone ?? '').trim(),
         address: hospital.address ?? null,
       },
-      /*plan: {
-        planId: (plan.planId as PlanId),
-      },*/
       status: 'SUBMITTED',
       createdAt: now,
       updatedAt: now,

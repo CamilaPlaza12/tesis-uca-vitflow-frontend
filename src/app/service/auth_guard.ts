@@ -1,17 +1,44 @@
+// src/app/guards/auth.guard.ts
+
 import { Injectable } from '@angular/core';
-import { CanActivate, Router } from '@angular/router';
-import { AuthService } from './auth_service';
+import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth } from '../service/firebaseconfig';
 
-@Injectable({ providedIn: 'root' })
+@Injectable({
+  providedIn: 'root'
+})
 export class AuthGuard implements CanActivate {
-  constructor(private authService: AuthService, private router: Router) {}
 
-  async canActivate(): Promise<boolean> {
-    const ok = await this.authService.isAuthenticated();
-    if (!ok) {
-      this.router.navigate(['/sign-in'], { replaceUrl: true });
-      return false;
+  constructor(private router: Router) {}
+
+  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<boolean> {
+
+    const publicRoutes = new Set([
+      '',
+      'login',
+      'register',
+      'forgot-password',
+      'hospital-onboarding', // wizard
+      'backoffice' // 🔥 dejamos backoffice público por ahora
+    ]);
+
+    const path = route.routeConfig?.path ?? '';
+
+    if (publicRoutes.has(path)) {
+      return Promise.resolve(true);
     }
-    return true;
+
+    return new Promise(resolve => {
+      const unsub = onAuthStateChanged(auth, user => {
+        unsub();
+        if (user) {
+          resolve(true);
+        } else {
+          this.router.navigate(['/'], { replaceUrl: true });
+          resolve(false);
+        }
+      });
+    });
   }
 }

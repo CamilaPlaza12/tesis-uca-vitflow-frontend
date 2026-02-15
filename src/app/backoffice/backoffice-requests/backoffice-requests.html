@@ -1,4 +1,5 @@
 <div class="bo-shell">
+
   <!-- Top bar -->
   <header class="bo-topbar">
     <div class="bo-brand">
@@ -17,6 +18,7 @@
   </header>
 
   <main class="bo-page">
+
     <div class="bo-hero">
       <div>
         <div class="bo-title">Solicitudes de alta</div>
@@ -26,10 +28,21 @@
       </div>
     </div>
 
-    <div class="form-error" *ngIf="errorMsg">{{ errorMsg }}</div>
+    <!-- LOADER -->
+    <div class="bo-empty" *ngIf="loading">
+      Cargando solicitudes...
+    </div>
 
-    <!-- List -->
-    <section class="bo-list" *ngIf="pendingRequests.length > 0; else empty">
+    <!-- ERROR -->
+    <div class="form-error" *ngIf="!loading && errorMsg">
+      {{ errorMsg }}
+    </div>
+
+    <!-- LISTA -->
+    <section
+      class="bo-list"
+      *ngIf="!loading && pendingRequests.length > 0"
+    >
       <button
         type="button"
         class="bo-row"
@@ -37,61 +50,82 @@
         (click)="openDetail(r)"
       >
         <div class="bo-row-left">
-          <div class="bo-hospital">{{ r.hospital.name }}</div>
+          <div class="bo-hospital">
+            {{ r.hospital?.name }}
+          </div>
 
           <div class="bo-meta">
-            <span class="bo-tag" [class.bo-tag--pro]="r.plan.planId === 1">
-              {{ planLabel(r.plan.planId) }}
+            <span class="bo-admin">
+              {{ r.admin?.email }}
             </span>
-
-            <span class="bo-dot">•</span>
-            <span class="bo-admin">{{ r.admin.email }}</span>
           </div>
         </div>
 
         <div class="bo-row-right">
-          <div class="bo-date">{{ formatDate(r.createdAt) }}</div>
-          <div class="bo-status">Pendiente</div>
+          <div class="bo-date">
+            {{ formatDate(r.createdAt) }}
+          </div>
+          <div class="bo-status">
+            Pendiente
+          </div>
         </div>
       </button>
     </section>
 
-    <ng-template #empty>
-      <div class="bo-empty">
-        <div class="bo-empty-title">No hay solicitudes pendientes</div>
-        <div class="bo-empty-sub">
-          Cuando un hospital complete el registro, va a aparecer acá.
-        </div>
+    <!-- EMPTY -->
+    <div
+      class="bo-empty"
+      *ngIf="!loading && pendingRequests.length === 0"
+    >
+      <div class="bo-empty-title">
+        No hay solicitudes pendientes
       </div>
-    </ng-template>
+      <div class="bo-empty-sub">
+        Cuando un hospital complete el registro, va a aparecer acá.
+      </div>
+    </div>
+
   </main>
 </div>
 
-<!-- Detail panel -->
+<!-- DETAIL PANEL -->
 <div class="bo-backdrop" *ngIf="selected" (click)="closeDetail()">
   <div class="bo-panel" (click)="$event.stopPropagation()">
+
     <div class="bo-panel-head">
       <div>
         <div class="bo-panel-title">Solicitud</div>
-        <div class="bo-panel-sub">{{ selected.hospital.name }}</div>
+        <div class="bo-panel-sub">
+          {{ selected?.hospital?.name }}
+        </div>
       </div>
 
-      <button type="button" class="bo-close" (click)="closeDetail()" [disabled]="loading">✕</button>
+      <button
+        type="button"
+        class="bo-close"
+        (click)="closeDetail()"
+        [disabled]="loading"
+      >
+        ✕
+      </button>
     </div>
 
     <div class="bo-grid">
+
       <section class="bo-card">
         <div class="bo-card-title">Hospital</div>
 
         <div class="bo-kv">
           <div class="k">Email</div>
-          <div class="v">{{ selected.hospital.email }}</div>
+          <div class="v">{{ selected?.hospital?.email }}</div>
 
           <div class="k">Teléfono</div>
-          <div class="v">{{ selected.hospital.phone }}</div>
+          <div class="v">{{ selected?.hospital?.phone }}</div>
 
           <div class="k">Dirección</div>
-          <div class="v">{{ selected ? fullAddress(selected) : '—' }}</div>
+          <div class="v">
+            {{ selected ? fullAddress(selected) : '—' }}
+          </div>
         </div>
       </section>
 
@@ -100,45 +134,54 @@
 
         <div class="bo-kv">
           <div class="k">Nombre</div>
-          <div class="v">{{ selected.admin.firstName }} {{ selected.admin.lastName }}</div>
+          <div class="v">
+            {{ selected?.admin?.firstName }}
+            {{ selected?.admin?.lastName }}
+          </div>
 
           <div class="k">Email</div>
-          <div class="v">{{ selected.admin.email }}</div>
+          <div class="v">
+            {{ selected?.admin?.email }}
+          </div>
 
           <div class="k">Teléfono</div>
-          <div class="v">{{ selected.admin.phone }}</div>
+          <div class="v">
+            {{ selected?.admin?.phone }}
+          </div>
 
           <div class="k">DNI</div>
-          <div class="v">{{ selected.admin.dni }}</div>
+          <div class="v">
+            {{ selected?.admin?.dni }}
+          </div>
         </div>
       </section>
 
-      <section class="bo-card bo-card--plan">
-        <div class="bo-card-title">Plan</div>
-        <div class="bo-plan">
-          <span class="bo-tag" [class.bo-tag--pro]="selected.plan.planId === 1">
-            {{ selected.plan.planId === 1 ? 'Pro' : 'Free' }}
-          </span>
-          <span class="bo-plan-note">
-            {{ selected.plan.planId === 1 ? 'Gestión profesional para escalar' : 'Operación base para empezar' }}
-          </span>
-        </div>
-      </section>
     </div>
 
     <div class="bo-actions">
-      <button type="button" class="btn btn-google" (click)="openRejectConfirm()" [disabled]="loading">
+      <button
+        type="button"
+        class="btn btn-google"
+        (click)="openRejectConfirm()"
+        [disabled]="loading"
+      >
         Rechazar
       </button>
 
-      <button type="button" class="btn btn-primary" (click)="openApproveConfirm()" [disabled]="loading">
+      <button
+        type="button"
+        class="btn btn-primary"
+        (click)="openApproveConfirm()"
+        [disabled]="loading"
+      >
         Aprobar
       </button>
     </div>
+
   </div>
 </div>
 
-<!-- ✅ Tu modal genérico para confirmar acciones -->
+<!-- CONFIRM MODAL (NO TOCADO) -->
 <app-confirm-modal
   [open]="confirmOpen"
   [title]="confirmTitle"
@@ -150,3 +193,4 @@
   (confirm)="onConfirmAction()"
   (cancel)="closeConfirm()"
 ></app-confirm-modal>
+
