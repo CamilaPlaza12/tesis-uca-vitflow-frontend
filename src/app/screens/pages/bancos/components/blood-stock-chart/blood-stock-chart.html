@@ -1,0 +1,16 @@
+<div class="card">
+  <div class="card__header">
+    <h2>Stock actual</h2>
+    <span class="hint">Barras según umbral</span>
+  </div>
+
+  <div class="chart-wrap">
+    <p-chart type="bar" [data]="chartData" [options]="chartOptions"></p-chart>
+  </div>
+
+  <div class="legend">
+    <div class="pill pill--ok">OK</div>
+    <div class="pill pill--warn">Bajo</div>
+    <div class="pill pill--bad">Crítico</div>
+  </div>
+</div>

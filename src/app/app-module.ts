@@ -46,6 +46,13 @@ import { EquipoRoles } from './screens/pages/equipos-roles/equipos-roles';
 import { MiembrosTable } from './screens/pages/equipos-roles/components/miembros-table/miembros-table';
 import { SendValidationModal } from './screens/auth/register/components/send-validation-modal/send-validation-modal';
 import { BackofficeRequests } from './backoffice/backoffice-requests/backoffice-requests';
+import { BloodStockChart } from './screens/pages/bancos/components/blood-stock-chart/blood-stock-chart';
+import { BloodThresholdTable } from './screens/pages/bancos/components/blood-threshold-table/blood-threshold-table';
+import { ChartModule } from 'primeng/chart';
+import { DialogModule } from 'primeng/dialog';
+import { InputNumberModule } from 'primeng/inputnumber';
+import { TooltipModule } from 'primeng/tooltip';
+import { ToastModule } from 'primeng/toast';
 
 @NgModule({
   declarations: [
@@ -79,6 +86,8 @@ import { BackofficeRequests } from './backoffice/backoffice-requests/backoffice-
     MiembrosTable,
     SendValidationModal,
     BackofficeRequests,
+    BloodStockChart,
+    BloodThresholdTable
   ],
   imports: [
     BrowserModule,
@@ -90,8 +99,13 @@ import { BackofficeRequests } from './backoffice/backoffice-requests/backoffice-
     ButtonModule,
     RouterModule,
     RippleModule,
-    HttpClientModule
-  ],
+    HttpClientModule,
+    ChartModule,
+    DialogModule,
+    InputNumberModule,
+    TooltipModule,
+    ToastModule
+],
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideHttpClient(withInterceptorsFromDi()),

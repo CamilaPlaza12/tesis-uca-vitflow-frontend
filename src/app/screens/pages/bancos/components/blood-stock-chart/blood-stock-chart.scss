@@ -1,0 +1,71 @@
+.card {
+  background: #fff;
+  border-radius: 18px;
+  border: 1px solid #eef2f6;
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.06);
+  overflow: hidden;
+}
+
+.card__header {
+  padding: 16px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid #f1f4f8;
+
+  h2 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 750;
+    letter-spacing: -0.01em;
+  }
+
+  .hint {
+    font-size: 12.5px;
+    color: #7b8a99;
+    background: #f6f8fb;
+    border: 1px solid #eef2f6;
+    padding: 6px 10px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+}
+
+.chart-wrap {
+  height: 360px;
+  padding: 14px 14px 8px;
+}
+
+.legend {
+  padding: 0 18px 16px;
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.pill {
+  font-size: 12px;
+  font-weight: 760;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+
+  &.pill--ok {
+    background: #eef6ff;
+    color: #1d4ed8;
+    border-color: #dbeafe;
+  }
+
+  &.pill--warn {
+    background: #fff3e6;
+    color: #9a4b00;
+    border-color: #ffe3c7;
+  }
+
+  &.pill--bad {
+    background: #fff1f2;
+    color: #b91c1c;
+    border-color: #fee2e2;
+  }
+}

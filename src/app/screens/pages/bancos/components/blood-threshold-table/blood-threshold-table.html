@@ -1,0 +1,89 @@
+<div class="card">
+  <div class="card__header">
+    <h2>Umbrales mínimos</h2>
+    <span class="hint">Editá por grupo</span>
+  </div>
+
+  <div class="table-wrap">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Grupo/Rh</th>
+          <th>Stock (ml)</th>
+          <th>Umbral mínimo (ml)</th>
+          <th>Estado</th>
+          <th class="actions-col"></th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let type of bloodTypes" class="row">
+          <td class="mono">{{ type }}</td>
+          <td class="mono">{{ stocks[type] }}</td>
+          <td class="mono">{{ (thresholds[type] ?? 0) }}</td>
+
+          <td>
+            <span
+              class="status"
+              [class.status--ok]="getStatus(type) === 'ok'"
+              [class.status--bajo]="getStatus(type) === 'bajo'"
+              [class.status--critico]="getStatus(type) === 'critico'"
+            >
+              {{ statusLabel(getStatus(type)) }}
+            </span>
+          </td>
+
+          <td class="actions-col">
+            <button
+              class="icon-btn"
+              type="button"
+              (click)="openEdit(type); $event.stopPropagation()"
+              pTooltip="Editar umbral"
+              tooltipPosition="left"
+              [innerHTML]="pencilSvg"
+            ></button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Modal edición -->
+<p-dialog
+  [(visible)]="editOpen"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [closable]="true"
+  [style]="{ width: '420px' }"
+  header="Editar umbral mínimo"
+  (onHide)="cancelEdit()"
+>
+  <div class="dialog-body">
+    <div class="dialog-row">
+      <div class="label">Grupo</div>
+      <div class="value mono">{{ editType }}</div>
+    </div>
+
+    <div class="dialog-row">
+      <div class="label">Umbral mínimo (ml)</div>
+      <div class="value">
+        <p-inputNumber
+          [(ngModel)]="editValue"
+          [min]="0"
+          [max]="5000000"
+          [useGrouping]="true"
+          inputId="thr"
+          [style]="{ width: '100%' }"
+        ></p-inputNumber>
+        <div class="subhint">Se usa para colorear el gráfico y disparar alertas automáticas.</div>
+      </div>
+    </div>
+
+    <div class="dialog-actions">
+      <button class="btn btn--ghost" type="button" (click)="cancelEdit()">Cancelar</button>
+      <button class="btn btn--primary" type="button" (click)="saveEdit()">Guardar</button>
+    </div>
+  </div>
+</p-dialog>

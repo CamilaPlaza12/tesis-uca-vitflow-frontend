@@ -1,1 +1,24 @@
-<p>bancos works!</p>
+<section class="bancos-page" *ngIf="!loading">
+
+  <header class="page-header">
+    <div>
+      <h1>Bancos de Sangre</h1>
+      <p>Stock en tiempo real por grupo sanguíneo y factor Rh</p>
+    </div>
+
+    <span class="hint">Actualizado hoy</span>
+  </header>
+
+  <!-- GRÁFICO -->
+  <app-blood-stock-chart
+    [stocks]="bloodBank.stocks_ml"
+    [thresholds]="bloodBank.thresholds_ml">
+  </app-blood-stock-chart>
+
+  <!-- TABLA -->
+  <app-blood-threshold-table
+    [stocks]="bloodBank.stocks_ml"
+    [thresholds]="bloodBank.thresholds_ml">
+  </app-blood-threshold-table>
+
+</section>
