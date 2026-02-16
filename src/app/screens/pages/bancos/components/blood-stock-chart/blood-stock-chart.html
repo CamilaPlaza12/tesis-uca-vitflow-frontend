@@ -1,11 +1,11 @@
-<div class="card" #hostEl>
+<div class="card">
   <div class="card__header">
     <h2>Stock actual</h2>
     <span class="hint">Barras según umbral</span>
   </div>
 
-  <div class="chart-wrap">
-    <p-chart #chart type="bar" [data]="chartData" [options]="chartOptions"></p-chart>
+  <div class="chart-wrap" #wrapRef>
+    <p-chart #chartRef type="bar" [data]="chartData" [options]="chartOptions"></p-chart>
   </div>
 
   <div class="legend">
