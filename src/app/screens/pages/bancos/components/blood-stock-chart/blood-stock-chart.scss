@@ -4,6 +4,10 @@
   border: 1px solid #eef2f6;
   box-shadow: 0 14px 34px rgba(15, 23, 42, 0.06);
   overflow: hidden;
+
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .card__header {
@@ -33,8 +37,21 @@
 }
 
 .chart-wrap {
-  height: 360px;
+  flex: 1;
+  min-height: 380px;
   padding: 14px 14px 8px;
+}
+
+/* ✅ PrimeNG Chart: fuerza 100% ancho/alto */
+:host ::ng-deep .chart-wrap .p-chart {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+:host ::ng-deep .chart-wrap canvas {
+  width: 100% !important;
+  height: 100% !important;
 }
 
 .legend {

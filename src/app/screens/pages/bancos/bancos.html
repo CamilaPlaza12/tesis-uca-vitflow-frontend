@@ -9,16 +9,22 @@
     <span class="hint">Actualizado hoy</span>
   </header>
 
-  <!-- GRÁFICO -->
-  <app-blood-stock-chart
-    [stocks]="bloodBank.stocks_ml"
-    [thresholds]="bloodBank.thresholds_ml">
-  </app-blood-stock-chart>
+  <div class="top-grid">
+    <app-blood-stock-chart
+      [stocks]="bloodBank.stocks_ml"
+      [thresholds]="bloodBank.thresholds_ml">
+    </app-blood-stock-chart>
 
-  <!-- TABLA -->
+    <app-blood-manual-actions
+      [stocks]="bloodBank.stocks_ml"
+      (applyChange)="onManualChange($event)">
+    </app-blood-manual-actions>
+  </div>
+
   <app-blood-threshold-table
     [stocks]="bloodBank.stocks_ml"
-    [thresholds]="bloodBank.thresholds_ml">
+    [thresholds]="bloodBank.thresholds_ml"
+    (thresholdChange)="onThresholdChange($event)">
   </app-blood-threshold-table>
 
 </section>

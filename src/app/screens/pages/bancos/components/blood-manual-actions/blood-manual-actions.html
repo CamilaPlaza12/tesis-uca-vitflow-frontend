@@ -1,0 +1,103 @@
+<div class="card actions-card">
+  <div class="card__header">
+    <h2>Acciones</h2>
+    <span class="hint">Manual</span>
+  </div>
+
+  <div class="body">
+    <p class="desc">{{ subtitle() }}</p>
+
+    <button class="action-btn action-btn--add" type="button" (click)="open('add')">
+      <span class="icon pi pi-plus"></span>
+      <span class="txt">
+        <span class="t">Agregar stock</span>
+        <span class="s">Suma ml a un grupo</span>
+      </span>
+    </button>
+
+    <button class="action-btn action-btn--remove" type="button" (click)="open('remove')">
+      <span class="icon pi pi-minus"></span>
+      <span class="txt">
+        <span class="t">Quitar stock</span>
+        <span class="s">Resta ml a un grupo</span>
+      </span>
+    </button>
+
+    <div class="note">
+      Tip: esto después llama a <span class="mono">PATCH /blood-bank/add</span> o <span class="mono">PATCH /blood-bank/remove</span>.
+    </div>
+  </div>
+</div>
+
+<p-dialog
+  [(visible)]="modalOpen"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [closable]="true"
+  [dismissableMask]="true"
+  maskStyleClass="vf-actions-mask"
+  styleClass="vf-actions-dialog"
+  [style]="{ width: '480px' }"
+  [baseZIndex]="10000"
+  (onHide)="close()"
+>
+  <!-- Header custom -->
+  <ng-template pTemplate="header">
+    <div class="vf-act__header">
+      <div class="vf-act__title">
+        <div class="h">{{ title() }}</div>
+        <div class="s">Ajuste manual de stock (ml) por grupo sanguíneo</div>
+      </div>
+
+      <div class="vf-act__chip mono">
+        {{ modalAction === 'add' ? 'Agregar' : 'Quitar' }}
+      </div>
+    </div>
+  </ng-template>
+
+  <!-- Content -->
+  <div class="vf-act__body">
+    <div class="vf-field">
+      <label class="vf-label">Grupo</label>
+      <div class="vf-control">
+        <select class="select" [(ngModel)]="selectedType">
+          <option *ngFor="let t of bloodTypes" [value]="t">{{ t }}</option>
+        </select>
+        <div class="vf-help">Elegí el grupo que querés ajustar.</div>
+      </div>
+    </div>
+
+    <div class="vf-field">
+      <label class="vf-label">Cantidad (ml)</label>
+      <div class="vf-control">
+        <p-inputNumber
+          [(ngModel)]="amountMl"
+          [min]="1"
+          [max]="5000000"
+          [useGrouping]="true"
+          [style]="{ width: '100%' }"
+        ></p-inputNumber>
+
+        <div class="vf-help">
+          Se aplicará como {{ modalAction === 'add' ? 'suma' : 'resta' }} en el stock del grupo seleccionado.
+        </div>
+      </div>
+    </div>
+
+    <div class="vf-act__warn" *ngIf="modalAction === 'remove'">
+      <i class="pi pi-info-circle"></i>
+      <span>Si la cantidad supera el stock, el backend puede rechazar la operación.</span>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <ng-template pTemplate="footer">
+    <div class="vf-act__footer">
+      <button class="btn btn--ghost" type="button" (click)="close()">Cancelar</button>
+      <button class="btn btn--primary" type="button" (click)="confirm()">
+        {{ modalAction === 'add' ? 'Confirmar agregado' : 'Confirmar descuento' }}
+      </button>
+    </div>
+  </ng-template>
+</p-dialog>

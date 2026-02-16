@@ -19,13 +19,13 @@ interface HospitalOnboardingRequest {
     email: string;
     phone: string;
     address: {
-      street?: string;
-      number?: string;
-      city?: string;
-      localidad?: string;
-      province?: string;
-      provinceId?: string;
-      localidadId?: string;
+      street: string;
+      number: string;
+      city: string;
+      localidad: string;
+      province: string;
+      provinceId: string;
+      localidadId: string;
     };
   };
   status: OnboardingStatus;

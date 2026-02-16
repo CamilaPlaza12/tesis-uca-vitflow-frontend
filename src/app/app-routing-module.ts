@@ -18,7 +18,7 @@ const routes: Routes = [
   { path: 'signin', component: SignIn },
   { path: 'register', component: Register },
   { path: 'home', component: Home},
-  { path: 'bancos', component: Bancos, canActivate: [AuthGuard] },
+  { path: 'bancos', component: Bancos},
   { path: 'turnos', component: Turnos },
   { path: 'pedidos-alertas', component: PedidosAlertas },
   { path: 'configuracion', component: Configuracion, canActivate: [AuthGuard] },

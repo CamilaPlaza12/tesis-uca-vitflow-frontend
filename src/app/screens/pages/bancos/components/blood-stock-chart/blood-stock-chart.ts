@@ -1,4 +1,5 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Input, OnChanges, OnDestroy, SimpleChanges, ViewChild } from '@angular/core';
+import { UIChart } from 'primeng/chart';
 import { BloodType } from '../../../../../models/blood-bank.model';
 
 @Component({
@@ -7,7 +8,7 @@ import { BloodType } from '../../../../../models/blood-bank.model';
   templateUrl: './blood-stock-chart.html',
   styleUrl: './blood-stock-chart.scss',
 })
-export class BloodStockChart implements OnChanges {
+export class BloodStockChart implements OnChanges, AfterViewInit, OnDestroy {
 
   @Input() stocks!: Record<BloodType, number>;
   @Input() thresholds!: Partial<Record<BloodType, number>>;
@@ -17,21 +18,44 @@ export class BloodStockChart implements OnChanges {
   chartData: any;
   chartOptions: any;
 
+  @ViewChild('chart') chart?: UIChart;
+  @ViewChild('hostEl', { static: true }) hostEl!: ElementRef<HTMLElement>;
+
+  private ro?: ResizeObserver;
+
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['stocks'] || changes['thresholds']) {
       this.buildChart();
+      this.safeRefresh();
     }
+  }
+
+  ngAfterViewInit(): void {
+    // ✅ refresco inicial post-render
+    this.safeRefresh();
+
+    // ✅ reflow automático cuando el contenedor cambia (sidebar open/close)
+    this.ro = new ResizeObserver(() => this.safeRefresh());
+    this.ro.observe(this.hostEl.nativeElement);
+  }
+
+  ngOnDestroy(): void {
+    this.ro?.disconnect();
+  }
+
+  private safeRefresh(): void {
+    // setTimeout para esperar a que el layout se asiente
+    setTimeout(() => this.chart?.refresh(), 0);
   }
 
   private buildChart(): void {
     const labels = this.bloodTypes;
     const values = labels.map(t => Number(this.stocks?.[t] ?? 0));
-    const thresholds = labels.map(t => Number(this.thresholds?.[t] ?? 0));
+    const thrValues = labels.map(t => Number(this.thresholds?.[t] ?? 0));
 
     const colors = labels.map(t => this.getBarColor(t));
     const borderColors = labels.map(t => this.getBarBorderColor(t));
 
-    // Línea de umbral (dataset tipo line)
     this.chartData = {
       labels,
       datasets: [
@@ -42,13 +66,17 @@ export class BloodStockChart implements OnChanges {
           backgroundColor: colors,
           borderColor: borderColors,
           borderWidth: 1.2,
-          borderRadius: 10,
-          barThickness: 34,
+          borderRadius: 12,
+
+          // ✅ más “gordas” pero escalables si sumás más categorías
+          maxBarThickness: 62,
+          categoryPercentage: 0.78,
+          barPercentage: 0.92,
         },
         {
           type: 'line',
           label: 'Umbral mínimo (ml)',
-          data: thresholds,
+          data: thrValues,
           tension: 0.35,
           borderWidth: 2,
           pointRadius: 3,
@@ -61,6 +89,7 @@ export class BloodStockChart implements OnChanges {
     this.chartOptions = {
       responsive: true,
       maintainAspectRatio: false,
+      layout: { padding: { left: 10, right: 14, top: 6, bottom: 0 } },
       plugins: {
         legend: {
           position: 'bottom',
@@ -79,7 +108,7 @@ export class BloodStockChart implements OnChanges {
       scales: {
         x: {
           grid: { display: false },
-          ticks: { font: { size: 12 } },
+          ticks: { font: { size: 12 }, color: '#607080' },
         },
         y: {
           beginAtZero: true,
@@ -87,21 +116,21 @@ export class BloodStockChart implements OnChanges {
           ticks: {
             callback: (v: number) => `${v} ml`,
             font: { size: 12 },
+            color: '#607080',
           },
         },
       },
     };
   }
 
-  // celeste ok, naranja bajo, rojo crítico
   private getBarColor(type: BloodType): string {
     const stock = Number(this.stocks?.[type] ?? 0);
     const thr = Number(this.thresholds?.[type] ?? 0);
 
-    if (!thr || thr <= 0) return 'rgba(125, 211, 252, 0.75)'; // sin umbral: lo tratamos como ok
-    if (stock <= thr) return 'rgba(239, 68, 68, 0.78)';       // rojo
-    if (stock <= thr * 1.3) return 'rgba(249, 115, 22, 0.78)';// naranja
-    return 'rgba(125, 211, 252, 0.82)';                        // celeste
+    if (!thr || thr <= 0) return 'rgba(125, 211, 252, 0.84)';
+    if (stock <= thr) return 'rgba(239, 68, 68, 0.84)';
+    if (stock <= thr * 1.3) return 'rgba(249, 115, 22, 0.84)';
+    return 'rgba(125, 211, 252, 0.88)';
   }
 
   private getBarBorderColor(type: BloodType): string {

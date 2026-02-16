@@ -51,12 +51,12 @@
       >
         <div class="bo-row-left">
           <div class="bo-hospital">
-            {{ r.hospital?.name }}
+            {{ r.hospital.name }}
           </div>
 
           <div class="bo-meta">
             <span class="bo-admin">
-              {{ r.admin?.email }}
+              {{ r.admin.email }}
             </span>
           </div>
         </div>
@@ -96,7 +96,7 @@
       <div>
         <div class="bo-panel-title">Solicitud</div>
         <div class="bo-panel-sub">
-          {{ selected?.hospital?.name }}
+          {{ selected.hospital.name }}
         </div>
       </div>
 
@@ -117,10 +117,10 @@
 
         <div class="bo-kv">
           <div class="k">Email</div>
-          <div class="v">{{ selected?.hospital?.email }}</div>
+          <div class="v">{{ selected.hospital.email }}</div>
 
           <div class="k">Teléfono</div>
-          <div class="v">{{ selected?.hospital?.phone }}</div>
+          <div class="v">{{ selected.hospital.phone }}</div>
 
           <div class="k">Dirección</div>
           <div class="v">
@@ -135,23 +135,23 @@
         <div class="bo-kv">
           <div class="k">Nombre</div>
           <div class="v">
-            {{ selected?.admin?.firstName }}
-            {{ selected?.admin?.lastName }}
+            {{ selected.admin.firstName }}
+            {{ selected.admin.lastName }}
           </div>
 
           <div class="k">Email</div>
           <div class="v">
-            {{ selected?.admin?.email }}
+            {{ selected.admin.email }}
           </div>
 
           <div class="k">Teléfono</div>
           <div class="v">
-            {{ selected?.admin?.phone }}
+            {{ selected.admin.phone }}
           </div>
 
           <div class="k">DNI</div>
           <div class="v">
-            {{ selected?.admin?.dni }}
+            {{ selected.admin.dni }}
           </div>
         </div>
       </section>

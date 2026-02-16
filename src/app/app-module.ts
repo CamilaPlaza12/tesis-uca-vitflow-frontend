@@ -53,6 +53,7 @@ import { DialogModule } from 'primeng/dialog';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { TooltipModule } from 'primeng/tooltip';
 import { ToastModule } from 'primeng/toast';
+import { BloodManualActions } from './screens/pages/bancos/components/blood-manual-actions/blood-manual-actions';
 
 @NgModule({
   declarations: [
@@ -87,7 +88,8 @@ import { ToastModule } from 'primeng/toast';
     SendValidationModal,
     BackofficeRequests,
     BloodStockChart,
-    BloodThresholdTable
+    BloodThresholdTable,
+    BloodManualActions
   ],
   imports: [
     BrowserModule,

@@ -38,10 +38,10 @@
               class="icon-btn"
               type="button"
               (click)="openEdit(type); $event.stopPropagation()"
-              pTooltip="Editar umbral"
-              tooltipPosition="left"
-              [innerHTML]="pencilSvg"
-            ></button>
+              aria-label="Editar umbral"
+            >
+              <i class="pi pi-pencil"></i>
+            </button>
           </td>
         </tr>
       </tbody>
@@ -56,34 +56,54 @@
   [draggable]="false"
   [resizable]="false"
   [closable]="true"
-  [style]="{ width: '420px' }"
-  header="Editar umbral mínimo"
+  [dismissableMask]="true"
+  maskStyleClass="vf-thr-mask"
+  styleClass="vf-thr-dialog"
+  [style]="{ width: '460px' }"
+  [baseZIndex]="10000"
   (onHide)="cancelEdit()"
 >
-  <div class="dialog-body">
-    <div class="dialog-row">
-      <div class="label">Grupo</div>
-      <div class="value mono">{{ editType }}</div>
+  <!-- Header custom -->
+  <ng-template pTemplate="header">
+    <div class="vf-thr__header">
+      <div class="vf-thr__title">
+        <div class="h">Editar umbral mínimo</div>
+        <div class="s">Definí el mínimo para alertas y color del gráfico</div>
+      </div>
+
+      <div class="vf-thr__chip mono">{{ editType }}</div>
+    </div>
+  </ng-template>
+
+  <!-- Content -->
+  <div class="vf-thr__body">
+    <div class="vf-field">
+      <label class="vf-label">Grupo</label>
+      <div class="vf-value mono">{{ editType }}</div>
     </div>
 
-    <div class="dialog-row">
-      <div class="label">Umbral mínimo (ml)</div>
-      <div class="value">
+    <div class="vf-field">
+      <label class="vf-label">Umbral mínimo (ml)</label>
+      <div class="vf-control">
         <p-inputNumber
           [(ngModel)]="editValue"
           [min]="0"
           [max]="5000000"
           [useGrouping]="true"
-          inputId="thr"
           [style]="{ width: '100%' }"
         ></p-inputNumber>
-        <div class="subhint">Se usa para colorear el gráfico y disparar alertas automáticas.</div>
+        <div class="vf-help">
+          Se usa para colorear el gráfico y disparar alertas automáticas.
+        </div>
       </div>
     </div>
+  </div>
 
-    <div class="dialog-actions">
+  <!-- Footer -->
+  <ng-template pTemplate="footer">
+    <div class="vf-thr__footer">
       <button class="btn btn--ghost" type="button" (click)="cancelEdit()">Cancelar</button>
       <button class="btn btn--primary" type="button" (click)="saveEdit()">Guardar</button>
     </div>
-  </div>
+  </ng-template>
 </p-dialog>
