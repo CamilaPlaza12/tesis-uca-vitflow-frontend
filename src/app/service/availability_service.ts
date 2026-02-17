@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-
+import { Observable, finalize, tap, timeout } from 'rxjs';
 import { HospitalAvailability } from '../models/disponibilidad';
 
 @Injectable({ providedIn: 'root' })
@@ -11,13 +10,41 @@ export class AvailabilityService {
 
   constructor(private http: HttpClient) {}
 
-  // GET /hospital-availability (el back identifica al hospital por el token)
   getHospitalAvailability(): Observable<HospitalAvailability> {
-    return this.http.get<HospitalAvailability>(this.endpoint);
+    const startedAt = performance.now();
+
+    return this.http.get<HospitalAvailability>(this.endpoint).pipe(
+      timeout(15000), // 15s: si no responde, cortamos
+      tap({
+        next: (res) => {
+          const ms = Math.round(performance.now() - startedAt);
+          console.log('✅ getHospitalAvailability OK', { ms, res });
+        },
+        error: (e) => {
+          const ms = Math.round(performance.now() - startedAt);
+          console.log('❌ getHospitalAvailability ERROR', { ms, e });
+        },
+      }),
+      finalize(() => console.log('ℹ️ getHospitalAvailability finalize()'))
+    );
   }
 
-  // PUT /hospital-availability
   saveHospitalAvailability(body: HospitalAvailability): Observable<HospitalAvailability> {
-    return this.http.put<HospitalAvailability>(this.endpoint, body);
+    const startedAt = performance.now();
+
+    return this.http.put<HospitalAvailability>(this.endpoint, body).pipe(
+      timeout(15000),
+      tap({
+        next: (res) => {
+          const ms = Math.round(performance.now() - startedAt);
+          console.log('✅ saveHospitalAvailability OK', { ms, res });
+        },
+        error: (e) => {
+          const ms = Math.round(performance.now() - startedAt);
+          console.log('❌ saveHospitalAvailability ERROR', { ms, e });
+        },
+      }),
+      finalize(() => console.log('ℹ️ saveHospitalAvailability finalize()'))
+    );
   }
 }

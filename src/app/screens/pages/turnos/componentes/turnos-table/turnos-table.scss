@@ -1,4 +1,4 @@
-.card{
+.card {
   background: #fff;
   border-radius: 18px;
   border: 1px solid #eef2f6;
@@ -7,7 +7,7 @@
   margin-top: 18px;
 }
 
-.card__header{
+.card__header {
   padding: 16px 18px;
   display: flex;
   align-items: center;
@@ -16,13 +16,13 @@
   border-bottom: 1px solid #f1f4f8;
 }
 
-.title{
+.title {
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
-.card__header h2{
+.card__header h2 {
   margin: 0;
   font-size: 16px;
   font-weight: 850;
@@ -30,19 +30,19 @@
   color: #0f172a;
 }
 
-.sub{
+.sub {
   font-size: 12.5px;
   color: #64748b;
   font-weight: 650;
 }
 
-.header-actions{
+.header-actions {
   display: inline-flex;
   align-items: center;
   gap: 10px;
 }
 
-.hint{
+.hint {
   font-size: 12.5px;
   color: #7b8a99;
   background: #f6f8fb;
@@ -52,7 +52,7 @@
   white-space: nowrap;
 }
 
-.excel-btn{
+.excel-btn {
   width: 38px;
   height: 38px;
   border-radius: 10px;
@@ -66,26 +66,25 @@
   transition: background 120ms ease, transform 100ms ease, box-shadow 120ms ease;
 }
 
-.excel-btn:hover{
+.excel-btn:hover {
   background: #d1fae5;
   transform: translateY(-1px);
   box-shadow: 0 6px 14px rgba(16, 185, 129, 0.25);
 }
 
-.excel-btn:disabled{
+.excel-btn:disabled {
   opacity: 0.45;
   cursor: default;
   transform: none;
   box-shadow: none;
 }
 
-.excel-ic{
+.excel-ic {
   width: 18px;
   height: 18px;
 }
 
-
-.filters{
+.filters {
   padding: 14px 18px;
   display: flex;
   align-items: end;
@@ -95,25 +94,25 @@
   background: #fbfcfe;
 }
 
-.field{
+.field {
   display: flex;
   flex-direction: column;
   gap: 6px;
   min-width: 180px;
 }
 
-.field.grow{
+.field.grow {
   flex: 1 1 260px;
   min-width: 240px;
 }
 
-label{
+label {
   font-size: 12px;
   color: #607080;
   font-weight: 750;
 }
 
-.input{
+.input {
   width: 100%;
   box-sizing: border-box;
   border: 1px solid #e6ecf3;
@@ -127,12 +126,12 @@ label{
   height: 40px;
 }
 
-.input:focus{
+.input:focus {
   border-color: rgba(59, 130, 246, 0.55);
   box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
 }
 
-.btn{
+.btn {
   height: 40px;
   border-radius: 12px;
   border: 1px solid #e6ecf3;
@@ -144,29 +143,29 @@ label{
   transition: background 120ms ease, transform 100ms ease;
 }
 
-.btn:hover{
+.btn:hover {
   background: #f6f8fb;
   transform: translateY(-1px);
 }
 
-.btn:active{
+.btn:active {
   transform: translateY(0);
 }
 
-.table-wrap{
+.table-wrap {
   max-height: 470px;
   overflow-y: auto;
   overflow-x: auto;
 }
 
-.table{
+.table {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
   min-width: 900px;
 }
 
-.table thead th{
+.table thead th {
   position: sticky;
   top: 0;
   background: #ffffff;
@@ -180,7 +179,7 @@ label{
   border-bottom: 1px solid #eef2f6;
 }
 
-.table tbody td{
+.table tbody td {
   padding: 12px 14px;
   border-bottom: 1px solid #f2f5f9;
   font-size: 13.5px;
@@ -188,22 +187,22 @@ label{
   text-align: center;
 }
 
-.row{
+.row {
   cursor: default;
 }
 
-.mono{
+.mono {
   font-variant-numeric: tabular-nums;
 }
 
-.name{
+.name {
   max-width: 260px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.status{
+.status {
   display: inline-flex;
   align-items: center;
   padding: 6px 10px;
@@ -213,53 +212,50 @@ label{
   border: 1px solid transparent;
 }
 
-.status.status--programado{
+.status.status--programado {
   background: #eef6ff;
   color: #1d4ed8;
   border-color: #dbeafe;
 }
 
-.status.status--confirmado{
+.status.status--confirmado {
   background: #ecfdf5;
   color: #047857;
   border-color: #d1fae5;
 }
 
-.status.status--completado{
+.status.status--completado {
   background: #f6f8fb;
   color: #526274;
   border-color: #eef2f6;
 }
 
-.status.status--no-presentado{
+.status.status--no-presentado {
   background: #fff1f2;
   color: #b91c1c;
   border-color: #fee2e2;
 }
 
-.status.status--cancelado{
+.status.status--cancelado {
   background: #fff1f2;
   color: #b91c1c;
   border-color: #fee2e2;
 }
 
-.empty{
+.empty {
   text-align: center;
   color: #7b8a99;
   padding: 22px 14px;
 }
 
-@media (max-width: 900px){
-  .field{
+@media (max-width: 900px) {
+  .field {
     min-width: 160px;
   }
-
-  .field.grow{
+  .field.grow {
     min-width: 100%;
   }
-
-  .btn{
+  .btn {
     width: 100%;
   }
 }
-

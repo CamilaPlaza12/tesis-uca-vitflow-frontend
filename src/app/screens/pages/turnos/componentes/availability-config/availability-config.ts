@@ -5,12 +5,10 @@ type Row = {
   day: Weekday;
   enabled: boolean;
   timeSlots: TimeSlot[];
-
   rangeStart: string;
   rangeEnd: string;
   interval: number;
   defaultCap: number;
-
   error?: string | null;
 };
 
@@ -21,19 +19,22 @@ type Row = {
   styleUrl: './availability-config.scss',
 })
 export class AvailabilityConfig implements OnChanges {
-  @Input() hospitalId!: number | string;
   @Input() initial: AvailabilityDay[] | null = null;
+
+  // ✅ NUEVO: estado de guardado/control desde el padre
+  @Input() saving = false;
+
+  // ✅ NUEVO: mostrar error real del save
+  @Input() errorMsg = '';
 
   @Output() save = new EventEmitter<AvailabilityDay[]>();
   @Output() cancel = new EventEmitter<void>();
 
-  // ✅ sin tildes, alineado a tu Weekday nuevo
   days: Weekday[] = ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo'];
   intervalOptions = [5, 10, 15, 20, 30, 60];
 
   rows: Row[] = [];
 
-  // snapshot “último estado confirmado” (initial al abrir / lo guardado)
   private lastInitialSnapshot: AvailabilityDay[] | null = null;
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -58,13 +59,11 @@ export class AvailabilityConfig implements OnChanges {
 
   private hydrateFromInitial(source: AvailabilityDay[] | null): void {
     const base = this.baseRows();
-
     if (!source || source.length === 0) {
       this.rows = base;
       return;
     }
 
-    // day -> { enabled, timeSlots }
     const map = new Map<Weekday, AvailabilityDay>();
     for (const item of source) {
       map.set(item.day, {
@@ -80,11 +79,7 @@ export class AvailabilityConfig implements OnChanges {
     this.rows = base.map((r) => {
       const found = map.get(r.day);
       const slots = this.sortUnique((found?.timeSlots ?? []) as TimeSlot[]);
-      return {
-        ...r,
-        enabled: found ? !!found.enabled : false,
-        timeSlots: slots,
-      };
+      return { ...r, enabled: found ? !!found.enabled : false, timeSlots: slots };
     });
 
     for (const row of this.rows) {
@@ -93,6 +88,7 @@ export class AvailabilityConfig implements OnChanges {
       const mins = row.timeSlots
         .map((s) => this.toMinutes(s.time))
         .filter((x) => x !== null) as number[];
+
       if (mins.length === 0) continue;
 
       const minM = Math.min(...mins);
@@ -107,7 +103,6 @@ export class AvailabilityConfig implements OnChanges {
   toggleDay(row: Row): void {
     row.enabled = !row.enabled;
     row.error = null;
-    // ✅ NO borrar timeSlots al apagar (se guardan aunque enabled=false)
   }
 
   addTimeSlot(row: Row): void {
@@ -150,7 +145,6 @@ export class AvailabilityConfig implements OnChanges {
   updateCapacity(row: Row, idx: number, value: string): void {
     const n = Number(value);
     const cap = Number.isFinite(n) ? Math.max(1, Math.min(999, Math.floor(n))) : 1;
-
     row.timeSlots = row.timeSlots.map((s, i) => (i === idx ? { ...s, capacity: cap } : s));
   }
 
@@ -192,7 +186,8 @@ export class AvailabilityConfig implements OnChanges {
   }
 
   onSave(): void {
-    // ✅ devolvemos SIEMPRE los 7 días (como acordamos)
+    if (this.saving) return;
+
     const out: AvailabilityDay[] = this.rows.map((r) => ({
       day: r.day,
       enabled: !!r.enabled,
@@ -237,17 +232,14 @@ export class AvailabilityConfig implements OnChanges {
   private sortUnique(list: TimeSlot[]): TimeSlot[] {
     const seen = new Set<string>();
     const out: TimeSlot[] = [];
-
     for (const item of list ?? []) {
       const time = this.normalizeTime(item?.time || '');
       if (!time || time.length !== 5) continue;
       if (seen.has(time)) continue;
       seen.add(time);
-
       const cap = Math.max(1, Math.min(999, Math.floor(Number(item?.capacity) || 1)));
       out.push({ time, capacity: cap });
     }
-
     out.sort((a, b) => a.time.localeCompare(b.time));
     return out;
   }

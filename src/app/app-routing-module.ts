@@ -18,11 +18,11 @@ const routes: Routes = [
   { path: 'signin', component: SignIn },
   { path: 'register', component: Register },
   { path: 'home', component: Home},
-  { path: 'bancos', component: Bancos},
-  { path: 'turnos', component: Turnos },
-  { path: 'pedidos-alertas', component: PedidosAlertas },
+  { path: 'bancos', component: Bancos, canActivate: [AuthGuard] },
+  { path: 'turnos', component: Turnos, canActivate: [AuthGuard]  },
+  { path: 'pedidos-alertas', component: PedidosAlertas, canActivate: [AuthGuard]  },
   { path: 'configuracion', component: Configuracion, canActivate: [AuthGuard] },
-  { path: 'equipo-roles', component: EquipoRoles },
+  { path: 'equipo-roles', component: EquipoRoles, canActivate: [AuthGuard]  },
   { path: 'backoffice', component: BackofficeRequests },
 
 

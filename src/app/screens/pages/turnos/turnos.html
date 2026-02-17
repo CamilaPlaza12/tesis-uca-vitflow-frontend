@@ -1,5 +1,4 @@
 <div class="page">
-  <div #topAnchor style="height:1px;"></div>
   <header class="header">
     <div class="header__left">
       <h1>Turnos de donación</h1>
@@ -7,12 +6,14 @@
       <div class="subtitle-row">
         <p>Controlá la agenda de donaciones del hospital.</p>
 
+        <!-- Lapicito solo cuando NO es onboarding -->
         <button
+          *ngIf="!availabilityLoading && showAgenda"
           class="edit-icon"
           type="button"
           title="Editar disponibilidad"
           aria-label="Editar disponibilidad"
-          (click)="onEditDisponibilidadFromHeader()"
+          (click)="openConfigFromEdit()"
         >
           <span class="edit-glyph">✎</span>
         </button>
@@ -24,23 +25,35 @@
     </div>
   </header>
 
-  <section class="onboarding" *ngIf="!hasDisponibilidad">
+  <!-- LOADING DISPONIBILIDAD -->
+  <section class="availability-loading" *ngIf="availabilityLoading">
+    <div class="loading-box">Cargando disponibilidad…</div>
+  </section>
+
+  <!-- ONBOARDING (vacío) -->
+  <section class="onboarding" *ngIf="!availabilityLoading && showOnboarding">
     <app-availability-empty-state
       [open]="availabilityConfigOpen"
-      (configure)="onClickConfigurar()"
+      (configure)="openConfigFromOnboarding()"
     ></app-availability-empty-state>
+
+    <!-- ✅ CONFIG ABAJO DEL ONBOARDING -->
+    <div #availabilityAnchor class="availability-anchor"></div>
 
     <div class="config-inline" [class.is-open]="availabilityConfigOpen">
       <app-availability-config
         *ngIf="availabilityConfigOpen || availabilityConfigClosing"
         [initial]="disponibilidad"
+        [saving]="availabilitySaving"
+        [errorMsg]="availabilitySaveError"
         (save)="onSaveDisponibilidad($event)"
         (cancel)="onCancelConfigurar()"
       ></app-availability-config>
     </div>
   </section>
 
-  <section *ngIf="hasDisponibilidad">
+  <!-- AGENDA (cuando ya hay disponibilidad) -->
+  <section *ngIf="!availabilityLoading && showAgenda">
     <section class="turnos-shell">
       <section class="top" [class.with-detail]="!!turnoSeleccionado">
         <div class="calendar-col">
@@ -66,20 +79,29 @@
 
       <section class="bottom">
         <app-turnos-table
-              [turnos]="turnosHistorico"
-              (search)="onSearchHistorico($event)"
-              (clearFilters)="onClearHistorico()"
-            ></app-turnos-table>
+          [turnos]="turnosHistorico"
+          (search)="onSearchHistorico($event)"
+          (clearFilters)="onClearHistorico()"
+        ></app-turnos-table>
+      </section>
+
+      <!-- ✅ CONFIG ABAJO DE TODO (como lo tenías) -->
+      <section class="availability-bottom">
+        <div class="availability-bottom__head">
+          <div class="availability-bottom__title">Horarios de atención</div>
+          <button class="edit-icon" type="button" (click)="openConfigFromEdit()">
+            <span class="edit-glyph">✎</span>
+          </button>
+        </div>
 
         <div #availabilityAnchor class="availability-anchor"></div>
 
-        <div
-          class="availability-panel"
-          [class.is-open]="availabilityConfigOpen"
-          *ngIf="availabilityConfigOpen || availabilityConfigClosing"
-        >
+        <div class="config-inline" [class.is-open]="availabilityConfigOpen">
           <app-availability-config
+            *ngIf="availabilityConfigOpen || availabilityConfigClosing"
             [initial]="disponibilidad"
+            [saving]="availabilitySaving"
+            [errorMsg]="availabilitySaveError"
             (save)="onSaveDisponibilidad($event)"
             (cancel)="onCancelConfigurar()"
           ></app-availability-config>
@@ -87,23 +109,21 @@
       </section>
     </section>
   </section>
+
+  <app-confirm-modal
+    [open]="modalOpen"
+    [title]="modalTitle"
+    [message]="modalMessage"
+    [confirmText]="modalConfirmText"
+    [loading]="modalLoading"
+    [error]="modalError"
+    [reprogram]="isReprogramAction"
+    [reprogramDate]="reprogramDate"
+    [reprogramTime]="reprogramTime"
+    [reprogramMinDate]="reprogramMinDate"
+    (reprogramDateChange)="reprogramDate = $event"
+    (reprogramTimeChange)="reprogramTime = $event"
+    (confirm)="confirmModal()"
+    (cancel)="closeModal()"
+  ></app-confirm-modal>
 </div>
-
-<app-confirm-modal
-  [open]="modalOpen"
-  [title]="modalTitle"
-  [message]="modalMessage"
-  [confirmText]="modalConfirmText"
-  [loading]="modalLoading"
-  [error]="modalError"
-  [reprogram]="isReprogramAction"
-  [reprogramDate]="reprogramDate"
-  [reprogramTime]="reprogramTime"
-  [reprogramMinDate]="reprogramMinDate"
-  (reprogramDateChange)="reprogramDate = $event"
-  (reprogramTimeChange)="reprogramTime = $event"
-  (confirm)="confirmModal()"
-  (cancel)="closeModal()"
-></app-confirm-modal>
-
-
