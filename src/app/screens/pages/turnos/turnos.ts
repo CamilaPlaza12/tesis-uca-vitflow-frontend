@@ -1,16 +1,7 @@
-import {
-  Component,
-  ElementRef,
-  ViewChild,
-  OnInit,
-  ChangeDetectorRef,
-} from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { Turno } from '../../../models/turno';
 import { AccionTurno } from './turno-actions.policy';
-import {
-  AvailabilityDay,
-  HospitalAvailability,
-} from '../../../models/disponibilidad';
+import { AvailabilityDay, HospitalAvailability } from '../../../models/disponibilidad';
 import { TurnoService } from '../../../service/turno_service';
 import { AvailabilityService } from '../../../service/availability_service';
 import { firstValueFrom } from 'rxjs';
@@ -56,10 +47,6 @@ export class Turnos implements OnInit {
   turnosHistorico: Turno[] = [];
   loadingHistorico = false;
   errorHistorico = '';
-
-  // 👇 OJO: el template tiene 2 anchors (onboarding y bottom).
-  // Angular va a agarrar el último que esté renderizado (en el modo actual).
-  @ViewChild('availabilityAnchor') availabilityAnchor?: ElementRef<HTMLElement>;
 
   constructor(
     private turnoService: TurnoService,
@@ -118,14 +105,10 @@ export class Turnos implements OnInit {
     return this.accionPendiente === 'REPROGRAMAR';
   }
 
-  private scrollToAvailability(): void {
-    // ✅ Solo scrollea cuando abrís el config (no cuando cerrás)
-    requestAnimationFrame(() => {
-      this.availabilityAnchor?.nativeElement?.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start',
-      });
-    });
+  private blurActiveElement(): void {
+    try {
+      (document.activeElement as HTMLElement | null)?.blur();
+    } catch {}
   }
 
   // =========================
@@ -136,16 +119,18 @@ export class Turnos implements OnInit {
     this.availabilitySaveError = '';
     this.availabilityConfigClosing = false;
     this.availabilityConfigOpen = true;
-
-    this.scrollToAvailability();
   }
 
-  openConfigFromEdit(): void {
+  toggleConfigFromBottom(): void {
+    // ✅ Toggle simple, cero scroll
     this.availabilitySaveError = '';
     this.availabilityConfigClosing = false;
-    this.availabilityConfigOpen = true;
 
-    this.scrollToAvailability();
+    if (this.availabilityConfigOpen) {
+      this.closeAvailabilityConfig();
+    } else {
+      this.availabilityConfigOpen = true;
+    }
   }
 
   onCancelConfigurar(): void {
@@ -163,13 +148,12 @@ export class Turnos implements OnInit {
     this.availabilityService.saveHospitalAvailability(payload).subscribe({
       next: (saved) => {
         this.disponibilidad = saved?.days ?? days;
-        this.closeAvailabilityConfig(); // ✅ NO toca scroll
+        this.closeAvailabilityConfig();
       },
       error: (e) => {
         console.error('Error al guardar disponibilidad:', e);
         this.availabilitySaveError =
-          e?.error?.detail ??
-          'No se pudo guardar la disponibilidad. Revisá el backend/token.';
+          e?.error?.detail ?? 'No se pudo guardar la disponibilidad. Revisá el backend/token.';
       },
       complete: () => {
         this.availabilitySaving = false;
@@ -181,11 +165,14 @@ export class Turnos implements OnInit {
   private closeAvailabilityConfig(): void {
     if (this.availabilityConfigClosing) return;
 
+    this.blurActiveElement();
+
     this.availabilityConfigOpen = false;
     this.availabilityConfigClosing = true;
 
     setTimeout(() => {
       this.availabilityConfigClosing = false;
+      this.blurActiveElement();
     }, this.configAnimMs + 20);
   }
 
@@ -238,21 +225,11 @@ export class Turnos implements OnInit {
       let res: Turno;
 
       if (this.accionPendiente === 'CONFIRMAR') {
-        res = await firstValueFrom(
-          this.turnoService.updateStatus(t.id, 'CONFIRMADO')
-        );
+        res = await firstValueFrom(this.turnoService.updateStatus(t.id, 'CONFIRMADO'));
       } else if (this.accionPendiente === 'CANCELAR') {
-        res = await firstValueFrom(
-          this.turnoService.updateStatus(t.id, 'CANCELADO')
-        );
+        res = await firstValueFrom(this.turnoService.updateStatus(t.id, 'CANCELADO'));
       } else if (this.accionPendiente === 'REPROGRAMAR') {
-        res = await firstValueFrom(
-          this.turnoService.reschedule(
-            t.id,
-            this.reprogramDate,
-            this.reprogramTime
-          )
-        );
+        res = await firstValueFrom(this.turnoService.reschedule(t.id, this.reprogramDate, this.reprogramTime));
       } else {
         throw new Error('Acción no reconocida');
       }
