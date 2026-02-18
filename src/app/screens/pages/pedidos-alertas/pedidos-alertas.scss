@@ -1,7 +1,7 @@
 .page {
-  padding: 28px 28px 3px;
-  max-width: 1280px;
-  margin: 0 auto;
+  width: 100%;
+  max-width: none;
+  padding: 22px 24px 28px;
 }
 
 .header {
@@ -12,11 +12,11 @@
   margin-bottom: 18px;
 
   h1 {
-    font-size: 34px;
-    line-height: 1.1;
     margin: 0;
-    font-weight: 750;
+    font-size: 28px;
+    font-weight: 800;
     letter-spacing: -0.02em;
+    color: #0f2b3a;
   }
 
   p {
