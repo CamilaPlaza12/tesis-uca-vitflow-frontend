@@ -1,0 +1,53 @@
+.grid {
+  display: grid;
+  grid-template-columns: 1.6fr 0.9fr;
+  gap: 16px;
+  align-items: stretch;
+  width: 100%;
+}
+
+.chartArea {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+.chartArea__title {
+  font-size: 14px;
+  font-weight: 850;
+  color: #0f2b3a;
+  padding: 0 2px;
+}
+
+/* Un “panel” suave, sin meter una card más */
+.chartArea__panel {
+  flex: 1;
+  min-height: 0;
+
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px solid #e7eef3;
+  border-radius: 18px;
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.06);
+  padding: 14px 14px 14px;
+}
+
+.side {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+.side__kpis {
+  flex: 1;
+  min-height: 0;
+  display: block;
+}
+
+/* responsive */
+@media (max-width: 980px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}

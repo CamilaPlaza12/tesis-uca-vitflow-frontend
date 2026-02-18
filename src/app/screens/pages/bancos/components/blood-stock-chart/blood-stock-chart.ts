@@ -22,6 +22,12 @@ export class BloodStockChart implements OnChanges, AfterViewInit, OnDestroy {
   @Input() stocks!: Record<BloodType, number>;
   @Input() thresholds!: Partial<Record<BloodType, number>>;
 
+  // ✅ ya lo usamos para Home
+  @Input() compact = false;
+
+  // ✅ NUEVO: para Home: sin card ni header (evita bloque-dentro-de-bloque)
+  @Input() embedded = false;
+
   @ViewChild('chartRef') chartRef?: UIChart;
   @ViewChild('wrapRef', { static: false }) wrapRef?: ElementRef<HTMLElement>;
 
@@ -36,7 +42,7 @@ export class BloodStockChart implements OnChanges, AfterViewInit, OnDestroy {
   constructor(private zone: NgZone) {}
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['stocks'] || changes['thresholds']) {
+    if (changes['stocks'] || changes['thresholds'] || changes['compact'] || changes['embedded']) {
       this.buildChart();
       this.scheduleReinit();
     }
@@ -63,14 +69,11 @@ export class BloodStockChart implements OnChanges, AfterViewInit, OnDestroy {
   private scheduleReinit(): void {
     if (this.reinitTimer) clearTimeout(this.reinitTimer);
 
-    // debounce para que no explote mientras arrastrás la ventana
     this.reinitTimer = setTimeout(() => {
       this.zone.run(() => {
-        // recalculamos thickness según width actual
         this.buildChart();
 
         try {
-          // reinit funciona mejor que refresh cuando cambia layout (sidebar, contenedor, etc.)
           this.chartRef?.reinit();
         } catch {
           try {
@@ -103,8 +106,6 @@ export class BloodStockChart implements OnChanges, AfterViewInit, OnDestroy {
           borderColor: borders,
           borderWidth: 1.2,
           borderRadius: 10,
-
-          // ✅ responsivo real (mobile no queda chanchote)
           barThickness,
           maxBarThickness: barThickness,
         },
@@ -130,7 +131,12 @@ export class BloodStockChart implements OnChanges, AfterViewInit, OnDestroy {
       plugins: {
         legend: {
           position: 'bottom',
-          labels: { boxWidth: 10, boxHeight: 10, usePointStyle: true },
+          labels: {
+            boxWidth: 10,
+            boxHeight: 10,
+            usePointStyle: true,
+            font: { size: this.compact ? 11 : 12 },
+          },
         },
         tooltip: {
           callbacks: {
@@ -145,14 +151,14 @@ export class BloodStockChart implements OnChanges, AfterViewInit, OnDestroy {
       scales: {
         x: {
           grid: { display: false },
-          ticks: { font: { size: 12 } },
+          ticks: { font: { size: this.compact ? 11 : 12 } },
         },
         y: {
           beginAtZero: true,
           grid: { color: '#eef2f6' },
           ticks: {
             callback: (v: number) => `${v} ml`,
-            font: { size: 12 },
+            font: { size: this.compact ? 11 : 12 },
           },
         },
       },
@@ -163,13 +169,9 @@ export class BloodStockChart implements OnChanges, AfterViewInit, OnDestroy {
     const wrap = this.wrapRef?.nativeElement;
     const w = wrap?.clientWidth ?? 900;
 
-    // ancho estimado por categoría (8 grupos)
     const perCat = w / Math.max(1, count);
-
-    // base proporcional
     let thickness = Math.floor(perCat * 0.55);
 
-    // ✅ breakpoints: en mobile no se permiten barras gordas
     let min = 10;
     let max = 22;
 
@@ -185,7 +187,6 @@ export class BloodStockChart implements OnChanges, AfterViewInit, OnDestroy {
     return thickness;
   }
 
-  // celeste ok, naranja bajo, rojo crítico
   private getBarColor(type: BloodType): string {
     const stock = Number(this.stocks?.[type] ?? 0);
     const thr = Number(this.thresholds?.[type] ?? 0);

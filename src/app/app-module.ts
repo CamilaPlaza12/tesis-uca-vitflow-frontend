@@ -54,6 +54,13 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { TooltipModule } from 'primeng/tooltip';
 import { ToastModule } from 'primeng/toast';
 import { BloodManualActions } from './screens/pages/bancos/components/blood-manual-actions/blood-manual-actions';
+import { HomeHeaderComponent } from './screens/pages/home/components/home-header/home-header';
+import { HomeTopGridComponent } from './screens/pages/home/components/home-top-grid/home-top-grid';
+import { HomeKpisComponent } from './screens/pages/home/components/home-kpis/home-kpis';
+import { HomePrimaryActionComponent } from './screens/pages/home/components/home-primary-action/home-primary-action';
+import { HomeDonationAppointmentsTableComponent } from './screens/pages/home/components/home-donation-appointments-table/home-donation-appointments-table';
+import { HomeActiveRequestsTableComponent } from './screens/pages/home/components/home-active-requests-table/home-active-requests-table';
+import { PillBadgeComponent } from './screens/pages/home/components/pill-badge/pill-badge';
 
 @NgModule({
   declarations: [
@@ -89,7 +96,14 @@ import { BloodManualActions } from './screens/pages/bancos/components/blood-manu
     BackofficeRequests,
     BloodStockChart,
     BloodThresholdTable,
-    BloodManualActions
+    BloodManualActions,
+    HomeHeaderComponent,
+    HomeTopGridComponent,
+    HomeKpisComponent,
+    HomePrimaryActionComponent,
+    HomeDonationAppointmentsTableComponent,
+    HomeActiveRequestsTableComponent,
+    PillBadgeComponent
   ],
   imports: [
     BrowserModule,

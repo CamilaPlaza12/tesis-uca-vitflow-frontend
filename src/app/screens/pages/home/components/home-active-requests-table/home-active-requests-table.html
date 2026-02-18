@@ -1,0 +1,47 @@
+<div class="card">
+  <div class="card__head">
+    <div class="card__title">{{ title }}</div>
+  </div>
+
+  <div class="card__body">
+    <div class="tableWrap">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Servicio</th>
+            <th>Componente</th>
+            <th class="t-center">Cantidad</th>
+            <th class="t-center">Prioridad</th>
+            <th class="t-center">Estado</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let r of rows">
+            <td class="mono">{{ r.date }}</td>
+            <td>{{ r.service }}</td>
+            <td>{{ r.component }}</td>
+            <td class="t-center mono">{{ r.quantity }}</td>
+            <td class="t-center">
+              <app-pill-badge
+                [text]="r.priority"
+                [tone]="toneForPriority(r.priority)"
+              ></app-pill-badge>
+            </td>
+            <td class="t-center">
+              <app-pill-badge
+                [text]="r.status"
+                [tone]="toneForStatus(r.status)"
+              ></app-pill-badge>
+            </td>
+          </tr>
+
+          <tr *ngIf="rows.length === 0">
+            <td colspan="6" class="empty">No hay pedidos para mostrar</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

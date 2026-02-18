@@ -1,2 +1,38 @@
-<p>home works!</p>
-   
+<div class="home">
+  <app-home-header
+    [title]="'Resumen general del hospital'"
+    [subtitle]="'Visualizá el stock, turnos y pedidos desde un solo lugar'"
+    [dateLabel]="currentDateLabel"
+    [unreadNotifications]="unreadNotifications"
+    (notificationsClick)="onOpenNotifications()"
+  ></app-home-header>
+
+  <app-home-top-grid
+    [stocks]="stocksRecord"
+    [thresholds]="thresholdsRecord"
+    (createRequestClick)="onCreateDonationRequest()"
+  >
+    <div homeSide>
+      <app-home-kpis
+        [totalUnits]="kpiTotalUnits"
+        [urgentActive]="kpiUrgentActive"
+        [appointmentsToday]="kpiAppointmentsToday"
+        [criticalGroupsCount]="criticalGroupsCount"
+      ></app-home-kpis>
+    </div>
+  </app-home-top-grid>
+
+  <div class="home__section">
+    <app-home-donation-appointments-table
+      [rows]="appointments"
+      title="Turnos de donación: hoy y mañana"
+    ></app-home-donation-appointments-table>
+  </div>
+
+  <div class="home__section">
+    <app-home-active-requests-table
+      [rows]="activeRequests"
+      title="Pedidos activos de componentes"
+    ></app-home-active-requests-table>
+  </div>
+</div>

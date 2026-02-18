@@ -1,0 +1,29 @@
+.cta {
+  width: 100%;
+  padding: 16px 18px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 91, 77, 0.35);
+  background: linear-gradient(180deg, rgba(255, 91, 77, 0.95), rgba(255, 91, 77, 0.85));
+  color: #fff;
+  cursor: pointer;
+  box-shadow: 0 14px 26px rgba(255, 91, 77, 0.24);
+  text-align: left;
+  min-height: 110px;
+}
+
+.cta__title {
+  font-weight: 950;
+  letter-spacing: -0.01em;
+  font-size: 16px;
+}
+
+.cta__subtitle {
+  margin-top: 6px;
+  font-size: 13px;
+  font-weight: 650;
+  opacity: 0.92;
+}
+
+.cta:active {
+  transform: translateY(1px);
+}

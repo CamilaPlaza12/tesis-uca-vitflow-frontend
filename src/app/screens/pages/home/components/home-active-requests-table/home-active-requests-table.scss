@@ -1,0 +1,63 @@
+.card {
+  background: rgba(255, 255, 255, 0.78);
+  border: 1px solid #e7eef3;
+  border-radius: 18px;
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.06);
+  overflow: hidden;
+}
+
+.card__head {
+  padding: 14px 16px;
+  border-bottom: 1px solid #eef4f7;
+}
+
+.card__title {
+  font-size: 16px;
+  font-weight: 900;
+  color: #0f2b3a;
+}
+
+.card__body {
+  padding: 10px 14px 14px;
+}
+
+.tableWrap {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 720px;
+  table-layout: fixed;
+}
+
+th {
+  text-align: left;
+  color: #4a6574;
+  font-size: 12.5px;
+  font-weight: 800;
+  padding: 10px 8px;
+}
+
+td {
+  padding: 10px 8px;
+  border-top: 1px solid #eef4f7;
+  color: #0f2b3a;
+  font-weight: 650;
+  vertical-align: middle;
+}
+
+.mono {
+  font-variant-numeric: tabular-nums;
+}
+
+.t-center {
+  text-align: center;
+}
+
+.empty {
+  text-align: center;
+  color: #6b8290;
+  padding: 16px 8px;
+}

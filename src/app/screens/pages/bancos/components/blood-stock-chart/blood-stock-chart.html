@@ -1,4 +1,5 @@
-<div class="card">
+<!-- ✅ Normal (Bancos de sangre): con card y header -->
+<div *ngIf="!embedded" class="card" [class.card--compact]="compact">
   <div class="card__header">
     <h2>Stock actual</h2>
     <span class="hint">Barras según umbral</span>
@@ -9,6 +10,24 @@
   </div>
 
   <div class="legend">
+    <div class="pill pill--ok">OK</div>
+    <div class="pill pill--warn">Bajo</div>
+    <div class="pill pill--bad">Crítico</div>
+  </div>
+</div>
+
+
+<div *ngIf="embedded" class="embed" [class.embed--compact]="compact">
+  <div class="card__header">
+    <h2>Stock actual por grupo y factor Rh</h2>
+    <span class="hint">Barras según umbral</span>
+  </div>
+
+  <div class="chart-wrap" #wrapRef>
+    <p-chart #chartRef type="bar" [data]="chartData" [options]="chartOptions"></p-chart>
+  </div>
+
+  <div class="legend legend--embed">
     <div class="pill pill--ok">OK</div>
     <div class="pill pill--warn">Bajo</div>
     <div class="pill pill--bad">Crítico</div>

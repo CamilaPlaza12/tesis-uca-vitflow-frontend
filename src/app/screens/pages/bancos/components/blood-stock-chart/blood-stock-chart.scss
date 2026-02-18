@@ -86,3 +86,69 @@
     border-color: #fee2e2;
   }
 }
+
+/* ✅ COMPACT MODE */
+.card--compact {
+  .card__header {
+    padding: 12px 14px;
+
+    h2 {
+      font-size: 14px;
+    }
+
+    .hint {
+      font-size: 12px;
+      padding: 5px 9px;
+    }
+  }
+
+  .chart-wrap {
+    min-height: 260px;
+    padding: 10px 12px 6px;
+  }
+
+  .legend {
+    padding: 0 14px 12px;
+  }
+}
+
+/* ✅ EMBEDDED MODE (Home): usa el panel externo, sin card propia */
+.embed {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  background: transparent;
+  border: none;
+  box-shadow: none;
+
+  /* ✅ Header alineado a las tablas (Turnos/Pedidos) */
+  .card__header {
+    padding: 14px 16px;
+    border-bottom: 1px solid #eef4f7;
+
+    h2 {
+      font-size: 14px;
+      font-weight: 850;
+      color: #0f2b3a;
+      letter-spacing: -0.01em;
+    }
+
+    .hint {
+      font-size: 12px;
+      padding: 5px 9px;
+    }
+  }
+
+  /* ✅ “body” del chart, como las cards */
+  .chart-wrap {
+    flex: 1;
+    min-height: 320px;
+    padding: 12px 14px 8px;
+  }
+}
+
+.legend--embed {
+  padding: 10px 14px 14px;
+}

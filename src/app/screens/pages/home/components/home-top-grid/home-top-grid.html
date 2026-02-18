@@ -1,0 +1,22 @@
+<div class="grid">
+  <!-- IZQUIERDA: título simple + chart embebido -->
+  <div class="chartArea">
+    <div class="chartArea__panel">
+      <app-blood-stock-chart
+        [stocks]="stocks"
+        [thresholds]="thresholds"
+        [compact]="true"
+        [embedded]="true"
+      ></app-blood-stock-chart>
+    </div>
+  </div>
+
+  <!-- DERECHA: CTA grande + KPIs 2x2 grandes, estirados -->
+  <div class="side">
+    <app-home-primary-action (clickAction)="createRequestClick.emit()"></app-home-primary-action>
+
+    <div class="side__kpis">
+      <ng-content select="[homeSide]"></ng-content>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,33 @@
+<div class="kpis">
+  <div class="kpi">
+    <div class="kpi__meta">
+      <div class="kpi__label">Unidades totales disponibles</div>
+      <div class="kpi__value">{{ totalUnits }}</div>
+    </div>
+    <div class="kpi__icon">🩸</div>
+  </div>
+
+  <div class="kpi">
+    <div class="kpi__meta">
+      <div class="kpi__label">Pedidos urgentes activos</div>
+      <div class="kpi__value">{{ urgentActive }}</div>
+    </div>
+    <div class="kpi__icon">⚠️</div>
+  </div>
+
+  <div class="kpi">
+    <div class="kpi__meta">
+      <div class="kpi__label">Turnos programados hoy</div>
+      <div class="kpi__value">{{ appointmentsToday }}</div>
+    </div>
+    <div class="kpi__icon">📅</div>
+  </div>
+
+  <div class="kpi kpi--soft">
+    <div class="kpi__meta">
+      <div class="kpi__label">Grupos en nivel crítico</div>
+      <div class="kpi__value">{{ criticalGroupsCount ?? 0 }}</div>
+    </div>
+    <div class="kpi__icon">🧪</div>
+  </div>
+</div>
