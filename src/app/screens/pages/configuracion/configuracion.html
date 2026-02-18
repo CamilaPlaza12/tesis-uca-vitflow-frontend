@@ -1,1 +1,39 @@
-<p>configuracion works!</p>
+<div class="page">
+  <header class="header">
+    <div>
+      <h1>Configuración</h1>
+      <p>Gestioná tu perfil, seguridad y la información del hospital.</p>
+    </div>
+  </header>
+
+  <div class="grid">
+    <app-config-profile-security-card
+      [email]="user.email"
+      [roleLabel]="roleLabel(user.role)"
+      [uid]="user.uid"
+      [createdAt]="user.createdAt"
+      [firstName]="user.firstName"
+      [lastName]="user.lastName"
+      [phone]="user.phone"
+      [savingProfile]="savingProfile"
+      [profileOk]="profileOk"
+      [profileError]="profileError"
+      [changingPassword]="changingPassword"
+      [passOk]="passOk"
+      [passError]="passError"
+      (saveProfile)="onSaveProfile($event)"
+      (changePassword)="onChangePassword($event)"
+    ></app-config-profile-security-card>
+
+    <app-config-hospital-session-card
+      [hospitalName]="hospital.name"
+      [hospitalEmail]="hospital.email"
+      [hospitalPhone]="hospital.phone"
+      [hospitalId]="user.hospitalId"
+      [createdAt]="hospital.createdAt"
+      [createdFromRequestId]="hospital.createdFromRequestId"
+      [addressLine]="addressLine()"
+      (logout)="onLogout()"
+    ></app-config-hospital-session-card>
+  </div>
+</div>

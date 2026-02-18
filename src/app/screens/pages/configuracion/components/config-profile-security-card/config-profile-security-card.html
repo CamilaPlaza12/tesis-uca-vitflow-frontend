@@ -1,0 +1,113 @@
+<section class="card">
+  <div class="card__head">
+    <div>
+      <div class="title">Perfil y seguridad</div>
+      <div class="sub">Datos personales y contraseña</div>
+    </div>
+
+    <div class="actions">
+      <button *ngIf="!editing" type="button" class="btn btn--ghost" (click)="startEdit()">
+        Editar
+      </button>
+
+      <button
+        *ngIf="editing"
+        type="button"
+        class="btn btn--ghost"
+        (click)="cancelEdit()"
+        [disabled]="savingProfile"
+      >
+        Cancelar
+      </button>
+
+      <button
+        *ngIf="editing"
+        type="button"
+        class="btn btn--primary"
+        (click)="submitProfile()"
+        [disabled]="savingProfile"
+      >
+        {{ savingProfile ? 'Guardando…' : 'Guardar' }}
+      </button>
+    </div>
+  </div>
+
+  <div class="card__body">
+    <!-- meta -->
+    <div class="meta">
+      <div class="chip">
+        <div class="chip__k">Email</div>
+        <div class="chip__v">{{ email }}</div>
+      </div>
+
+      <div class="chip">
+        <div class="chip__k">Rol</div>
+        <div class="chip__v">{{ roleLabel }}</div>
+      </div>
+    </div>
+
+    <!-- form perfil -->
+    <div class="form">
+      <label class="field">
+        <span>Nombre</span>
+        <input [(ngModel)]="form.firstName" [disabled]="!editing || savingProfile" />
+      </label>
+
+      <label class="field">
+        <span>Apellido</span>
+        <input [(ngModel)]="form.lastName" [disabled]="!editing || savingProfile" />
+      </label>
+
+      <label class="field field--full">
+        <span>Teléfono</span>
+        <input [(ngModel)]="form.phone" [disabled]="!editing || savingProfile" />
+      </label>
+    </div>
+
+    <div class="status" *ngIf="profileOk">✅ Guardado</div>
+    <div class="status status--err" *ngIf="profileError">{{ profileError }}</div>
+
+    <div class="divider"></div>
+
+    <!-- seguridad -->
+    <div class="secHead">
+      <div>
+        <div class="secTitle">Contraseña</div>
+        <div class="secSub">Actualizala si hace falta</div>
+      </div>
+
+      <button type="button" class="btn btn--ghost" (click)="clearPassword()" [disabled]="changingPassword">
+        Limpiar
+      </button>
+    </div>
+
+    <div class="form passForm">
+      <label class="field field--full">
+        <span>Contraseña actual</span>
+        <input [(ngModel)]="pass.current" type="password" [disabled]="changingPassword" />
+      </label>
+
+      <label class="field">
+        <span>Nueva</span>
+        <input [(ngModel)]="pass.next" type="password" [disabled]="changingPassword" />
+      </label>
+
+      <label class="field">
+        <span>Confirmar</span>
+        <input [(ngModel)]="pass.confirm" type="password" [disabled]="changingPassword" />
+      </label>
+    </div>
+
+    <button type="button" class="btn btn--primaryFull" (click)="submitPassword()" [disabled]="changingPassword">
+      {{ changingPassword ? 'Actualizando…' : 'Cambiar contraseña' }}
+    </button>
+
+    <div class="status" *ngIf="passOk">✅ Contraseña actualizada</div>
+    <div class="status status--err" *ngIf="passError">{{ passError }}</div>
+
+    <div class="foot">
+      <div class="small">UID: <span class="mono">{{ uid }}</span></div>
+      <div class="small">Creado: <span class="mono">{{ createdAt }}</span></div>
+    </div>
+  </div>
+</section>

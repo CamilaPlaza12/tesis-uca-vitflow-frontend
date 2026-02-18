@@ -61,6 +61,8 @@ import { HomePrimaryActionComponent } from './screens/pages/home/components/home
 import { HomeDonationAppointmentsTableComponent } from './screens/pages/home/components/home-donation-appointments-table/home-donation-appointments-table';
 import { HomeActiveRequestsTableComponent } from './screens/pages/home/components/home-active-requests-table/home-active-requests-table';
 import { PillBadgeComponent } from './screens/pages/home/components/pill-badge/pill-badge';
+import { ConfigProfileSecurityCard } from './screens/pages/configuracion/components/config-profile-security-card/config-profile-security-card';
+import { ConfigHospitalSessionCard } from './screens/pages/configuracion/components/config-hospital-session-card/config-hospital-session-card';
 
 @NgModule({
   declarations: [
@@ -103,7 +105,9 @@ import { PillBadgeComponent } from './screens/pages/home/components/pill-badge/p
     HomePrimaryActionComponent,
     HomeDonationAppointmentsTableComponent,
     HomeActiveRequestsTableComponent,
-    PillBadgeComponent
+    PillBadgeComponent,
+    ConfigProfileSecurityCard,
+    ConfigHospitalSessionCard
   ],
   imports: [
     BrowserModule,
