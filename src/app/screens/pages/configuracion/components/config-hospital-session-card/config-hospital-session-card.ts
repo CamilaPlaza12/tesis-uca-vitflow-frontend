@@ -10,10 +10,8 @@ export class ConfigHospitalSessionCard {
   @Input() hospitalName = '';
   @Input() hospitalEmail = '';
   @Input() hospitalPhone = '';
-  @Input() hospitalId = '';
-  @Input() createdAt = '';
-  @Input() createdFromRequestId = '';
   @Input() addressLine = '';
+  @Input() verified = false;
 
   @Output() logout = new EventEmitter<void>();
 

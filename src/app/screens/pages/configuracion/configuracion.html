@@ -1,39 +1,268 @@
 <div class="page">
   <header class="header">
-    <div>
+    <div class="header__left">
       <h1>Configuración</h1>
-      <p>Gestioná tu perfil, seguridad y la información del hospital.</p>
+      <p class="subtitle">Perfil y datos del hospital. Nada raro, nada técnico, nada de UID.</p>
     </div>
   </header>
 
-  <div class="grid">
-    <app-config-profile-security-card
-      [email]="user.email"
-      [roleLabel]="roleLabel(user.role)"
-      [uid]="user.uid"
-      [createdAt]="user.createdAt"
-      [firstName]="user.firstName"
-      [lastName]="user.lastName"
-      [phone]="user.phone"
-      [savingProfile]="savingProfile"
-      [profileOk]="profileOk"
-      [profileError]="profileError"
-      [changingPassword]="changingPassword"
-      [passOk]="passOk"
-      [passError]="passError"
-      (saveProfile)="onSaveProfile($event)"
-      (changePassword)="onChangePassword($event)"
-    ></app-config-profile-security-card>
+  <section class="grid">
+    <!-- =======================
+         IZQUIERDA: Perfil + Preferencias
+         ======================= -->
+    <div class="col">
+      <!-- PERFIL -->
+      <div class="card">
+        <div class="card__head">
+          <div class="headL">
+            <div class="iconBubble">👤</div>
+            <div>
+              <div class="title">Mi perfil</div>
+              <div class="hint">Datos de tu cuenta</div>
+            </div>
+          </div>
 
-    <app-config-hospital-session-card
-      [hospitalName]="hospital.name"
-      [hospitalEmail]="hospital.email"
-      [hospitalPhone]="hospital.phone"
-      [hospitalId]="user.hospitalId"
-      [createdAt]="hospital.createdAt"
-      [createdFromRequestId]="hospital.createdFromRequestId"
-      [addressLine]="addressLine()"
-      (logout)="onLogout()"
-    ></app-config-hospital-session-card>
+          <button class="ghostBtn" type="button" (click)="startEditPhone()" [disabled]="editingPhone">
+            Editar
+          </button>
+        </div>
+
+        <div class="card__body">
+          <div class="profileRow">
+            <div class="avatar">
+              <ng-container *ngIf="avatarUrl; else initials">
+                <img [src]="avatarUrl" alt="Foto de perfil" />
+              </ng-container>
+              <ng-template #initials>
+                <span class="initials">{{ getInitials() }}</span>
+              </ng-template>
+            </div>
+
+            <div class="avatarActions">
+              <div class="avatarTitle">Foto de perfil</div>
+              <div class="avatarSub">Se ve en tu panel y en comunicaciones internas.</div>
+
+              <label class="pillBtn">
+                Subir imagen
+                <input type="file" accept="image/*" (change)="onAvatarFilePicked($event)" hidden />
+              </label>
+
+              <button class="pillBtn pillBtn--muted" type="button" (click)="avatarUrl = null" [disabled]="!avatarUrl">
+                Quitar
+              </button>
+            </div>
+          </div>
+
+          <div class="formGrid">
+            <div class="field">
+              <div class="k">Email</div>
+              <div class="v readonly">{{ user.email }}</div>
+            </div>
+
+            <div class="field">
+              <div class="k">Rol</div>
+              <div class="v readonly chip">{{ user.roleLabel }}</div>
+            </div>
+
+            <div class="field">
+              <div class="k">Nombre</div>
+              <div class="v readonly">{{ user.firstName }}</div>
+            </div>
+
+            <div class="field">
+              <div class="k">Apellido</div>
+              <div class="v readonly">{{ user.lastName }}</div>
+            </div>
+
+            <!-- ✅ SOLO TELEFONO EDITABLE -->
+            <div class="field field--full">
+              <div class="k">Teléfono</div>
+
+              <ng-container *ngIf="!editingPhone; else editPhone">
+                <div class="v">{{ user.phone }}</div>
+              </ng-container>
+
+              <ng-template #editPhone>
+                <div class="editRow">
+                  <input class="input" type="text" [(ngModel)]="phoneDraft" placeholder="+54 11 ..." />
+                  <button class="btn btn--ok" type="button" (click)="savePhone()">Guardar</button>
+                  <button class="btn btn--ghost" type="button" (click)="cancelEditPhone()">Cancelar</button>
+                </div>
+              </ng-template>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PREFERENCIAS -->
+      <div class="card">
+        <div class="card__head">
+          <div class="headL">
+            <div class="iconBubble">⚙️</div>
+            <div>
+              <div class="title">Preferencias</div>
+              <div class="hint">Cómo querés que te avise y se vea la app</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card__body">
+          <div class="toggleRow">
+            <div class="tL">
+              <div class="tTitle">Alertas por email</div>
+              <div class="tSub">Recibí notificaciones de pedidos y cambios relevantes.</div>
+            </div>
+            <label class="switch">
+              <input type="checkbox" [(ngModel)]="prefs.emailAlerts" />
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div class="toggleRow">
+            <div class="tL">
+              <div class="tTitle">Solo urgentes</div>
+              <div class="tSub">Filtra avisos para ver únicamente lo crítico.</div>
+            </div>
+            <label class="switch">
+              <input type="checkbox" [(ngModel)]="prefs.urgentOnly" />
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div class="toggleRow">
+            <div class="tL">
+              <div class="tTitle">Interfaz compacta</div>
+              <div class="tSub">Reduce paddings en tablas y tarjetas (útil en pantallas chicas).</div>
+            </div>
+            <label class="switch">
+              <input type="checkbox" [(ngModel)]="prefs.compactUI" />
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div class="note">
+            Esto por ahora es visual/hardcode. Después lo persistimos por usuario.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- =======================
+         DERECHA: Hospital + Sesión + Info
+         ======================= -->
+    <div class="col">
+      <!-- HOSPITAL -->
+      <div class="card">
+        <div class="card__head">
+          <div class="headL">
+            <div class="iconBubble">🏥</div>
+            <div>
+              <div class="title">Hospital asociado</div>
+              <div class="hint">Datos operativos</div>
+            </div>
+          </div>
+
+          <div class="badge" [class.badge--ok]="hospital.verified">
+            {{ hospital.verified ? 'Verificado' : 'Pendiente' }}
+          </div>
+        </div>
+
+        <div class="card__body">
+          <div class="hospitalHero">
+            <div class="hospitalName">{{ hospital.name }}</div>
+            <div class="hospitalSub">{{ hospital.subtitle }}</div>
+          </div>
+
+          <div class="kv">
+            <div class="k">Email</div>
+            <div class="v">{{ hospital.email }}</div>
+          </div>
+          <div class="kv">
+            <div class="k">Teléfono</div>
+            <div class="v">{{ hospital.phone }}</div>
+          </div>
+          <div class="kv">
+            <div class="k">Dirección</div>
+            <div class="v">{{ hospital.address }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SESION -->
+      <div class="card">
+        <div class="card__head">
+          <div class="headL">
+            <div class="iconBubble">🔒</div>
+            <div>
+              <div class="title">Sesión</div>
+              <div class="hint">Si estás en un dispositivo compartido, cerrá sesión.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card__body">
+          <button class="dangerBtn" type="button" (click)="openLogout()">
+            Cerrar sesión
+          </button>
+          <div class="muted">
+            Tip: si te desconectás seguido, revisá el navegador (autocompletar/usuarios).
+          </div>
+        </div>
+      </div>
+
+      <!-- INFO / AYUDA -->
+      <div class="card">
+        <div class="card__head">
+          <div class="headL">
+            <div class="iconBubble">ℹ️</div>
+            <div>
+              <div class="title">Información</div>
+              <div class="hint">Atajos útiles para no perderte</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card__body">
+          <div class="infoList">
+            <div class="infoItem">
+              <div class="iTitle">Centro de ayuda</div>
+              <div class="iSub">Guías rápidas para pedidos, stock y turnos.</div>
+              <button class="linkBtn" type="button">Abrir</button>
+            </div>
+
+            <div class="infoItem">
+              <div class="iTitle">Política de privacidad</div>
+              <div class="iSub">Qué guardamos y por qué (spoiler: lo necesario).</div>
+              <button class="linkBtn" type="button">Ver</button>
+            </div>
+
+            <div class="infoItem infoItem--version">
+              <div>
+                <div class="iTitle">Versión</div>
+                <div class="iSub">VitFlow v0.1 (tesis build)</div>
+              </div>
+              <div class="chipSmall">beta</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =======================
+       MODAL: Confirmar logout
+       ======================= -->
+  <div class="modalBackdrop" *ngIf="logoutOpen" (click)="closeLogout()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal__title">¿Cerrar sesión?</div>
+      <div class="modal__msg">
+        Vas a salir de VitFlow en este dispositivo. Si es una compu compartida, sí: salí.
+      </div>
+
+      <div class="modal__actions">
+        <button class="btn btn--ghost" type="button" (click)="closeLogout()">Cancelar</button>
+        <button class="btn btn--danger" type="button" (click)="confirmLogout()">Cerrar sesión</button>
+      </div>
+    </div>
   </div>
 </div>

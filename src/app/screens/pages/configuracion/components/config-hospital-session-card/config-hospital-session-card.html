@@ -1,20 +1,24 @@
 <section class="card">
   <div class="card__head">
-    <div>
-      <div class="title">Hospital y sesión</div>
-      <div class="sub">Datos del hospital y cierre de sesión</div>
+    <div class="headLeft">
+      <div class="icon">🏥</div>
+      <div>
+        <div class="title">
+          Hospital asociado
+          <span class="badge" *ngIf="verified">Verificado</span>
+        </div>
+        <div class="sub">Datos operativos</div>
+      </div>
     </div>
   </div>
 
   <div class="card__body">
-    <div class="block">
-      <div class="block__t">Hospital</div>
+    <div class="hero">
+      <div class="hero__name">{{ hospitalName }}</div>
+      <div class="hero__hint">Banco de sangre • Gestión interna</div>
+    </div>
 
-      <div class="row">
-        <div class="k">Nombre</div>
-        <div class="v">{{ hospitalName }}</div>
-      </div>
-
+    <div class="info">
       <div class="row">
         <div class="k">Email</div>
         <div class="v">{{ hospitalEmail }}</div>
@@ -25,47 +29,27 @@
         <div class="v">{{ hospitalPhone }}</div>
       </div>
 
-      <div class="row">
+      <div class="row row--full">
         <div class="k">Dirección</div>
         <div class="v">{{ addressLine }}</div>
-      </div>
-
-      <div class="grid2">
-        <div class="mini">
-          <div class="k">Hospital ID</div>
-          <div class="v mono">{{ hospitalId }}</div>
-        </div>
-        <div class="mini">
-          <div class="k">Creado</div>
-          <div class="v mono">{{ createdAt }}</div>
-        </div>
-      </div>
-
-      <div class="mini">
-        <div class="k">Request ID origen</div>
-        <div class="v mono">{{ createdFromRequestId }}</div>
       </div>
     </div>
 
     <div class="divider"></div>
 
-    <div class="block">
-      <div class="block__t">Sesión</div>
-
-      <div class="warn">
-        <div class="warn__t">Cerrar sesión</div>
-        <div class="warn__s">Te saca de VitFlow en este dispositivo.</div>
-      </div>
+    <div class="logout">
+      <div class="logout__t">Sesión</div>
+      <div class="logout__s">Cerrá sesión si estás en un dispositivo compartido.</div>
 
       <button type="button" class="btn btn--danger" (click)="openConfirm()">
         Cerrar sesión
       </button>
 
       <div class="confirm" *ngIf="confirmOpen">
-        <div class="confirm__title">¿Seguro que querés salir?</div>
+        <div class="confirm__title">¿Cerrar sesión?</div>
         <div class="confirm__actions">
           <button type="button" class="btn btn--ghost" (click)="cancel()">Cancelar</button>
-          <button type="button" class="btn btn--danger" (click)="confirm()">Sí, salir</button>
+          <button type="button" class="btn btn--dangerSmall" (click)="confirm()">Sí, salir</button>
         </div>
       </div>
     </div>
