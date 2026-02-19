@@ -16,7 +16,6 @@ import { RippleModule } from 'primeng/ripple';
 import { Bancos } from './screens/pages/bancos/bancos';
 import { Turnos } from './screens/pages/turnos/turnos';
 import { PedidosAlertas } from './screens/pages/pedidos-alertas/pedidos-alertas';
-import { Donantes } from './screens/pages/donantes/donantes';
 import { Configuracion } from './screens/pages/configuracion/configuracion';
 
 import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
@@ -74,7 +73,6 @@ import { ConfigHospitalSessionCard } from './screens/pages/configuracion/compone
     Bancos,
     Turnos,
     PedidosAlertas,
-    Donantes,
     Configuracion,
     PedidosTable,
     PedidoDetalle,
