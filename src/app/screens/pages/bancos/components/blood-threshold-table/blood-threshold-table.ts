@@ -34,16 +34,12 @@ export class BloodThresholdTable implements OnChanges {
     this.editValue = 0;
   }
 
-  saveEdit(): void {
-    if (!this.editType) return;
-
-    const value = Math.max(0, Math.floor(Number(this.editValue || 0)));
-    this.thresholdChange.emit({ bloodType: this.editType, thresholdMl: value });
-
-    (this.thresholds as any)[this.editType] = value;
-
-    this.cancelEdit();
-  }
+saveEdit(): void {
+  if (!this.editType) return;
+  const value = Math.max(0, Math.floor(Number(this.editValue || 0)));
+  this.thresholdChange.emit({ bloodType: this.editType, thresholdMl: value });
+  this.cancelEdit();
+}
 
   getStatus(type: BloodType): 'ok' | 'bajo' | 'critico' {
     const stock = Number(this.stocks?.[type] ?? 0);

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { OnboardingRequestsService } from '../../service/onboarding_request_service';
+import { ChangeDetectorRef, NgZone } from '@angular/core';
 
 type OnboardingStatus = 'SUBMITTED' | 'APPROVED' | 'REJECTED';
 type PendingAction = 'APPROVE' | 'REJECT';
@@ -57,13 +58,17 @@ export class BackofficeRequests implements OnInit {
   confirmError: string | null = null;
   private pendingAction: PendingAction | null = null;
 
-  constructor(private onboardingRequestsService: OnboardingRequestsService) {}
+  constructor(
+  private onboardingRequestsService: OnboardingRequestsService,
+  private cdr: ChangeDetectorRef,
+  private zone: NgZone
+) {}
 
   async ngOnInit(): Promise<void> {
     await this.loadRequests();
   }
 
- async loadRequests(): Promise<void> {
+  async loadRequests(): Promise<void> {
   this.loading = true;
   this.errorMsg = '';
 
@@ -72,24 +77,24 @@ export class BackofficeRequests implements OnInit {
       this.onboardingRequestsService.getOnboardingRequests()
     );
 
-    console.log('RAW RESPONSE:', res);
+    this.zone.run(() => {
+      this.requests = Array.isArray(res) ? res : [];
+      this.pendingRequests = this.requests.filter(
+        r => String(r.status).trim().toUpperCase() === 'SUBMITTED'
+      );
+      this.loading = false;
 
-    this.requests = Array.isArray(res) ? res : [];
-
-    console.log('ANTES DEL FILTER:', this.requests);
-
-    this.pendingRequests = this.requests.filter(r => {
-      console.log('STATUS RAW:', r.status);
-      return String(r.status).trim().toUpperCase() === 'SUBMITTED';
+      // 🔥 fuerza render inmediato
+      this.cdr.detectChanges();
     });
-
-    console.log('DESPUÉS DEL FILTER:', this.pendingRequests);
 
   } catch (e) {
     console.error(e);
-    this.errorMsg = 'No se pudieron cargar las solicitudes.';
-  } finally {
-    this.loading = false;
+    this.zone.run(() => {
+      this.errorMsg = 'No se pudieron cargar las solicitudes.';
+      this.loading = false;
+      this.cdr.detectChanges();
+    });
   }
 }
 
@@ -154,35 +159,41 @@ export class BackofficeRequests implements OnInit {
   }
 
   async onConfirmAction(): Promise<void> {
-    if (!this.selected || !this.pendingAction) return;
+  if (!this.selected || !this.pendingAction) return;
 
-    this.loading = true;
-    this.confirmError = null;
+  this.loading = true;
+  this.confirmError = null;
 
-    try {
-      const id = this.selected.id;
+  try {
+    const id = this.selected.id;
 
-      await firstValueFrom(
-        this.onboardingRequestsService.reviewOnboardingRequest(id, {
-          status:
-            this.pendingAction === 'APPROVE'
-              ? 'APPROVED'
-              : 'REJECTED',
-          reviewedAt: new Date().toISOString(),
-        })
-      );
+    await firstValueFrom(
+      this.onboardingRequestsService.reviewOnboardingRequest(id, {
+        status: this.pendingAction === 'APPROVE' ? 'APPROVED' : 'REJECTED',
+        reviewedAt: new Date().toISOString(),
+      })
+    );
 
-      await this.loadRequests();
-
+    // ✅ CERRAR UI INMEDIATAMENTE (antes del reload)
+    this.zone.run(() => {
       this.confirmOpen = false;
       this.pendingAction = null;
       this.selected = null;
+      this.cdr.detectChanges();
+    });
 
-    } catch (e) {
-      console.error(e);
+    // ✅ ahora sí refrescás la lista
+    await this.loadRequests();
+
+  } catch (e) {
+    console.error(e);
+    this.zone.run(() => {
       this.confirmError = 'No se pudo completar la acción.';
-    } finally {
-      this.loading = false;
-    }
+      this.cdr.detectChanges();
+    });
+  } finally {
+    this.loading = false;
+    this.cdr.detectChanges();
   }
+}
 }
