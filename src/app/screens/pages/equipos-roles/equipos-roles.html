@@ -12,7 +12,6 @@
     </div>
   </header>
 
-  <!-- SOLO TABLA (sin panel de detalle) -->
   <section class="layout">
     <app-miembros-table
       [miembros]="miembros"
@@ -25,7 +24,6 @@
     ></app-miembros-table>
   </section>
 
-  <!-- TOAST -->
   <div
     class="toast"
     *ngIf="toastOpen"
@@ -41,7 +39,6 @@
     <span class="x">✕</span>
   </div>
 
-  <!-- MODAL INVITAR -->
   <div class="overlay" *ngIf="modalInvitarOpen" (click)="closeInvitar()">
     <div class="modal" (click)="$event.stopPropagation()">
       <div class="modal__header">
@@ -61,18 +58,27 @@
 
           <label class="field">
             <span>DNI *</span>
-            <input type="text" [(ngModel)]="invite_dni" placeholder="Ej: 40.123.456" />
+            <input type="text" [(ngModel)]="invite_dni" placeholder="Ej: 40123456" />
           </label>
 
           <label class="field">
-            <span>Nombre (opcional)</span>
-            <input type="text" [(ngModel)]="invite_nombre" placeholder="Nombre y apellido" />
+            <span>Nombre *</span>
+            <input type="text" [(ngModel)]="invite_nombre" placeholder="Nombre" />
+          </label>
+
+          <label class="field">
+            <span>Apellido *</span>
+            <input type="text" [(ngModel)]="invite_apellido" placeholder="Apellido" />
+          </label>
+
+          <label class="field">
+            <span>Teléfono *</span>
+            <input type="text" [(ngModel)]="invite_phone" placeholder="Ej: 1122334455" />
           </label>
 
           <div class="field">
             <span>Rol</span>
 
-            <!-- dropdown lindo (ancho fijo, solo texto) -->
             <div class="dd">
               <button
                 type="button"
@@ -85,13 +91,10 @@
               </button>
 
               <div class="dd__menu dd__menu--fixed" *ngIf="inviteRoleOpen">
-                <button type="button" class="dd__item" (click)="setInviteRole('OPERADOR')">
-                  Operador
+                <button type="button" class="dd__item" (click)="setInviteRole('TECHNICIAN')">
+                  Técnico
                 </button>
-                <button type="button" class="dd__item" (click)="setInviteRole('LECTURA')">
-                  Lectura
-                </button>
-                <button type="button" class="dd__item" (click)="setInviteRole('ADMIN')">
+                <button type="button" class="dd__item" (click)="setInviteRole('HOSPITAL_ADMIN')">
                   Administrador
                 </button>
               </div>
@@ -107,7 +110,14 @@
           <button
             class="btn btn--primary"
             (click)="submitInvitar()"
-            [disabled]="inviteLoading || !invite_email.trim() || !invite_dni.trim()"
+            [disabled]="
+              inviteLoading ||
+              !invite_email.trim() ||
+              !invite_dni.trim() ||
+              !invite_nombre.trim() ||
+              !invite_apellido.trim() ||
+              !invite_phone.trim()
+            "
           >
             {{ inviteLoading ? 'Enviando...' : 'Enviar invitación' }}
           </button>
@@ -116,7 +126,6 @@
     </div>
   </div>
 
-  <!-- MODAL CONFIRM -->
   <div class="overlay" *ngIf="confirmOpen" (click)="closeConfirm()">
     <div class="modal modal--sm" (click)="$event.stopPropagation()">
       <div class="modal__header">

@@ -1,20 +1,8 @@
 import { Component, OnInit, ChangeDetectorRef, HostListener } from '@angular/core';
-
-type MemberRole = 'ADMIN' | 'OPERADOR' | 'LECTURA';
-type MemberStatus = 'INVITED' | 'ACTIVE' | 'SUSPENDED';
-
-export interface HospitalMember {
-  id: string;
-  full_name: string;
-  email: string;
-  dni: string;
-  role: MemberRole;
-  status: MemberStatus;
-  created_at: string; // ISO
-}
+import { HospitalUser, MemberRole, MemberStatus } from '../../../models/hospital-user';
+import { EquipoRolesService } from '../../../service/equipos_roles_service';
 
 type ToastKind = 'success' | 'error' | 'info';
-
 
 @Component({
   selector: 'app-equipo-roles',
@@ -23,38 +11,38 @@ type ToastKind = 'success' | 'error' | 'info';
   styleUrl: './equipos-roles.scss',
 })
 export class EquipoRoles implements OnInit {
-  miembros: HospitalMember[] = [];
-  miembroSeleccionado: HospitalMember | null = null;
+  miembros: HospitalUser[] = [];
+  miembroSeleccionado: HospitalUser | null = null;
 
   cargando = true;
 
-  // UI state
   modalInvitarOpen = false;
   inviteLoading = false;
 
-  // Dropdowns
   inviteRoleOpen = false;
-  selectedInviteRole: MemberRole = 'OPERADOR';
+  selectedInviteRole: MemberRole = 'TECHNICIAN';
 
-  // Form invitar
   invite_email = '';
   invite_dni = '';
   invite_nombre = '';
+  invite_apellido = '';
+  invite_phone = '';
 
-  // Confirm modal (para suspender/reactivar y reenviar)
   confirmOpen = false;
   confirmTitle = '';
   confirmMessage = '';
   confirmLoading = false;
   confirmAction: null | (() => void) = null;
 
-  // Toast
   toastOpen = false;
   toastText = '';
   toastKind: ToastKind = 'success';
   private toastTimer: any = null;
 
-  constructor(private cdr: ChangeDetectorRef) {}
+  constructor(
+    private cdr: ChangeDetectorRef,
+    private equipoRolesService: EquipoRolesService
+  ) {}
 
   ngOnInit(): void {
     this.cargarMiembros();
@@ -64,60 +52,31 @@ export class EquipoRoles implements OnInit {
   onEsc(): void {
     if (this.modalInvitarOpen) this.closeInvitar();
     if (this.confirmOpen) this.closeConfirm();
-    // Los dropdown se cierran con click afuera (se maneja en html)
   }
 
   private cargarMiembros(): void {
     this.cargando = true;
 
-    setTimeout(() => {
-      this.miembros = [
-        {
-          id: 'm1',
-          full_name: 'Camila Plaza',
-          email: 'cami@vitflow.com',
-          dni: '40.123.456',
-          role: 'ADMIN',
-          status: 'ACTIVE',
-          created_at: new Date(Date.now() - 1000 * 60 * 60 * 24 * 30).toISOString(),
-        },
-        {
-          id: 'm2',
-          full_name: 'Sofía González',
-          email: 'sofi@vitflow.com',
-          dni: '41.987.321',
-          role: 'OPERADOR',
-          status: 'ACTIVE',
-          created_at: new Date(Date.now() - 1000 * 60 * 60 * 24 * 10).toISOString(),
-        },
-        {
-          id: 'm3',
-          full_name: 'Nicolás Pérez',
-          email: 'nico@vitflow.com',
-          dni: '39.555.222',
-          role: 'LECTURA',
-          status: 'INVITED',
-          created_at: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
-        },
-        {
-          id: 'm4',
-          full_name: 'María López',
-          email: 'maria@vitflow.com',
-          dni: '38.111.999',
-          role: 'OPERADOR',
-          status: 'SUSPENDED',
-          created_at: new Date(Date.now() - 1000 * 60 * 60 * 24 * 65).toISOString(),
-        },
-      ];
-
-      this.cargando = false;
-      this.cdr.detectChanges();
-    }, 450);
+    this.equipoRolesService.getUsers().subscribe({
+      next: (users) => {
+        console.log('USERS BACK:', users);
+        this.miembros = users || [];
+        this.cargando = false;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        this.cargando = false;
+        this.showToast(err?.error?.detail || 'No se pudieron cargar los miembros.', 'error');
+        this.cdr.detectChanges();
+      },
+    });
   }
 
-  // ===== UI =====
+  getFullName(u: HospitalUser): string {
+    return `${u.firstName || ''} ${u.lastName || ''}`.trim() || '(Sin nombre)';
+  }
 
-  onSelectMiembro(m: HospitalMember): void {
+  onSelectMiembro(m: HospitalUser): void {
     this.miembroSeleccionado = m;
   }
 
@@ -138,7 +97,9 @@ export class EquipoRoles implements OnInit {
     this.invite_email = '';
     this.invite_dni = '';
     this.invite_nombre = '';
-    this.selectedInviteRole = 'OPERADOR';
+    this.invite_apellido = '';
+    this.invite_phone = '';
+    this.selectedInviteRole = 'TECHNICIAN';
   }
 
   toggleInviteRoleOpen(): void {
@@ -153,86 +114,105 @@ export class EquipoRoles implements OnInit {
   submitInvitar(): void {
     const email = this.invite_email.trim();
     const dni = this.invite_dni.trim();
-    const nombre = this.invite_nombre.trim();
+    const firstName = this.invite_nombre.trim();
+    const lastName = this.invite_apellido.trim();
+    const phone = this.invite_phone.trim();
 
-    if (!email || !dni) return;
+    if (!email || !dni || !firstName || !lastName || !phone) return;
     if (this.inviteLoading) return;
+
+    if (this.selectedInviteRole !== 'TECHNICIAN') {
+      this.showToast('Por ahora solo se pueden invitar técnicos.', 'info');
+      return;
+    }
 
     this.inviteLoading = true;
     this.cdr.detectChanges();
 
-    // Simula backend real time
-    setTimeout(() => {
-      const nuevo: HospitalMember = {
-        id: 'm_' + Math.random().toString(16).slice(2),
-        full_name: nombre || '(Sin nombre)',
+    this.equipoRolesService
+      .createTechnician({
         email,
         dni,
-        role: this.selectedInviteRole,
-        status: 'INVITED',
-        created_at: new Date().toISOString(),
-      };
-
-      this.miembros = [nuevo, ...this.miembros];
-      this.inviteLoading = false;
-
-      this.showToast('Invitación enviada correctamente.', 'success');
-      this.closeInvitar();
-      this.cdr.detectChanges();
-    }, 700);
+        firstName,
+        lastName,
+        phone,
+      })
+      .subscribe({
+        next: (created) => {
+          this.miembros = [created, ...this.miembros];
+          this.inviteLoading = false;
+          this.showToast('Invitación enviada correctamente.', 'success');
+          this.closeInvitar();
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          this.inviteLoading = false;
+          this.showToast(err?.error?.detail || 'No se pudo enviar la invitación.', 'error');
+          this.cdr.detectChanges();
+        },
+      });
   }
 
-  // ===== Actions (desde tabla) =====
-
-  onCambiarRol(m: HospitalMember, role: MemberRole): void {
+  onCambiarRol(m: HospitalUser, role: MemberRole): void {
     if (m.role === role) return;
+    this.showToast('Por ahora no está habilitado cambiar roles.', 'info');
+  }
 
-    // En este caso NO confirmo, porque cambiar rol es algo “rápido” tipo dropdown.
-    // Si querés confirmación después la sumamos.
-    this.miembros = this.miembros.map(x => (x.id === m.id ? { ...x, role } : x));
-    if (this.miembroSeleccionado?.id === m.id) {
-      this.miembroSeleccionado = { ...this.miembroSeleccionado, role };
+  onToggleEstado(m: HospitalUser): void {
+    if (m.role === 'HOSPITAL_ADMIN') {
+      this.showToast('No se puede modificar el estado del administrador.', 'info');
+      return;
     }
 
-    this.showToast(`Rol actualizado: ${m.full_name} → ${this.roleLabel(role)}.`, 'info');
-    this.cdr.detectChanges();
-  }
-
-  onToggleEstado(m: HospitalMember): void {
     const next: MemberStatus = m.status === 'SUSPENDED' ? 'ACTIVE' : 'SUSPENDED';
     const verb = next === 'SUSPENDED' ? 'suspender' : 'reactivar';
 
     this.openConfirm(
       'Confirmar acción',
-      `Vas a ${verb} el acceso de ${m.full_name}.`,
+      `Vas a ${verb} el acceso de ${this.getFullName(m)}.`,
       () => {
-        this.miembros = this.miembros.map(x => (x.id === m.id ? { ...x, status: next } : x));
-        if (this.miembroSeleccionado?.id === m.id) {
-          this.miembroSeleccionado = { ...this.miembroSeleccionado, status: next };
-        }
-        this.closeConfirm();
-        this.showToast(`Acceso actualizado: ${m.full_name}.`, 'success');
-        this.cdr.detectChanges();
+        this.equipoRolesService.updateUserStatus(m.uid, next).subscribe({
+          next: (updated) => {
+            this.miembros = this.miembros.map((x) => (x.uid === m.uid ? updated : x));
+
+            if (this.miembroSeleccionado?.uid === m.uid) {
+              this.miembroSeleccionado = updated;
+            }
+
+            this.closeConfirm();
+            this.showToast(`Acceso actualizado: ${this.getFullName(updated)}.`, 'success');
+            this.cdr.detectChanges();
+          },
+          error: (err) => {
+            this.confirmLoading = false;
+            this.showToast(err?.error?.detail || 'No se pudo actualizar el estado.', 'error');
+            this.cdr.detectChanges();
+          },
+        });
       }
     );
   }
 
-  onReenviarInvitacion(m: HospitalMember): void {
+  onReenviarInvitacion(m: HospitalUser): void {
     this.openConfirm(
       'Reenviar invitación',
       `Se reenviará la invitación a ${m.email}.`,
       () => {
-        // Simula request
-        setTimeout(() => {
-          this.closeConfirm();
-          this.showToast('Invitación reenviada.', 'success');
-          this.cdr.detectChanges();
-        }, 350);
+        this.equipoRolesService.resendInvitation(m.uid).subscribe({
+          next: () => {
+            this.closeConfirm();
+            this.showToast('Invitación reenviada.', 'success');
+            this.cdr.detectChanges();
+          },
+          error: (err) => {
+            this.confirmLoading = false;
+            this.showToast(err?.error?.detail || 'No se pudo reenviar la invitación.', 'error');
+            this.cdr.detectChanges();
+          },
+        });
       }
     );
   }
-
-  // ===== Confirm modal =====
 
   private openConfirm(title: string, message: string, action: () => void): void {
     this.confirmTitle = title;
@@ -256,14 +236,8 @@ export class EquipoRoles implements OnInit {
     this.confirmLoading = true;
     this.cdr.detectChanges();
 
-    setTimeout(() => {
-      this.confirmAction?.();
-      this.confirmLoading = false;
-      this.cdr.detectChanges();
-    }, 250);
+    this.confirmAction();
   }
-
-  // ===== Toast =====
 
   private showToast(text: string, kind: ToastKind): void {
     this.toastText = text;
@@ -282,12 +256,9 @@ export class EquipoRoles implements OnInit {
     if (this.toastTimer) clearTimeout(this.toastTimer);
   }
 
-  // ===== Labels / utils =====
-
   roleLabel(r: MemberRole): string {
-    if (r === 'ADMIN') return 'Administrador';
-    if (r === 'OPERADOR') return 'Operador';
-    return 'Lectura';
+    if (r === 'HOSPITAL_ADMIN') return 'Administrador';
+    return 'Técnico';
   }
 
   statusLabel(s: MemberStatus): string {
@@ -296,7 +267,7 @@ export class EquipoRoles implements OnInit {
     return 'Suspendido';
   }
 
-  formatFechaHora(iso: string): string {
+  formatFechaHora(iso?: string): string {
     if (!iso) return '';
     const d = new Date(iso);
     const dd = String(d.getDate()).padStart(2, '0');

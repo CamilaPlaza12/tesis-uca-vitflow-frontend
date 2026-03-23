@@ -37,28 +37,33 @@
         <tr
           *ngFor="let m of miembros"
           class="row"
-          [class.selected]="m.id === miembroSeleccionadoId"
+          [class.selected]="m.uid === miembroSeleccionadoId"
           (click)="onRowClick(m)"
         >
-          <td class="name">{{ m.full_name }}</td>
+          <td class="name">{{ getFullName(m) }}</td>
           <td class="mono">{{ m.email }}</td>
           <td class="mono">{{ m.dni }}</td>
 
-          <!-- ROL: dropdown lindo -->
           <td (click)="$event.stopPropagation()">
-            <div class="dd" [class.dd--open]="roleOpenId === m.id">
-             <button type="button" class="dd__btn" (click)="toggleRoleMenu(m)">
-              <span class="dd__value">{{ roleLabel(m.role) }}</span>
-              <span class="chev">▾</span>
-            </button>
-              <div class="dd__menu" *ngIf="roleOpenId === m.id">
-                <button type="button" class="dd__item" (click)="setRole(m, 'OPERADOR')">
-                  Operador
+            <div class="dd" [class.dd--open]="roleOpenId === m.uid">
+              <button type="button" class="dd__btn" (click)="toggleRoleMenu(m)">
+                <span class="dd__value">{{ roleLabel(m.role) }}</span>
+                <span class="chev">▾</span>
+              </button>
+
+              <div class="dd__menu" *ngIf="roleOpenId === m.uid">
+                <button
+                  type="button"
+                  class="dd__item"
+                  (click)="setRole(m, 'TECHNICIAN')"
+                >
+                  Técnico
                 </button>
-                <button type="button" class="dd__item" (click)="setRole(m, 'LECTURA')">
-                  Lectura
-                </button>
-                <button type="button" class="dd__item" (click)="setRole(m, 'ADMIN')">
+                <button
+                  type="button"
+                  class="dd__item"
+                  (click)="setRole(m, 'HOSPITAL_ADMIN')"
+                >
                   Administrador
                 </button>
               </div>
@@ -76,21 +81,20 @@
             </span>
           </td>
 
-          <td class="mono">{{ formatFechaHora(m.created_at) }}</td>
+          <td class="mono">{{ formatFechaHora(m.createdAt) }}</td>
 
-          <!-- Acceso: suspender/reactivar -->
           <td (click)="$event.stopPropagation()">
             <button
               class="mini"
               [class.mini--danger]="m.status !== 'SUSPENDED'"
               [class.mini--success]="m.status === 'SUSPENDED'"
               (click)="toggleEstado.emit(m)"
+              [disabled]="m.role === 'HOSPITAL_ADMIN'"
             >
               {{ m.status === 'SUSPENDED' ? 'Reactivar' : 'Suspender' }}
             </button>
           </td>
 
-          <!-- Invitación: reenviar solo si INVITED -->
           <td (click)="$event.stopPropagation()">
             <button
               class="mini"

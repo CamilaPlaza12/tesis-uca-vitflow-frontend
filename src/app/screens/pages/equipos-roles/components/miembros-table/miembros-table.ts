@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { HospitalMember } from '../../equipos-roles';
+import { HospitalUser } from '../../../../../models/hospital-user';
 
-type MemberRole = HospitalMember['role'];
+type MemberRole = HospitalUser['role'];
 
 @Component({
   selector: 'app-miembros-table',
@@ -10,48 +10,50 @@ type MemberRole = HospitalMember['role'];
   styleUrl: './miembros-table.scss',
 })
 export class MiembrosTable {
-   @Input() miembros: HospitalMember[] = [];
+  @Input() miembros: HospitalUser[] = [];
   @Input() miembroSeleccionadoId: string | null = null;
   @Input() cargando = false;
 
-  @Output() selectMiembro = new EventEmitter<HospitalMember>();
-  @Output() cambiarRol = new EventEmitter<{ miembro: HospitalMember; role: MemberRole }>();
-  @Output() toggleEstado = new EventEmitter<HospitalMember>();
-  @Output() reenviarInvitacion = new EventEmitter<HospitalMember>();
+  @Output() selectMiembro = new EventEmitter<HospitalUser>();
+  @Output() cambiarRol = new EventEmitter<{ miembro: HospitalUser; role: MemberRole }>();
+  @Output() toggleEstado = new EventEmitter<HospitalUser>();
+  @Output() reenviarInvitacion = new EventEmitter<HospitalUser>();
 
-  // dropdown abierto por id
   roleOpenId: string | null = null;
 
-  onRowClick(m: HospitalMember): void {
+  onRowClick(m: HospitalUser): void {
     this.selectMiembro.emit(m);
   }
 
-  toggleRoleMenu(m: HospitalMember): void {
-    this.roleOpenId = this.roleOpenId === m.id ? null : m.id;
+  toggleRoleMenu(m: HospitalUser): void {
+    this.roleOpenId = this.roleOpenId === m.uid ? null : m.uid;
   }
 
   closeRoleMenu(): void {
     this.roleOpenId = null;
   }
 
-  setRole(m: HospitalMember, role: MemberRole): void {
+  setRole(m: HospitalUser, role: MemberRole): void {
     this.cambiarRol.emit({ miembro: m, role });
     this.roleOpenId = null;
   }
 
-  roleLabel(r: MemberRole): string {
-    if (r === 'ADMIN') return 'Administrador';
-    if (r === 'OPERADOR') return 'Operador';
-    return 'Lectura';
+  getFullName(u: HospitalUser): string {
+    return `${u.firstName || ''} ${u.lastName || ''}`.trim() || '(Sin nombre)';
   }
 
-  statusLabel(s: HospitalMember['status']): string {
+  roleLabel(r: MemberRole): string {
+    if (r === 'HOSPITAL_ADMIN') return 'Administrador';
+    return 'Técnico';
+  }
+
+  statusLabel(s: HospitalUser['status']): string {
     if (s === 'ACTIVE') return 'Activo';
     if (s === 'INVITED') return 'Invitado';
     return 'Suspendido';
   }
 
-  formatFechaHora(iso: string): string {
+  formatFechaHora(iso?: string): string {
     if (!iso) return '';
     const d = new Date(iso);
     const dd = String(d.getDate()).padStart(2, '0');
