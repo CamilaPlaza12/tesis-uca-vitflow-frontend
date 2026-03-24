@@ -13,7 +13,7 @@ export class UserService {
   currentUserData: any = null;
   currentUserData$ = new BehaviorSubject<any>(null);
 
-  private baseUrl = 'http://127.0.0.1:8000';
+  private baseUrl = 'http://localhost:8000';
 
   constructor(private http: HttpClient, private authService: AuthService) {}
 
@@ -23,7 +23,6 @@ export class UserService {
       this.currentUser = cred.user;
 
       const token = await cred.user.getIdToken();
-      localStorage.setItem('token', token);
 
       const data = await this.fetchUserData();
 
@@ -54,18 +53,13 @@ export class UserService {
     this.currentUser = null;
     this.currentUserData = null;
     this.currentUserData$.next(null);
+
     await this.authService.logout();
   }
 
-  async fetchUserData(): Promise<any> {
-    const token = localStorage.getItem('token');
-
-    const headers = new HttpHeaders({
-      Authorization: `Bearer ${token}`,
-    });
-
-    return await firstValueFrom(
-      this.http.get(`${this.baseUrl}/api/v1/auth/me/full`, { headers })
-    );
-  }
+async fetchUserData(): Promise<any> {
+  return await firstValueFrom(
+    this.http.get(`${this.baseUrl}/api/v1/auth/me/full`)
+  );
+}
 }

@@ -28,7 +28,6 @@ export class SignIn {
       password: ['', [Validators.required, Validators.minLength(6)]],
     });
 
-    localStorage.removeItem('token');
   }
 
   get email() { return this.form.get('email'); }
