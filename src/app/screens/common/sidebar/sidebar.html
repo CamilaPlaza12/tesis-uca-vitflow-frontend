@@ -6,15 +6,12 @@
   [class.mobile]="isMobile"
   [class.mobile-open]="isMobile && mobileOpen"
 >
-  <!-- TOP -->
   <div class="top">
-    <!-- IZQUIERDA: logo + texto (SOLO cuando NO está colapsado) -->
     <div class="brand">
       <img class="logo-img" src="images/gota.png" alt="VitFlow" />
       <span class="brand-text" *ngIf="!(collapsed && !isMobile)">VitFlow</span>
     </div>
 
-    <!-- DERECHA: flecha -->
     <div class="actions">
       <button
         *ngIf="!isMobile"
@@ -26,7 +23,6 @@
         <i class="pi" [ngClass]="collapsed ? 'pi-angle-right' : 'pi-angle-left'"></i>
       </button>
 
-      <!-- Mobile close -->
       <button
         *ngIf="isMobile"
         class="icon-btn"
@@ -39,7 +35,6 @@
     </div>
   </div>
 
-  <!-- NAV -->
   <nav class="nav">
     <a routerLink="/home" routerLinkActive="active" class="item" (click)="onNavClick()">
       <i class="pi pi-home icon"></i>
@@ -61,7 +56,13 @@
       <span class="label" *ngIf="!(collapsed && !isMobile)">Pedidos y alertas</span>
     </a>
 
-    <a routerLink="/equipo-roles" routerLinkActive="active" class="item" (click)="onNavClick()">
+    <a
+      *ngIf="isAdmin"
+      routerLink="/equipo-roles"
+      routerLinkActive="active"
+      class="item"
+      (click)="onNavClick()"
+    >
       <i class="pi pi-users icon"></i>
       <span class="label" *ngIf="!(collapsed && !isMobile)">Equipos Roles</span>
     </a>
@@ -72,9 +73,8 @@
     </a>
   </nav>
 
-  <!-- FOOTER -->
   <div class="bottom" *ngIf="!(collapsed && !isMobile)">
-    <div class="hospital">Hospital Central de CABA</div>
-    <div class="user">Sección: Dra. García (Administración)</div>
+    <div class="hospital">{{ hospitalName }}</div>
+    <div class="user">{{ fullName }} ({{ roleLabel }})</div>
   </div>
 </aside>

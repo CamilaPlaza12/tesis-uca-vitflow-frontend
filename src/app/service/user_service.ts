@@ -25,12 +25,10 @@ export class UserService {
       const token = await cred.user.getIdToken();
       localStorage.setItem('token', token);
 
-      const uid = cred.user.uid;
-      const userData = await this.fetchUserData(uid);
-      userData.uid = uid;
+      const data = await this.fetchUserData();
 
-      this.currentUserData = userData;
-      this.currentUserData$.next(userData);
+      this.currentUserData = data;
+      this.currentUserData$.next(data);
 
       return { ok: true };
     } catch (e: any) {
@@ -59,14 +57,15 @@ export class UserService {
     await this.authService.logout();
   }
 
-  async fetchUserData(uid: string): Promise<any> {
+  async fetchUserData(): Promise<any> {
     const token = localStorage.getItem('token');
+
     const headers = new HttpHeaders({
       Authorization: `Bearer ${token}`,
     });
 
     return await firstValueFrom(
-      this.http.get(`${this.baseUrl}/api/v1/users/getByID/${uid}`, { headers })
+      this.http.get(`${this.baseUrl}/api/v1/auth/me/full`, { headers })
     );
   }
 }

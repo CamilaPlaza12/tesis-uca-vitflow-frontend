@@ -7,11 +7,7 @@
   </header>
 
   <section class="grid">
-    <!-- =======================
-         IZQUIERDA: Perfil + Preferencias
-         ======================= -->
     <div class="col">
-      <!-- PERFIL -->
       <div class="card">
         <div class="card__head">
           <div class="headL">
@@ -74,7 +70,6 @@
               <div class="v readonly">{{ user.lastName }}</div>
             </div>
 
-            <!-- ✅ SOLO TELEFONO EDITABLE -->
             <div class="field field--full">
               <div class="k">Teléfono</div>
 
@@ -94,7 +89,6 @@
         </div>
       </div>
 
-      <!-- PREFERENCIAS -->
       <div class="card">
         <div class="card__head">
           <div class="headL">
@@ -147,11 +141,7 @@
       </div>
     </div>
 
-    <!-- =======================
-         DERECHA: Hospital + Sesión + Info
-         ======================= -->
     <div class="col">
-      <!-- HOSPITAL -->
       <div class="card">
         <div class="card__head">
           <div class="headL">
@@ -188,7 +178,6 @@
         </div>
       </div>
 
-      <!-- SESION -->
       <div class="card">
         <div class="card__head">
           <div class="headL">
@@ -210,7 +199,6 @@
         </div>
       </div>
 
-      <!-- INFO / AYUDA -->
       <div class="card">
         <div class="card__head">
           <div class="headL">
@@ -249,9 +237,6 @@
     </div>
   </section>
 
-  <!-- =======================
-       MODAL: Confirmar logout
-       ======================= -->
   <div class="modalBackdrop" *ngIf="logoutOpen" (click)="closeLogout()">
     <div class="modal" (click)="$event.stopPropagation()">
       <div class="modal__title">¿Cerrar sesión?</div>

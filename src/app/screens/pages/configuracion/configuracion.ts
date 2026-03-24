@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { UserService } from '../../../service/user_service';
 
-type UserRoleLabel = 'Administrador' | 'Empleado';
+type UserRoleLabel = 'Administrador' | 'Técnico';
 
 @Component({
   selector: 'app-configuracion',
@@ -8,49 +9,74 @@ type UserRoleLabel = 'Administrador' | 'Empleado';
   templateUrl: './configuracion.html',
   styleUrl: './configuracion.scss',
 })
-export class Configuracion {
-  // =========================
-  // Hardcode (por ahora)
-  // =========================
-  user = {
-    email: 'admin.donaciones@hospitalcentral.gob.ar',
-    firstName: 'Martina',
-    lastName: 'Heine',
-    phone: '+54 11 4567-8899',
-    roleLabel: 'Administrador' as UserRoleLabel,
-  };
+export class Configuracion implements OnInit {
+  data: any = null;
 
-  hospital = {
-    name: 'Hospital Central de CABA',
-    subtitle: 'Banco de sangre • Gestión interna',
-    email: 'bancosangre@hospitalcentral.gob.ar',
-    phone: '+54 11 4382-1100',
-    address: 'Av. Corrientes 2389, Almagro, Ciudad Autónoma de Buenos Aires',
-    verified: true,
-  };
-
-  // =========================
-  // UI state
-  // =========================
   editingPhone = false;
-  phoneDraft = this.user.phone;
+  phoneDraft = '';
 
-  // Avatar (preview local)
-  avatarUrl: string | null = null; // si querés default: poné una URL o dejalo null
+  avatarUrl: string | null = null;
 
-  // Preferencias
   prefs = {
     emailAlerts: true,
     urgentOnly: false,
     compactUI: false,
   };
 
-  // Modal cerrar sesión
   logoutOpen = false;
 
-  // =========================
-  // Actions
-  // =========================
+  constructor(private userService: UserService) {}
+
+  ngOnInit(): void {
+    this.userService.currentUserData$.subscribe((data) => {
+      this.data = data;
+      this.phoneDraft = this.user.phone;
+    });
+  }
+
+  get user() {
+    const u = this.data?.user || {};
+
+    return {
+      email: u.email || '',
+      firstName: u.firstName || '',
+      lastName: u.lastName || '',
+      phone: u.phone || '',
+      roleLabel: this.getRoleLabel(u.role),
+    };
+  }
+
+  get hospital() {
+    const h = this.data?.hospital || {};
+    const address = h.address || {};
+
+    return {
+      name: h.name || '',
+      subtitle: 'Banco de sangre • Gestión interna',
+      email: h.email || '',
+      phone: h.phone || '',
+      address: this.buildAddress(address),
+      verified: true,
+    };
+  }
+
+  private getRoleLabel(role?: string): UserRoleLabel {
+    return role === 'HOSPITAL_ADMIN' ? 'Administrador' : 'Técnico';
+  }
+
+  private buildAddress(address: any): string {
+    if (!address) return '';
+
+    const parts = [
+      [address.street, address.number].filter(Boolean).join(' ').trim(),
+      address.localidad || address.locality || '',
+      address.city || '',
+      address.province || '',
+    ].filter(Boolean);
+
+    return parts.join(', ');
+  }
+
   startEditPhone(): void {
     this.editingPhone = true;
     this.phoneDraft = this.user.phone;
@@ -62,10 +88,8 @@ export class Configuracion {
   }
 
   savePhone(): void {
-    // ✅ por ahora solo actualizamos hardcode.
-    // después acá llamás al backend.
     const cleaned = (this.phoneDraft || '').trim();
-    this.user.phone = cleaned || this.user.phone;
+    this.phoneDraft = cleaned || this.user.phone;
     this.editingPhone = false;
   }
 
@@ -77,13 +101,9 @@ export class Configuracion {
     this.logoutOpen = false;
   }
 
-  confirmLogout(): void {
+  async confirmLogout(): Promise<void> {
     this.logoutOpen = false;
-
-    // TODO: acá conectás tu logout real
-    // this.authService.logout();
-    // this.router.navigate(['/login']);
-    console.log('Logout confirmado (conectar auth real).');
+    await this.userService.logout();
   }
 
   onAvatarFilePicked(ev: Event): void {
@@ -91,7 +111,6 @@ export class Configuracion {
     const file = input?.files?.[0];
     if (!file) return;
 
-    // simple validación
     if (!file.type.startsWith('image/')) return;
 
     const reader = new FileReader();
@@ -100,7 +119,6 @@ export class Configuracion {
     };
     reader.readAsDataURL(file);
 
-    // reset para permitir re-subir el mismo archivo
     if (input) input.value = '';
   }
 
