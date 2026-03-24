@@ -12,8 +12,20 @@ export class HomeDonationAppointmentsTableComponent {
   @Input() rows: DonationAppointmentRow[] = [];
 
   toneForStatus(status: DonationAppointmentRow['status']) {
-    if (status === 'Confirmado') return 'success';
-    if (status === 'Pendiente') return 'warning';
-    return 'danger';
+    switch (status) {
+      case 'CONFIRMADO':
+      case 'COMPLETADO':
+        return 'success';
+
+      case 'PROGRAMADO':
+        return 'warning';
+
+      case 'CANCELADO':
+      case 'NO_PRESENTADO':
+        return 'danger';
+
+      default:
+        return 'neutral';
+    }
   }
 }

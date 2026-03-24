@@ -1,28 +1,47 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef} from '@angular/core';
 import { Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 
-// AJUSTÁ ESTE PATH al real en tu repo
 import { BloodType } from '../../../models/blood-bank.model';
 
-export type DonationType = 'Sangre' | 'Plaquetas' | 'Médula';
-export type AppointmentStatus = 'Confirmado' | 'Pendiente' | 'Cancelado';
+export type DonationType = 'SANGRE' | 'PLAQUETAS' | 'MEDULA_OSEA';
+export type AppointmentStatus =
+  | 'PROGRAMADO'
+  | 'CONFIRMADO'
+  | 'CANCELADO'
+  | 'COMPLETADO'
+  | 'NO_PRESENTADO';
 
-export type RequestPriority = 'Urgente' | 'Normal';
-export type RequestStatus = 'Activo' | 'Completado';
+export type RequestPriority = 'URGENTE' | 'NORMAL' | 'CRITICA';
+export type RequestStatus = 'ACTIVO' | 'COMPLETO' | 'CANCELADO' | 'FINALIZADO';
 
 export interface DonationAppointmentRow {
-  time: string; // "08:30"
-  donation: DonationType;
+  time_local: string;
+  donation_type: DonationType;
   status: AppointmentStatus;
 }
 
 export interface ActiveRequestRow {
-  date: string; // "12/04/2024"
-  service: string; // "UTI"
-  component: string; // "Sangre O-"
-  quantity: number;
+  date: string;
+  hospital_unit: string;
+  component: string;
+  blood_group: string;
+  requested_liters: number;
   priority: RequestPriority;
   status: RequestStatus;
+}
+
+interface HomeSummaryResponse {
+  stocks: Record<BloodType, number>;
+  thresholds: Partial<Record<BloodType, number>>;
+  kpis: {
+    totalUnits: number;
+    urgentActive: number;
+    appointmentsToday: number;
+    criticalGroupsCount: number;
+  };
+  appointments: DonationAppointmentRow[];
+  activeRequests: ActiveRequestRow[];
 }
 
 @Component({
@@ -31,96 +50,85 @@ export interface ActiveRequestRow {
   templateUrl: './home.html',
   styleUrl: './home.scss',
 })
-export class Home {
-  hospitalName = 'Hospital Central de CABA';
-  currentDateLabel = '18 de marzo de 2024';
-  unreadNotifications = 1;
+export class Home implements OnInit {
+  currentDateLabel = '';
+  unreadNotifications = 0;
 
-  // ✅ Formato correcto para el chart que ya tenés (stocks/thresholds)
   stocksRecord: Record<BloodType, number> = {
-    'A+': 28,
-    'A-': 26,
-    'B+': 55,
-    'B-': 38,
-    'AB+': 37,
-    'AB-': 35,
-    'O+': 52,
-    'O-': 34,
+    'A+': 0,
+    'A-': 0,
+    'B+': 0,
+    'B-': 0,
+    'AB+': 0,
+    'AB-': 0,
+    'O+': 0,
+    'O-': 0,
   };
 
-  thresholdsRecord: Partial<Record<BloodType, number>> = {
-    'A+': 20,
-    'A-': 20,
-    'B+': 20,
-    'B-': 20,
-    'AB+': 15,
-    'AB-': 15,
-    'O+': 25,
-    'O-': 25,
-  };
+  thresholdsRecord: Partial<Record<BloodType, number>> = {};
 
-  kpiTotalUnits = Object.values(this.stocksRecord).reduce(
-    (a, v) => a + (Number(v) || 0),
-    0
-  );
+  kpiTotalUnits = 0;
+  kpiUrgentActive = 0;
+  kpiAppointmentsToday = 0;
+  criticalGroupsCount = 0;
 
-  kpiUrgentActive = 1;
-  kpiAppointmentsToday = 14;
+  appointments: DonationAppointmentRow[] = [];
+  activeRequests: ActiveRequestRow[] = [];
 
-  criticalGroupsThreshold = 20;
-  criticalGroupsCount = (Object.entries(this.stocksRecord) as Array<[BloodType, number]>).filter(
-    ([t, v]) => Number(v) < Number(this.thresholdsRecord?.[t] ?? this.criticalGroupsThreshold)
-  ).length;
+  private baseUrl = 'http://localhost:8000/api/v1';
 
-  appointments: DonationAppointmentRow[] = [
-    { time: '08:30', donation: 'Sangre', status: 'Confirmado' },
-    { time: '09:15', donation: 'Plaquetas', status: 'Confirmado' },
-    { time: '10:45', donation: 'Médula', status: 'Pendiente' },
-    { time: '11:00', donation: 'Sangre', status: 'Cancelado' },
-  ];
+  constructor(
+    private router: Router,
+    private http: HttpClient,
+    private cdr: ChangeDetectorRef
+  ) {}
 
-  activeRequests: ActiveRequestRow[] = [
-    {
-      date: '12/04/2024',
-      service: 'UTI',
-      component: 'Sangre O-',
-      quantity: 2,
-      priority: 'Urgente',
-      status: 'Activo',
+  ngOnInit(): void {
+    this.currentDateLabel = this.buildCurrentDateLabel();
+    this.loadHomeSummary();
+  }
+
+private loadHomeSummary(): void {
+  console.log('🔥 Loading home summary...');
+
+  this.http.get<HomeSummaryResponse>(`${this.baseUrl}/home/summary`).subscribe({
+    next: (data) => {
+      console.log('✅ HOME DATA:', data);
+
+      this.stocksRecord = { ...(data.stocks || this.stocksRecord) };
+      this.thresholdsRecord = { ...(data.thresholds || {}) };
+
+      this.kpiTotalUnits = data.kpis?.totalUnits ?? 0;
+      this.kpiUrgentActive = data.kpis?.urgentActive ?? 0;
+      this.kpiAppointmentsToday = data.kpis?.appointmentsToday ?? 0;
+      this.criticalGroupsCount = data.kpis?.criticalGroupsCount ?? 0;
+
+      this.appointments = [...(data.appointments || [])];
+      this.activeRequests = [...(data.activeRequests || [])];
+
+      this.cdr.detectChanges();
     },
-    {
-      date: '11/04/2024',
-      service: 'Guardia',
-      component: 'Plaquetas A+',
-      quantity: 1,
-      priority: 'Normal',
-      status: 'Activo',
+    error: (err) => {
+      console.error('❌ Error loading home summary:', err);
+      this.cdr.detectChanges();
     },
-    {
-      date: '11/04/2024',
-      service: 'Terapia',
-      component: 'Sangre A-',
-      quantity: 4,
-      priority: 'Normal',
-      status: 'Activo',
-    },
-    {
-      date: '10/04/2024',
-      service: 'Terapia',
-      component: 'Plaquetas B+',
-      quantity: 1,
-      priority: 'Normal',
-      status: 'Completado',
-    },
-  ];
+  });
+}
 
-  constructor(private router: Router) {}
+  private buildCurrentDateLabel(): string {
+    const d = new Date();
+    return d.toLocaleDateString('es-AR', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    });
+  }
 
   onCreateDonationRequest(): void {
-    this.router.navigate(['/pedidos-y-alertas']);
+    this.router.navigate(['/pedidos-alertas']);
   }
 
   onOpenNotifications(): void {
-    this.router.navigate(['/pedidos-y-alertas']);
+    this.router.navigate(['/pedidos-alertas']);
   }
 }

@@ -12,10 +12,12 @@ export class HomeActiveRequestsTableComponent {
   @Input() rows: ActiveRequestRow[] = [];
 
   toneForPriority(p: ActiveRequestRow['priority']) {
-    return p === 'Urgente' ? 'danger' : 'neutral';
+    if (p === 'URGENTE' || p === 'CRITICA') return 'danger';
+    return 'neutral';
   }
 
   toneForStatus(s: ActiveRequestRow['status']) {
-    return s === 'Activo' ? 'info' : 'success';
+    if (s === 'ACTIVO') return 'info';
+    return 'success';
   }
 }
