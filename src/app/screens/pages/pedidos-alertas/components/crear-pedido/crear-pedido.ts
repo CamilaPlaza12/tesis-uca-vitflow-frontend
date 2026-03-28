@@ -161,7 +161,7 @@ export class CrearPedido {
       hospital_unit: this.form.servicio,
       component: this.form.componente,
       blood_group: this.form.grupoSanguineo,
-      requested_liters: litros2, // ✅ ahora va en litros, sin convertir
+      requested_units: litros2, // ✅ ahora va en litros, sin convertir
       priority: this.form.prioridad,
       requested_by: this.form.solicitadoPor.trim(),
       comments: this.form.comentarios?.trim() || undefined,

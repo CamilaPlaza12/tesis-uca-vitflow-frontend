@@ -44,25 +44,25 @@ export class Bancos implements OnInit {
     });
   }
 
-onThresholdChange(ev: { bloodType: BloodType; thresholdMl: number }): void {
+onThresholdChange(ev: { bloodType: BloodType; thresholdUnits: number }): void {
   console.log('thresholdChange event', ev);
   if (!this.bloodBank) return;
 
   const bt = ev.bloodType;
 
   // asegurá el objeto
-  this.bloodBank.thresholds_ml = this.bloodBank.thresholds_ml ?? ({} as any);
+  this.bloodBank.thresholds_units = this.bloodBank.thresholds_units ?? ({} as any);
 
-  const prev = Number(this.bloodBank.thresholds_ml?.[bt] ?? 0);
+  const prev = Number(this.bloodBank.thresholds_units?.[bt] ?? 0);
 
   // optimistic update
-  this.bloodBank.thresholds_ml[bt] = ev.thresholdMl;
+  this.bloodBank.thresholds_units[bt] = ev.thresholdUnits;
 
   this.saving = true;
   this.errorMsg = '';
   this.cdr.detectChanges();
 
-  this.bloodBankService.updateThreshold(bt, ev.thresholdMl).subscribe({
+  this.bloodBankService.updateThreshold(bt, ev.thresholdUnits).subscribe({
     next: (res) => {
       this.zone.run(() => {
         this.bloodBank = res;
@@ -73,7 +73,7 @@ onThresholdChange(ev: { bloodType: BloodType; thresholdMl: number }): void {
     error: (err) => {
       this.zone.run(() => {
         // rollback
-        this.bloodBank.thresholds_ml[bt] = prev;
+        this.bloodBank.thresholds_units[bt] = prev;
         this.errorMsg = err?.error?.detail || 'Error guardando umbral';
         this.saving = false;
         this.cdr.detectChanges();
@@ -82,18 +82,18 @@ onThresholdChange(ev: { bloodType: BloodType; thresholdMl: number }): void {
   });
 }
 
-  onManualChange(ev: { action: 'add' | 'remove'; bloodType: BloodType; amountMl: number }): void {
+  onManualChange(ev: { action: 'add' | 'remove'; bloodType: BloodType; amountUnits: number }): void {
     if (!this.bloodBank) return;
 
     const bt = ev.bloodType;
-    const amount = Number(ev.amountMl ?? 0);
-    const prev = Number(this.bloodBank.stocks_ml?.[bt] ?? 0);
+    const amount = Number(ev.amountUnits ?? 0);
+    const prev = Number(this.bloodBank.stocks_units?.[bt] ?? 0);
 
     // optimistic update
     if (ev.action === 'add') {
-      this.bloodBank.stocks_ml[bt] = prev + amount;
+      this.bloodBank.stocks_units[bt] = prev + amount;
     } else {
-      this.bloodBank.stocks_ml[bt] = Math.max(0, prev - amount);
+      this.bloodBank.stocks_units[bt] = Math.max(0, prev - amount);
     }
 
     this.saving = true;
@@ -111,7 +111,7 @@ onThresholdChange(ev: { bloodType: BloodType; thresholdMl: number }): void {
       },
       error: (err) => {
         // rollback
-        this.bloodBank.stocks_ml[bt] = prev;
+        this.bloodBank.stocks_units[bt] = prev;
         this.errorMsg = err?.error?.detail || 'Error aplicando ajuste';
         this.saving = false;
       },

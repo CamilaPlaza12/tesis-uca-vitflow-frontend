@@ -13,19 +13,19 @@
 
   <div class="top-grid">
     <app-blood-stock-chart
-      [stocks]="bloodBank.stocks_ml"
-      [thresholds]="bloodBank.thresholds_ml">
+      [stocks]="bloodBank.stocks_units"
+      [thresholds]="bloodBank.thresholds_units">
     </app-blood-stock-chart>
 
     <app-blood-manual-actions
-      [stocks]="bloodBank.stocks_ml"
+      [stocks]="bloodBank.stocks_units"
       (applyChange)="onManualChange($event)">
     </app-blood-manual-actions>
   </div>
 
   <app-blood-threshold-table
-  [stocks]="bloodBank.stocks_ml"
-  [thresholds]="bloodBank.thresholds_ml"
+  [stocks]="bloodBank.stocks_units"
+  [thresholds]="bloodBank.thresholds_units"
   (thresholdChange)="onThresholdChange($event)"
 ></app-blood-threshold-table>
 

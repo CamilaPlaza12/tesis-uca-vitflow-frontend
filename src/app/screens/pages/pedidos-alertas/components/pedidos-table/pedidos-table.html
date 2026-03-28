@@ -42,8 +42,8 @@
           <td class="mono">{{ formatFechaHora(p.datetime_local) }}</td>
           <td>{{ p.hospital_unit }}</td>
           <td>{{ componenteLabel(p) }}</td>
-          <td>{{ p.requested_liters | number:'1.0-2' }} L</td>
-          <td>{{ p.collected_liters | number:'1.0-2' }} L</td>
+          <td>{{ p.requested_units | number:'1.0-2' }} L</td>
+          <td>{{ p.collected_units | number:'1.0-2' }} L</td>
 
           <td>
             <span

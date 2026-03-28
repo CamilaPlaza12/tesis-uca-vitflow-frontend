@@ -18,7 +18,7 @@ export interface HospitalRequestCreate {
   hospital_unit: HospitalUnit;
   component: string;
   blood_group: string;
-  requested_liters: number;
+  requested_units: number;
   priority: HospitalRequestPriority;
   requested_by: string;
   comments?: string | null;
@@ -30,8 +30,8 @@ export interface HospitalRequest {
   hospital_unit: HospitalUnit;
   component: string;
   blood_group: string;
-  requested_liters: number;
-  collected_liters: number;
+  requested_units: number;
+  collected_units: number;
   priority: HospitalRequestPriority;
   status: HospitalRequestStatus;
   requested_by: string;

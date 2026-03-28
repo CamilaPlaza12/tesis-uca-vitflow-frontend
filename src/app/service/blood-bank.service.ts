@@ -8,7 +8,7 @@ export class BloodBankService {
   getBloodBank(): Observable<BloodBank> {
     return of({
       hospital_id: 'hospital-demo',
-      stocks_ml: {
+      stocks_units: {
         'A+': 1200,
         'A-': 700,
         'B+': 300,
@@ -18,7 +18,7 @@ export class BloodBankService {
         'O+': 2000,
         'O-': 500,
       },
-      thresholds_ml: {
+      thresholds_units: {
         'A+': 600,
         'A-': 500,
         'B+': 400,

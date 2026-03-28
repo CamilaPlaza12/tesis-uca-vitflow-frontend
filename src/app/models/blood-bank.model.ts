@@ -4,6 +4,6 @@ export type BloodType =
 
 export interface BloodBank {
   hospital_id: string;
-  stocks_ml: Record<BloodType, number>;
-  thresholds_ml: Partial<Record<BloodType, number>>;
+  stocks_units: Record<BloodType, number>;
+  thresholds_units: Partial<Record<BloodType, number>>;
 }

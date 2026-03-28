@@ -9,7 +9,7 @@ import { BloodType } from '../../../../../models/blood-bank.model';
 })
 export class BloodManualActions {
   @Input() stocks!: Record<BloodType, number>;
-  @Output() applyChange = new EventEmitter<{ action: 'add' | 'remove'; bloodType: BloodType; amountMl: number }>();
+  @Output() applyChange = new EventEmitter<{ action: 'add' | 'remove'; bloodType: BloodType; amountUnits: number }>();
 
   modalOpen = false;
   modalAction: 'add' | 'remove' = 'add';
@@ -19,7 +19,7 @@ export class BloodManualActions {
   bloodTypes: BloodType[] = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
 
   selectedType: BloodType = 'A+';
-  amountMl = 500;
+  amountUnits = 500;
 
   open(action: 'add' | 'remove'): void {
     this.modalAction = action;
@@ -27,13 +27,13 @@ export class BloodManualActions {
 
     if (action === 'remove') {
       const max = this.maxAmount();
-      if (max > 0 && Number(this.amountMl || 0) > max) this.amountMl = max;
+      if (max > 0 && Number(this.amountUnits || 0) > max) this.amountUnits = max;
     }
   }
 
   close(): void {
     this.modalOpen = false;
-    this.amountMl = 500;
+    this.amountUnits = 500;
     this.selectedType = 'A+';
   }
 
@@ -66,16 +66,16 @@ export class BloodManualActions {
     if (this.modalAction !== 'remove') return null;
 
     const stock = this.currentStock();
-    const val = Number(this.amountMl ?? 0);
+    const val = Number(this.amountUnits ?? 0);
 
     if (stock <= 0) return 'No hay stock disponible para descontar en este grupo.';
     if (!val || val <= 0) return 'Ingresá una cantidad válida.';
-    if (val > stock) return `No podés descontar más de ${stock} ml.`;
+    if (val > stock) return `No podés descontar más de ${stock} unidades.`;
     return null;
   }
 
   canConfirm(): boolean {
-    const val = Number(this.amountMl ?? 0);
+    const val = Number(this.amountUnits ?? 0);
     if (!val || val <= 0) return false;
 
     if (this.modalAction === 'remove') {
@@ -95,7 +95,7 @@ export class BloodManualActions {
     // ✅ blindaje final: aunque lleguen acá, corta
     if (this.confirmDisabled) return;
 
-    const amt = Math.max(1, Math.floor(Number(this.amountMl || 0)));
+    const amt = Math.max(1, Math.floor(Number(this.amountUnits || 0)));
 
     if (this.modalAction === 'remove') {
       const stock = this.currentStock();
@@ -106,7 +106,7 @@ export class BloodManualActions {
     this.applyChange.emit({
       action: this.modalAction,
       bloodType: this.selectedType,
-      amountMl: amt,
+      amountUnits: amt,
     });
 
     this.close();
@@ -115,7 +115,7 @@ export class BloodManualActions {
   onTypeChange(): void {
     if (this.modalAction === 'remove') {
       const max = this.maxAmount();
-      if (max > 0 && Number(this.amountMl || 0) > max) this.amountMl = max;
+      if (max > 0 && Number(this.amountUnits || 0) > max) this.amountUnits = max;
     }
   }
 }

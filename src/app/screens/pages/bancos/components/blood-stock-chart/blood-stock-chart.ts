@@ -100,7 +100,7 @@ export class BloodStockChart implements OnChanges, AfterViewInit, OnDestroy {
       datasets: [
         {
           type: 'bar',
-          label: 'Stock (ml)',
+          label: 'Stock (unidades)',
           data: values,
           backgroundColor: colors,
           borderColor: borders,
@@ -111,7 +111,7 @@ export class BloodStockChart implements OnChanges, AfterViewInit, OnDestroy {
         },
         {
           type: 'line',
-          label: 'Umbral mínimo (ml)',
+          label: 'Umbral mínimo (unidades)',
           data: thr,
           tension: 0.35,
           borderWidth: 2,
@@ -143,7 +143,7 @@ export class BloodStockChart implements OnChanges, AfterViewInit, OnDestroy {
             label: (ctx: any) => {
               const label = ctx.dataset?.label ?? '';
               const val = ctx.parsed?.y ?? ctx.raw ?? 0;
-              return `${label}: ${val} ml`;
+              return `${label}: ${val} unidades`;
             },
           },
         },
@@ -157,7 +157,7 @@ export class BloodStockChart implements OnChanges, AfterViewInit, OnDestroy {
           beginAtZero: true,
           grid: { color: '#eef2f6' },
           ticks: {
-            callback: (v: number) => `${v} ml`,
+            callback: (v: number) => `${v} unidades`,
             font: { size: this.compact ? 11 : 12 },
           },
         },

@@ -12,7 +12,7 @@ export class BloodThresholdTable implements OnChanges {
   @Input() stocks!: Record<BloodType, number>;
   @Input() thresholds!: Partial<Record<BloodType, number>>;
 
-  @Output() thresholdChange = new EventEmitter<{ bloodType: BloodType; thresholdMl: number }>();
+  @Output() thresholdChange = new EventEmitter<{ bloodType: BloodType; thresholdUnits: number }>();
 
   bloodTypes: BloodType[] = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
 
@@ -37,7 +37,7 @@ export class BloodThresholdTable implements OnChanges {
 saveEdit(): void {
   if (!this.editType) return;
   const value = Math.max(0, Math.floor(Number(this.editValue || 0)));
-  this.thresholdChange.emit({ bloodType: this.editType, thresholdMl: value });
+  this.thresholdChange.emit({ bloodType: this.editType, thresholdUnits: value });
   this.cancelEdit();
 }
 

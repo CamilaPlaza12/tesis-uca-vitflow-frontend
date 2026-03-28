@@ -26,7 +26,7 @@ export interface ActiveRequestRow {
   hospital_unit: string;
   component: string;
   blood_group: string;
-  requested_liters: number;
+  requested_units: number;
   priority: RequestPriority;
   status: RequestStatus;
 }

@@ -12,7 +12,7 @@
         <span class="icon pi pi-plus"></span>
         <span class="txt">
           <span class="t">Agregar stock</span>
-          <span class="s">Sumá ml a un grupo</span>
+          <span class="s">Sumá unidades a un grupo</span>
         </span>
       </button>
 
@@ -20,7 +20,7 @@
         <span class="icon pi pi-minus"></span>
         <span class="txt">
           <span class="t">Quitar stock</span>
-          <span class="s">Descontá ml de un grupo</span>
+          <span class="s">Descontá unidades de un grupo</span>
         </span>
       </button>
 
@@ -52,7 +52,7 @@
     <div class="vf-act__header">
       <div class="vf-act__title">
         <div class="h">{{ title() }}</div>
-        <div class="s">Ajuste manual de stock (ml) por grupo sanguíneo</div>
+        <div class="s">Ajuste manual de stock (unidades) por grupo sanguíneo</div>
       </div>
 
       <div class="vf-act__chip mono">
@@ -70,16 +70,16 @@
         </select>
 
         <div class="vf-help" *ngIf="modalAction === 'remove'">
-          Stock actual: <span class="mono">{{ currentStock() }} ml</span>
+          Stock actual: <span class="mono">{{ currentStock() }} unidades</span>
         </div>
       </div>
     </div>
 
     <div class="vf-field">
-      <label class="vf-label">Cantidad (ml)</label>
+      <label class="vf-label">Cantidad (unidades))</label>
       <div class="vf-control">
         <p-inputNumber
-          [(ngModel)]="amountMl"
+          [(ngModel)]="amountUnits"
           [min]="1"
           [max]="maxAmount()"
           [useGrouping]="true"

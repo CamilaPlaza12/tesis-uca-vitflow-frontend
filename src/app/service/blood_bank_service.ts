@@ -14,23 +14,23 @@ export class BloodBankService {
     return this.http.get<BloodBank>(`${this.endpoint}`);
   }
 
-  updateThreshold(bloodType: BloodType, thresholdMl: number): Observable<BloodBank> {
+  updateThreshold(bloodType: BloodType, thresholdUnits: number): Observable<BloodBank> {
     return this.http.patch<BloodBank>(`${this.endpoint}/thresholds`, {
-      thresholds_ml: { [bloodType]: thresholdMl },
+      thresholds_units: { [bloodType]: thresholdUnits },
     });
   }
 
-  addStock(bloodType: BloodType, amountMl: number): Observable<BloodBank> {
+  addStock(bloodType: BloodType, amountUnits: number): Observable<BloodBank> {
     return this.http.patch<BloodBank>(`${this.endpoint}/add-stock`, {
       blood_type: bloodType,
-      amount_ml: amountMl,
+      amount_units: amountUnits,
     });
   }
 
-  removeStock(bloodType: BloodType, amountMl: number): Observable<BloodBank> {
+  removeStock(bloodType: BloodType, amountUnits: number): Observable<BloodBank> {
     return this.http.patch<BloodBank>(`${this.endpoint}/remove-stock`, {
       blood_type: bloodType,
-      amount_ml: amountMl,
+      amount_units: amountUnits,
     });
   }
 }
