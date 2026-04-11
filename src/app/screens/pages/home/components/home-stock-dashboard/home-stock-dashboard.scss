@@ -1,0 +1,25 @@
+.stock-dash {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.stock-dash__loading,
+.stock-dash__empty {
+  font-size: 13px;
+  color: #7b8a99;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 0;
+}
+
+.stock-dash__chart {
+  flex: 1;
+  min-height: 200px;
+
+  p-chart {
+    display: block;
+    height: 100%;
+  }
+}

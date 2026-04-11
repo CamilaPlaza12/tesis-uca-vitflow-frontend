@@ -4,7 +4,11 @@ import { AccionTurno } from './turno-actions.policy';
 import { AvailabilityDay, HospitalAvailability } from '../../../models/disponibilidad';
 import { TurnoService } from '../../../service/turno_service';
 import { AvailabilityService } from '../../../service/availability_service';
+import { StockService } from '../../../service/stock_service';
+import { ComponenteSanguineo, GrupoSanguineo, UnidadStock } from '../../../models/blood-bank.model';
 import { firstValueFrom } from 'rxjs';
+
+const BLOOD_TYPES: GrupoSanguineo[] = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
 
 @Component({
   selector: 'app-turnos',
@@ -48,9 +52,25 @@ export class Turnos implements OnInit {
   loadingHistorico = false;
   errorHistorico = '';
 
+  // ─── Donación: selección de componentes ────────────────────────────────────
+  donacionModalOpen = false;
+  donacionTurno: Turno | null = null;
+  donacionBloodGroup: string = 'A+';
+  donacionComponentes: Record<ComponenteSanguineo, boolean> = {
+    globulos_rojos: false,
+    plasma: false,
+    plaquetas: false,
+  };
+  donacionLoading = false;
+  donacionError = '';
+  donacionResultado: UnidadStock[] | null = null;
+
+  readonly bloodTypes = BLOOD_TYPES;
+
   constructor(
     private turnoService: TurnoService,
     private availabilityService: AvailabilityService,
+    private stockService: StockService,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -122,7 +142,6 @@ export class Turnos implements OnInit {
   }
 
   toggleConfigFromBottom(): void {
-    // ✅ Toggle simple, cero scroll
     this.availabilitySaveError = '';
     this.availabilityConfigClosing = false;
 
@@ -229,7 +248,24 @@ export class Turnos implements OnInit {
       } else if (this.accionPendiente === 'CANCELAR') {
         res = await firstValueFrom(this.turnoService.updateStatus(t.id, 'CANCELADO'));
       } else if (this.accionPendiente === 'REPROGRAMAR') {
-        res = await firstValueFrom(this.turnoService.reschedule(t.id, this.reprogramDate, this.reprogramTime));
+        res = await firstValueFrom(
+          this.turnoService.reschedule(t.id, this.reprogramDate, this.reprogramTime)
+        );
+      } else if (this.accionPendiente === 'COMPLETAR') {
+        res = await firstValueFrom(this.turnoService.updateStatus(t.id, 'COMPLETADO'));
+
+        // Actualizar el turno en la lista
+        const idx = this.turnos.findIndex((x) => x.id === res.id);
+        if (idx !== -1) this.turnos[idx] = res;
+        this.turnoSeleccionado = res;
+
+        // Cerrar modal de confirmación y abrir modal de donación
+        this.modalOpen = false;
+        this.accionPendiente = null;
+        this.openDonacionModal(res);
+        return;
+      } else if (this.accionPendiente === 'NO_PRESENTADO') {
+        res = await firstValueFrom(this.turnoService.updateStatus(t.id, 'NO_PRESENTADO'));
       } else {
         throw new Error('Acción no reconocida');
       }
@@ -240,35 +276,97 @@ export class Turnos implements OnInit {
       this.modalOpen = false;
       this.accionPendiente = null;
     } catch (e: any) {
-      this.modalError = e?.message ?? 'Ocurrió un error inesperado.';
+      this.modalError = e?.error?.detail ?? e?.message ?? 'Ocurrió un error inesperado.';
     } finally {
       this.modalLoading = false;
     }
   }
 
-  private toDateStr(d: Date): string {
-    const pad = (n: number) => (n < 10 ? `0${n}` : `${n}`);
-    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+  // =========================
+  // Donación: selección de componentes
+  // =========================
+
+  openDonacionModal(turno: Turno): void {
+    this.donacionTurno = turno;
+    this.donacionBloodGroup =
+      turno.blood_group || turno.donor?.blood_group || 'A+';
+    this.donacionComponentes = {
+      globulos_rojos: false,
+      plasma: false,
+      plaquetas: false,
+    };
+    this.donacionError = '';
+    this.donacionResultado = null;
+    this.donacionLoading = false;
+    this.donacionModalOpen = true;
   }
 
-  private getModalTitle(accion: AccionTurno): string {
-    if (accion === 'CONFIRMAR') return 'Confirmar turno';
-    if (accion === 'CANCELAR') return 'Cancelar turno';
-    return 'Reprogramar turno';
+  closeDonacionModal(): void {
+    if (this.donacionLoading) return;
+    this.donacionModalOpen = false;
+    this.donacionTurno = null;
+    this.donacionResultado = null;
   }
 
-  private getModalConfirmText(accion: AccionTurno): string {
-    if (accion === 'CONFIRMAR') return 'Confirmar';
-    if (accion === 'CANCELAR') return 'Cancelar turno';
-    return 'Reprogramar';
+  get donacionComponentesSeleccionados(): ComponenteSanguineo[] {
+    return (Object.keys(this.donacionComponentes) as ComponenteSanguineo[]).filter(
+      (k) => this.donacionComponentes[k]
+    );
   }
 
-  private getModalMessage(accion: AccionTurno, turno: Turno): string {
-    const base = `Donante: ${turno.donor?.full_name ?? '—'} · ${turno.date_local} ${turno.time_local}`;
-    if (accion === 'CONFIRMAR') return `${base}\n¿Confirmás este turno?`;
-    if (accion === 'CANCELAR') return `${base}\n¿Querés cancelar este turno?`;
-    return `${base}\n¿Reprogramar?`;
+  get donacionPuedeConfirmar(): boolean {
+    return this.donacionComponentesSeleccionados.length > 0 && !this.donacionLoading;
   }
+
+  async confirmDonacion(): Promise<void> {
+    if (!this.donacionTurno || !this.donacionPuedeConfirmar) return;
+
+    this.donacionLoading = true;
+    this.donacionError = '';
+
+    try {
+      const result = await firstValueFrom(
+        this.stockService.confirmarDonacion({
+          turno_id: this.donacionTurno.id,
+          donante_id: this.donacionTurno.donor?.dni ?? '',
+          blood_group: this.donacionBloodGroup,
+          componentes: this.donacionComponentesSeleccionados,
+        })
+      );
+      this.donacionResultado = result.unidades_creadas;
+    } catch (e: any) {
+      this.donacionError =
+        e?.error?.detail ?? e?.message ?? 'Error al registrar la donación.';
+    } finally {
+      this.donacionLoading = false;
+    }
+  }
+
+  componenteLabel(c: ComponenteSanguineo): string {
+    const labels: Record<ComponenteSanguineo, string> = {
+      globulos_rojos: 'Glóbulos Rojos',
+      plasma: 'Plasma',
+      plaquetas: 'Plaquetas',
+    };
+    return labels[c];
+  }
+
+  formatDate(iso: string): string {
+    if (!iso) return '—';
+    try {
+      return new Date(iso).toLocaleDateString('es-AR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+      });
+    } catch {
+      return iso;
+    }
+  }
+
+  // =========================
+  // Histórico
+  // =========================
 
   onSearchHistorico(e: { desde: string; hasta: string }): void {
     this.loadingHistorico = true;
@@ -290,5 +388,39 @@ export class Turnos implements OnInit {
 
   onClearHistorico(): void {
     this.turnosHistorico = [];
+  }
+
+  // =========================
+  // Helpers
+  // =========================
+
+  private toDateStr(d: Date): string {
+    const pad = (n: number) => (n < 10 ? `0${n}` : `${n}`);
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+  }
+
+  private getModalTitle(accion: AccionTurno): string {
+    if (accion === 'CONFIRMAR') return 'Confirmar turno';
+    if (accion === 'CANCELAR') return 'Cancelar turno';
+    if (accion === 'COMPLETAR') return 'Marcar asistencia';
+    if (accion === 'NO_PRESENTADO') return 'No se presentó';
+    return 'Reprogramar turno';
+  }
+
+  private getModalConfirmText(accion: AccionTurno): string {
+    if (accion === 'CONFIRMAR') return 'Confirmar';
+    if (accion === 'CANCELAR') return 'Cancelar turno';
+    if (accion === 'COMPLETAR') return 'Completar';
+    if (accion === 'NO_PRESENTADO') return 'Marcar ausencia';
+    return 'Reprogramar';
+  }
+
+  private getModalMessage(accion: AccionTurno, turno: Turno): string {
+    const base = `Donante: ${turno.donor?.full_name ?? '—'} · ${turno.date_local} ${turno.time_local}`;
+    if (accion === 'CONFIRMAR') return `${base}\n¿Confirmás este turno?`;
+    if (accion === 'CANCELAR') return `${base}\n¿Querés cancelar este turno?`;
+    if (accion === 'COMPLETAR') return `${base}\n¿El donante completó la donación?`;
+    if (accion === 'NO_PRESENTADO') return `${base}\n¿El donante no se presentó?`;
+    return `${base}\n¿Reprogramar?`;
   }
 }

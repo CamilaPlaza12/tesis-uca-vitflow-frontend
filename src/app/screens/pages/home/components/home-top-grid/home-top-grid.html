@@ -1,13 +1,11 @@
 <div class="grid">
-  <!-- IZQUIERDA: título simple + chart embebido -->
+  <!-- IZQUIERDA: gráfico de barras agrupadas por componente -->
   <div class="chartArea">
     <div class="chartArea__panel">
-      <app-blood-stock-chart
-        [stocks]="stocks"
-        [thresholds]="thresholds"
-        [compact]="true"
-        [embedded]="true"
-      ></app-blood-stock-chart>
+      <app-home-stock-dashboard
+        [dashboard]="stockDashboard"
+        [loading]="stockDashboardLoading"
+      ></app-home-stock-dashboard>
     </div>
   </div>
 

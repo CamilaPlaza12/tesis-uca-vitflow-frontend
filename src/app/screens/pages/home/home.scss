@@ -8,3 +8,12 @@
 .home__section {
   margin-top: 16px;
 }
+
+.home__loading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #7b8a99;
+  padding: 24px 0;
+}

@@ -1,0 +1,13 @@
+<div class="stock-dash">
+  <div class="stock-dash__loading" *ngIf="loading">
+    <span class="pi pi-spin pi-spinner"></span> Cargando stock…
+  </div>
+
+  <div class="stock-dash__chart" *ngIf="!loading && dashboard">
+    <p-chart #chartRef type="bar" [data]="chartData" [options]="chartOptions"></p-chart>
+  </div>
+
+  <div class="stock-dash__empty" *ngIf="!loading && !dashboard">
+    No hay datos de stock disponibles.
+  </div>
+</div>

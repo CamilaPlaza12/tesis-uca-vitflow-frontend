@@ -112,10 +112,9 @@
   }
 }
 
-/* ✅ EMBEDDED MODE (Home): usa el panel externo, sin card propia */
+/* ✅ EMBEDDED MODE: usa el panel externo, sin card propia */
 .embed {
   width: 100%;
-  height: 100%;
   display: flex;
   flex-direction: column;
 
@@ -123,7 +122,6 @@
   border: none;
   box-shadow: none;
 
-  /* ✅ Header alineado a las tablas (Turnos/Pedidos) */
   .card__header {
     padding: 14px 16px;
     border-bottom: 1px solid #eef4f7;
@@ -141,11 +139,18 @@
     }
   }
 
-  /* ✅ “body” del chart, como las cards */
   .chart-wrap {
     flex: 1;
     min-height: 320px;
     padding: 12px 14px 8px;
+  }
+
+  /* Modo compacto: altura fija para no tapar elementos adyacentes */
+  &.embed--compact {
+    .chart-wrap {
+      min-height: 0;
+      height: 200px;
+    }
   }
 }
 

@@ -47,6 +47,7 @@ import { SendValidationModal } from './screens/auth/register/components/send-val
 import { BackofficeRequests } from './backoffice/backoffice-requests/backoffice-requests';
 import { BloodStockChart } from './screens/pages/bancos/components/blood-stock-chart/blood-stock-chart';
 import { BloodThresholdTable } from './screens/pages/bancos/components/blood-threshold-table/blood-threshold-table';
+import { HomeStockDashboardComponent } from './screens/pages/home/components/home-stock-dashboard/home-stock-dashboard';
 import { ChartModule } from 'primeng/chart';
 import { DialogModule } from 'primeng/dialog';
 import { InputNumberModule } from 'primeng/inputnumber';
@@ -105,7 +106,8 @@ import { ConfigHospitalSessionCard } from './screens/pages/configuracion/compone
     HomeActiveRequestsTableComponent,
     PillBadgeComponent,
     ConfigProfileSecurityCard,
-    ConfigHospitalSessionCard
+    ConfigHospitalSessionCard,
+    HomeStockDashboardComponent,
   ],
   imports: [
     BrowserModule,

@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/Users/camil/Documents/GitHub/tesis-uca-vitflow-backend/**)",
+      "Bash(npm run:*)"
+    ]
+  }
+}

@@ -7,32 +7,40 @@
     (notificationsClick)="onOpenNotifications()"
   ></app-home-header>
 
-  <app-home-top-grid
-    [stocks]="stocksRecord"
-    [thresholds]="thresholdsRecord"
-    (createRequestClick)="onCreateDonationRequest()"
-  >
-    <div homeSide>
-      <app-home-kpis
-        [totalUnits]="kpiTotalUnits"
-        [urgentActive]="kpiUrgentActive"
-        [appointmentsToday]="kpiAppointmentsToday"
-        [criticalGroupsCount]="criticalGroupsCount"
-      ></app-home-kpis>
+  <div *ngIf="loading" class="home__loading">
+    <span class="pi pi-spin pi-spinner"></span> Cargando resumen…
+  </div>
+
+  <ng-container *ngIf="!loading">
+    <app-home-top-grid
+      [stocks]="stocksRecord"
+      [thresholds]="thresholdsRecord"
+      [stockDashboard]="stockDashboard"
+      [stockDashboardLoading]="stockDashboardLoading"
+      (createRequestClick)="onCreateDonationRequest()"
+    >
+      <div homeSide>
+        <app-home-kpis
+          [totalUnits]="kpiTotalUnits"
+          [urgentActive]="kpiUrgentActive"
+          [appointmentsToday]="kpiAppointmentsToday"
+          [criticalGroupsCount]="criticalGroupsCount"
+        ></app-home-kpis>
+      </div>
+    </app-home-top-grid>
+
+    <div class="home__section">
+      <app-home-donation-appointments-table
+        [rows]="appointments"
+        title="Turnos de donación: hoy y mañana"
+      ></app-home-donation-appointments-table>
     </div>
-  </app-home-top-grid>
 
-  <div class="home__section">
-    <app-home-donation-appointments-table
-      [rows]="appointments"
-      title="Turnos de donación: hoy y mañana"
-    ></app-home-donation-appointments-table>
-  </div>
-
-  <div class="home__section">
-    <app-home-active-requests-table
-      [rows]="activeRequests"
-      title="Pedidos activos de componentes"
-    ></app-home-active-requests-table>
-  </div>
+    <div class="home__section">
+      <app-home-active-requests-table
+        [rows]="activeRequests"
+        title="Pedidos activos de componentes"
+      ></app-home-active-requests-table>
+    </div>
+  </ng-container>
 </div>

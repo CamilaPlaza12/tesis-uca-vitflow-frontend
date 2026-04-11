@@ -32,6 +32,15 @@
   padding: 14px 14px 14px;
 }
 
+.chart-loading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #7b8a99;
+  padding: 16px 0;
+}
+
 .side {
   display: flex;
   flex-direction: column;

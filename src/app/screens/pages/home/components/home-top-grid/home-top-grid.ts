@@ -1,7 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-
-// AJUSTÁ ESTE PATH al real en tu repo
-import { BloodType } from '../../../../../models/blood-bank.model';
+import { BloodType, ResumenDashboard } from '../../../../../models/blood-bank.model';
 
 @Component({
   selector: 'app-home-top-grid',
@@ -12,6 +10,8 @@ import { BloodType } from '../../../../../models/blood-bank.model';
 export class HomeTopGridComponent {
   @Input() stocks!: Record<BloodType, number>;
   @Input() thresholds!: Partial<Record<BloodType, number>>;
+  @Input() stockDashboard: ResumenDashboard | null = null;
+  @Input() stockDashboardLoading = false;
 
   @Output() createRequestClick = new EventEmitter<void>();
 }

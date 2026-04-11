@@ -10,6 +10,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import { BloodType } from '../../../../../models/blood-bank.model';
+import { COMPONENT_COLORS } from '../../../../../models/component-colors';
 import { UIChart } from 'primeng/chart';
 
 @Component({
@@ -22,11 +23,10 @@ export class BloodStockChart implements OnChanges, AfterViewInit, OnDestroy {
   @Input() stocks!: Record<BloodType, number>;
   @Input() thresholds!: Partial<Record<BloodType, number>>;
 
-  // ✅ ya lo usamos para Home
   @Input() compact = false;
-
-  // ✅ NUEVO: para Home: sin card ni header (evita bloque-dentro-de-bloque)
   @Input() embedded = false;
+  // Color del componente para barras en estado "ok"
+  @Input() componentColor: string | null = null;
 
   @ViewChild('chartRef') chartRef?: UIChart;
   @ViewChild('wrapRef', { static: false }) wrapRef?: ElementRef<HTMLElement>;
@@ -42,7 +42,7 @@ export class BloodStockChart implements OnChanges, AfterViewInit, OnDestroy {
   constructor(private zone: NgZone) {}
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['stocks'] || changes['thresholds'] || changes['compact'] || changes['embedded']) {
+    if (changes['stocks'] || changes['thresholds'] || changes['compact'] || changes['embedded'] || changes['componentColor']) {
       this.buildChart();
       this.scheduleReinit();
     }
@@ -191,19 +191,31 @@ export class BloodStockChart implements OnChanges, AfterViewInit, OnDestroy {
     const stock = Number(this.stocks?.[type] ?? 0);
     const thr = Number(this.thresholds?.[type] ?? 0);
 
-    if (!thr || thr <= 0) return 'rgba(125, 211, 252, 0.82)';
-    if (stock <= thr) return 'rgba(239, 68, 68, 0.78)';
+    if (!thr || thr <= 0) return this.okColor(0.82);
+    if (stock <= thr) return COMPONENT_COLORS.globulos_rojos.backgroundColor;
     if (stock <= thr * 1.3) return 'rgba(249, 115, 22, 0.78)';
-    return 'rgba(125, 211, 252, 0.82)';
+    return this.okColor(0.82);
   }
 
   private getBarBorderColor(type: BloodType): string {
     const stock = Number(this.stocks?.[type] ?? 0);
     const thr = Number(this.thresholds?.[type] ?? 0);
 
-    if (!thr || thr <= 0) return 'rgba(56, 189, 248, 1)';
-    if (stock <= thr) return 'rgba(220, 38, 38, 1)';
+    if (!thr || thr <= 0) return this.okColor(1);
+    if (stock <= thr) return COMPONENT_COLORS.globulos_rojos.borderColor;
     if (stock <= thr * 1.3) return 'rgba(234, 88, 12, 1)';
-    return 'rgba(56, 189, 248, 1)';
+    return this.okColor(1);
+  }
+
+  private okColor(alpha: number): string {
+    if (this.componentColor) {
+      // Parse hex (#rrggbb) to rgba
+      const c = this.componentColor.replace('#', '');
+      const r = parseInt(c.substring(0, 2), 16);
+      const g = parseInt(c.substring(2, 4), 16);
+      const b = parseInt(c.substring(4, 6), 16);
+      return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    }
+    return alpha < 1 ? 'rgba(56, 189, 248, 0.82)' : 'rgba(2, 132, 199, 1)';
   }
 }

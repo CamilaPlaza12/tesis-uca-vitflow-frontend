@@ -10,17 +10,16 @@ export type AppointmentStatus =
 export interface Donor {
   full_name: string;
   dni: string;
+  blood_group?: string;
 }
 
 export interface Turno {
-  // Idealmente el back lo incluye; si no, lo agregamos después
   id: string;
-
   hospital_request_id: string;
   date_local: string;     // "YYYY-MM-DD"
   time_local: string;     // "HH:mm"
   donor: Donor;
   donation_type: DonationType;
   status: AppointmentStatus;
-  
+  blood_group?: string;
 }

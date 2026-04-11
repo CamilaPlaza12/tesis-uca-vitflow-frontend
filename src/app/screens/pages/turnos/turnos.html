@@ -116,4 +116,130 @@
     (confirm)="confirmModal()"
     (cancel)="closeModal()"
   ></app-confirm-modal>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       MODAL: Selección de componentes obtenidos de la donación
+  ════════════════════════════════════════════════════════════════════════ -->
+  <p-dialog
+    [(visible)]="donacionModalOpen"
+    [modal]="true"
+    [draggable]="false"
+    [resizable]="false"
+    [closable]="!donacionLoading"
+    [dismissableMask]="!donacionLoading && donacionResultado === null"
+    maskStyleClass="vf-donacion-mask"
+    styleClass="vf-donacion-dialog"
+    [style]="{ width: '520px' }"
+    [baseZIndex]="10000"
+    (onHide)="closeDonacionModal()"
+  >
+    <ng-template pTemplate="header">
+      <div class="vf-don__header">
+        <div class="vf-don__title">
+          <div class="h">Registrar componentes donados</div>
+          <div class="s" *ngIf="donacionTurno">
+            {{ donacionTurno.donor.full_name }} · {{ donacionTurno.date_local }}
+          </div>
+        </div>
+        <span class="vf-don__chip">Donación completada</span>
+      </div>
+    </ng-template>
+
+    <!-- Resultado exitoso -->
+    <div class="vf-don__body" *ngIf="donacionResultado">
+      <div class="vf-don__success">
+        <i class="pi pi-check-circle"></i>
+        <div class="vf-don__success-title">¡Unidades registradas!</div>
+        <div class="vf-don__success-sub">Se crearon {{ donacionResultado.length }} unidad(es) en el banco de sangre.</div>
+      </div>
+
+      <div class="vf-don__result-list">
+        <div class="vf-don__result-item" *ngFor="let u of donacionResultado; let i = index">
+          <span class="vf-don__result-comp">
+            {{ componenteLabel(donacionComponentesSeleccionados[i] || 'globulos_rojos') }}
+          </span>
+          <span class="mono vf-don__result-group">{{ u.blood_group }}</span>
+          <span class="vf-don__result-vence">Vence: {{ formatDate(u.fecha_vencimiento) }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Formulario de selección -->
+    <div class="vf-don__body" *ngIf="!donacionResultado">
+      <div class="vf-don__field">
+        <label class="vf-don__label">Grupo sanguíneo del donante</label>
+        <select class="vf-don__select" [(ngModel)]="donacionBloodGroup" [disabled]="donacionLoading">
+          <option *ngFor="let bt of bloodTypes" [value]="bt">{{ bt }}</option>
+        </select>
+      </div>
+
+      <div class="vf-don__field">
+        <label class="vf-don__label">Componentes obtenidos</label>
+        <div class="vf-don__checks">
+          <label class="vf-don__check-item">
+            <input
+              type="checkbox"
+              [(ngModel)]="donacionComponentes.globulos_rojos"
+              [disabled]="donacionLoading"
+            />
+            <span class="vf-don__check-icon vf-don__check-icon--gr"></span>
+            Glóbulos Rojos
+            <span class="vf-don__check-hint">42 días de vida útil</span>
+          </label>
+
+          <label class="vf-don__check-item">
+            <input
+              type="checkbox"
+              [(ngModel)]="donacionComponentes.plasma"
+              [disabled]="donacionLoading"
+            />
+            <span class="vf-don__check-icon vf-don__check-icon--plasma"></span>
+            Plasma
+            <span class="vf-don__check-hint">365 días de vida útil</span>
+          </label>
+
+          <label class="vf-don__check-item">
+            <input
+              type="checkbox"
+              [(ngModel)]="donacionComponentes.plaquetas"
+              [disabled]="donacionLoading"
+            />
+            <span class="vf-don__check-icon vf-don__check-icon--plaquetas"></span>
+            Plaquetas
+            <span class="vf-don__check-hint">5 días de vida útil — muy corto</span>
+          </label>
+        </div>
+
+        <div class="vf-don__warn" *ngIf="donacionComponentesSeleccionados.length === 0">
+          Seleccioná al menos un componente para continuar.
+        </div>
+      </div>
+
+      <div class="vf-don__error" *ngIf="donacionError">{{ donacionError }}</div>
+    </div>
+
+    <ng-template pTemplate="footer">
+      <div class="vf-don__footer">
+        <button
+          class="btn btn--ghost"
+          type="button"
+          [disabled]="donacionLoading"
+          (click)="closeDonacionModal()"
+        >
+          {{ donacionResultado ? 'Cerrar' : 'Omitir' }}
+        </button>
+
+        <button
+          *ngIf="!donacionResultado"
+          class="btn btn--primary"
+          type="button"
+          [disabled]="!donacionPuedeConfirmar"
+          (click)="confirmDonacion()"
+        >
+          {{ donacionLoading ? 'Registrando…' : 'Registrar donación' }}
+        </button>
+      </div>
+    </ng-template>
+  </p-dialog>
+
 </div>
