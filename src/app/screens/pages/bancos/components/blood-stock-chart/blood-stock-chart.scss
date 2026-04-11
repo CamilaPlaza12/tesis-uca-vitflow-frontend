@@ -1,3 +1,4 @@
+/* 🔥 CARD (modo standalone, no lo estás usando pero lo dejo limpio) */
 .card {
   background: #fff;
   border-radius: 18px;
@@ -5,48 +6,44 @@
   box-shadow: 0 14px 34px rgba(15, 23, 42, 0.06);
   overflow: hidden;
 
-  height: 100%;
   display: flex;
   flex-direction: column;
 }
 
+/* HEADER */
 .card__header {
-  padding: 16px 18px;
+  padding: 12px 14px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  border-bottom: 1px solid #f1f4f8;
+  border-bottom: 1px solid #eef2f6;
 
   h2 {
     margin: 0;
-    font-size: 16px;
-    font-weight: 750;
-    letter-spacing: -0.01em;
+    font-size: 14px;
+    font-weight: 700;
   }
 
   .hint {
-    font-size: 12.5px;
+    font-size: 11px;
     color: #7b8a99;
     background: #f6f8fb;
     border: 1px solid #eef2f6;
-    padding: 6px 10px;
+    padding: 4px 8px;
     border-radius: 999px;
-    white-space: nowrap;
   }
 }
 
+/* 🔥 CHART WRAP (LA CLAVE) */
 .chart-wrap {
-  flex: 1;
-  min-height: 380px;
-  padding: 14px 14px 8px;
+  height: 140px; /* 🔥 controlás el tamaño acá */
+  padding: 8px 10px 4px;
 }
 
-/* ✅ PrimeNG Chart: fuerza 100% ancho/alto */
+/* 🔥 FORZAR CANVAS A RESPETAR ALTURA */
 :host ::ng-deep .chart-wrap .p-chart {
   width: 100%;
-  height: 100%;
-  display: block;
+  height: 100% !important;
 }
 
 :host ::ng-deep .chart-wrap canvas {
@@ -54,65 +51,37 @@
   height: 100% !important;
 }
 
+/* LEGEND */
 .legend {
-  padding: 0 18px 16px;
+  padding: 6px 10px 10px;
   display: flex;
-  gap: 8px;
+  gap: 6px;
   justify-content: flex-end;
 }
 
 .pill {
-  font-size: 12px;
-  font-weight: 760;
-  padding: 6px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 8px;
   border-radius: 999px;
-  border: 1px solid transparent;
 
   &.pill--ok {
     background: #eef6ff;
     color: #1d4ed8;
-    border-color: #dbeafe;
   }
 
   &.pill--warn {
     background: #fff3e6;
     color: #9a4b00;
-    border-color: #ffe3c7;
   }
 
   &.pill--bad {
     background: #fff1f2;
     color: #b91c1c;
-    border-color: #fee2e2;
   }
 }
 
-/* ✅ COMPACT MODE */
-.card--compact {
-  .card__header {
-    padding: 12px 14px;
-
-    h2 {
-      font-size: 14px;
-    }
-
-    .hint {
-      font-size: 12px;
-      padding: 5px 9px;
-    }
-  }
-
-  .chart-wrap {
-    min-height: 260px;
-    padding: 10px 12px 6px;
-  }
-
-  .legend {
-    padding: 0 14px 12px;
-  }
-}
-
-/* ✅ EMBEDDED MODE: usa el panel externo, sin card propia */
+/* 🔥 EMBED (el que realmente estás usando) */
 .embed {
   width: 100%;
   display: flex;
@@ -123,37 +92,27 @@
   box-shadow: none;
 
   .card__header {
-    padding: 14px 16px;
-    border-bottom: 1px solid #eef4f7;
+    padding: 10px 12px;
 
     h2 {
-      font-size: 14px;
-      font-weight: 850;
-      color: #0f2b3a;
-      letter-spacing: -0.01em;
-    }
-
-    .hint {
-      font-size: 12px;
-      padding: 5px 9px;
+      font-size: 13px;
+      font-weight: 800;
     }
   }
 
   .chart-wrap {
-    flex: 1;
-    min-height: 320px;
-    padding: 12px 14px 8px;
-  }
-
-  /* Modo compacto: altura fija para no tapar elementos adyacentes */
-  &.embed--compact {
-    .chart-wrap {
-      min-height: 0;
-      height: 200px;
-    }
+    height: 140px; /* 🔥 ESTE ES EL QUE IMPORTA */
   }
 }
 
+/* 🔥 Compact ya no hace nada raro */
+.embed--compact {
+  .chart-wrap {
+    height: 450px; /* aún más chico si querés */
+  }
+}
+
+/* LEGEND EMBED */
 .legend--embed {
-  padding: 10px 14px 14px;
+  padding: 6px 10px 10px;
 }

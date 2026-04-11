@@ -8,28 +8,26 @@
     <span class="hint">Actualizado hoy</span>
   </header>
 
-  <!-- ═══════════════════════════════════════════════════════════════════════
-       SECCIÓN POR COMPONENTE
-  ════════════════════════════════════════════════════════════════════════ -->
   <section class="componente-section" *ngFor="let comp of componentesConfig">
 
-    <!-- Cabecera del componente -->
+    <!-- Header -->
     <div class="comp-header">
       <span class="comp-header__icon" [style.background]="comp.color + '18'" [style.color]="comp.color">
         <i class="pi" [ngClass]="comp.icon"></i>
       </span>
+
       <div>
         <div class="comp-header__title">{{ comp.label }}</div>
         <div class="comp-header__total">
-          <span class="mono" [style.color]="comp.color">{{ totalByComponent(comp.key) }}</span>
-          <span class="comp-header__total-label">unidades disponibles</span>
+          <span class="mono">{{ totalByComponent(comp.key) }}</span>
+          <span class="comp-header__total-label">unidades</span>
         </div>
       </div>
     </div>
 
     <!-- Loading -->
     <div class="loading-box" *ngIf="loadingComponent[comp.key]">
-      <span class="pi pi-spin pi-spinner"></span> Cargando stock…
+      <span class="pi pi-spin pi-spinner"></span> Cargando…
     </div>
 
     <!-- Error -->
@@ -37,65 +35,73 @@
       {{ errorComponent[comp.key] }}
     </div>
 
-    <!-- Dashboard de stock por grupo sanguíneo (gráfico de barras) -->
-    <div class="stock-chart-wrap" *ngIf="!loadingComponent[comp.key]">
-      <app-blood-stock-chart
-        [stocks]="stocksForChart(comp.key)"
-        [thresholds]="thresholdsForChart(comp.key)"
-        [compact]="true"
-        [embedded]="true"
-        [componentColor]="comp.color"
-      ></app-blood-stock-chart>
-    </div>
+    <!-- 🔥 NUEVO: CARD con chart + botones -->
+    <div class="dashboard-card" *ngIf="!loadingComponent[comp.key]">
 
-    <!-- Botones de acción -->
-    <div class="action-row">
-      <button class="action-btn action-btn--add" type="button" (click)="openAddModal(comp.key)">
-        <span class="pi pi-plus"></span>
-        Agregar stock
-      </button>
-
-      <button class="action-btn action-btn--remove" type="button" (click)="openRemoveModal(comp.key)">
-        <span class="pi pi-minus"></span>
-        Quitar stock
-      </button>
-
-      <!-- TODO: Historial de movimientos — pendiente de endpoint en backend -->
-      <button class="action-btn action-btn--history" type="button" (click)="openHistoryModal(comp.key)">
-        <span class="pi pi-clock"></span>
-        Ver historial
-      </button>
-    </div>
-
-    <!-- Umbrales mínimos -->
-    <div class="umbrales-card">
-      <div class="umbrales-card__head">
-        <span>Umbrales mínimos</span>
-        <span class="hint-chip">Editá por grupo</span>
+      <!-- Chart -->
+      <div class="chart-area">
+        <app-blood-stock-chart
+          [stocks]="stocksForChart(comp.key)"
+          [thresholds]="thresholdsForChart(comp.key)"
+          [compact]="true"
+          [embedded]="true"
+        ></app-blood-stock-chart>
       </div>
 
-      <div class="umbrales-loading" *ngIf="loadingUmbrales">
-        <span class="pi pi-spin pi-spinner"></span> Cargando umbrales…
+      <!-- Actions -->
+      <div class="actions-area">
+        <button class="action-btn action-btn--add" (click)="openAddModal(comp.key)">
+          <i class="pi pi-plus"></i>
+          Agregar
+        </button>
+
+        <button class="action-btn action-btn--remove" (click)="openRemoveModal(comp.key)">
+          <i class="pi pi-minus"></i>
+          Quitar
+        </button>
+
+        <button class="action-btn action-btn--history" (click)="openHistoryModal(comp.key)">
+          <i class="pi pi-clock"></i>
+          Historial
+        </button>
       </div>
 
-      <div class="umbrales-error" *ngIf="errorUmbrales && !loadingUmbrales">{{ errorUmbrales }}</div>
+    </div>
 
-      <div class="umbrales-table-wrap" *ngIf="!loadingUmbrales">
-        <table class="table">
+    <!-- 🔽 Umbrales colapsables -->
+    <details class="umbrales-collapse">
+      <summary>
+        Umbrales mínimos
+        <span class="hint-chip">Configurable</span>
+      </summary>
+
+      <div class="umbrales-content">
+
+        <div class="umbrales-loading" *ngIf="loadingUmbrales">
+          <span class="pi pi-spin pi-spinner"></span> Cargando…
+        </div>
+
+        <div class="umbrales-error" *ngIf="errorUmbrales && !loadingUmbrales">
+          {{ errorUmbrales }}
+        </div>
+
+        <table class="table" *ngIf="!loadingUmbrales">
           <thead>
             <tr>
-              <th>Grupo/Rh</th>
-              <th>Stock disponible</th>
-              <th>Umbral mínimo</th>
+              <th>Grupo</th>
+              <th>Stock</th>
+              <th>Umbral</th>
               <th>Estado</th>
               <th></th>
             </tr>
           </thead>
+
           <tbody>
-            <tr *ngFor="let bt of bloodTypes" class="row">
+            <tr *ngFor="let bt of bloodTypes">
               <td class="mono">{{ bt }}</td>
               <td class="mono">{{ countByGroup(comp.key, bt) }}</td>
               <td class="mono">{{ getUmbralValue(comp.key, bt) }}</td>
+
               <td>
                 <span
                   class="status-badge"
@@ -106,257 +112,18 @@
                   {{ statusLabel(getStatusForGroup(comp.key, bt)) }}
                 </span>
               </td>
-              <td class="actions-col">
-                <button
-                  class="icon-btn"
-                  type="button"
-                  (click)="openEditUmbral(getUmbral(comp.key, bt) ?? { id: '', hospital_id: '', componente: comp.key, blood_group: bt, umbral_minimo: 0 })"
-                  aria-label="Editar umbral"
-                >
+
+              <td>
+                <button class="icon-btn" (click)="openEditUmbral(getUmbral(comp.key, bt)!)">
                   <i class="pi pi-pencil"></i>
                 </button>
               </td>
             </tr>
           </tbody>
         </table>
+
       </div>
-    </div>
+    </details>
 
   </section>
-
-  <!-- ═══════════════════════════════════════════════════════════════════════
-       MODAL: Agregar stock
-  ════════════════════════════════════════════════════════════════════════ -->
-  <p-dialog
-    [(visible)]="addModalOpen"
-    [modal]="true"
-    [draggable]="false"
-    [resizable]="false"
-    [closable]="true"
-    [dismissableMask]="true"
-    maskStyleClass="vf-bancos-mask"
-    styleClass="vf-bancos-dialog"
-    [style]="{ width: '480px' }"
-    [baseZIndex]="10000"
-    (onHide)="closeAddModal()"
-  >
-    <ng-template pTemplate="header">
-      <div class="vf-dialog__header">
-        <div class="vf-dialog__title">
-          <div class="h">Agregar unidad</div>
-          <div class="s">{{ configFor(addModalComponente || 'globulos_rojos').label }}</div>
-        </div>
-        <span class="chip mono">Agregar</span>
-      </div>
-    </ng-template>
-
-    <div class="vf-dialog__body">
-      <div class="vf-field">
-        <label class="vf-label">Componente</label>
-        <div class="vf-value">{{ configFor(addModalComponente || 'globulos_rojos').label }}</div>
-      </div>
-
-      <div class="vf-field">
-        <label class="vf-label">Grupo sanguíneo</label>
-        <div class="vf-control">
-          <select class="select" [(ngModel)]="addBloodGroup">
-            <option *ngFor="let bt of bloodTypes" [value]="bt">{{ bt }}</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="vf-error" *ngIf="addError">{{ addError }}</div>
-    </div>
-
-    <ng-template pTemplate="footer">
-      <div class="vf-dialog__footer">
-        <button class="btn btn--ghost" type="button" (click)="closeAddModal()">Cancelar</button>
-        <button
-          class="btn btn--primary"
-          type="button"
-          [disabled]="addLoading"
-          (click)="confirmAdd()"
-        >
-          {{ addLoading ? 'Guardando…' : 'Confirmar' }}
-        </button>
-      </div>
-    </ng-template>
-  </p-dialog>
-
-  <!-- ═══════════════════════════════════════════════════════════════════════
-       MODAL: Quitar stock
-  ════════════════════════════════════════════════════════════════════════ -->
-  <p-dialog
-    [(visible)]="removeModalOpen"
-    [modal]="true"
-    [draggable]="false"
-    [resizable]="false"
-    [closable]="true"
-    [dismissableMask]="true"
-    maskStyleClass="vf-bancos-mask"
-    styleClass="vf-bancos-dialog"
-    [style]="{ width: '520px' }"
-    [baseZIndex]="10000"
-    (onHide)="closeRemoveModal()"
-  >
-    <ng-template pTemplate="header">
-      <div class="vf-dialog__header">
-        <div class="vf-dialog__title">
-          <div class="h">Quitar unidad</div>
-          <div class="s">{{ configFor(removeModalComponente || 'globulos_rojos').label }} — marcar como usada</div>
-        </div>
-        <span class="chip chip--remove mono">Retirar</span>
-      </div>
-    </ng-template>
-
-    <div class="vf-dialog__body">
-      <div class="vf-field">
-        <label class="vf-label">Grupo sanguíneo</label>
-        <div class="vf-control">
-          <select class="select" [(ngModel)]="removeBloodGroup" (change)="onRemoveBloodGroupChange()">
-            <option *ngFor="let bt of bloodTypes" [value]="bt">{{ bt }}</option>
-          </select>
-          <div class="vf-help">
-            Disponibles en {{ removeBloodGroup }}: <strong class="mono">{{ removeUnidades.length }}</strong>
-          </div>
-        </div>
-      </div>
-
-      <div class="vf-field">
-        <label class="vf-label">Unidad a retirar</label>
-        <div class="vf-control">
-          <select class="select" [(ngModel)]="removeSelectedId" [disabled]="removeUnidades.length === 0">
-            <option value="" disabled>— Seleccioná una unidad —</option>
-            <option *ngFor="let u of removeUnidades" [value]="u.id">
-              {{ u.blood_group }} · Vence: {{ formatDate(u.fecha_vencimiento) }} · ID: {{ u.id | slice:0:8 }}…
-            </option>
-          </select>
-
-          <div class="vf-error" *ngIf="removeUnidades.length === 0">
-            No hay unidades disponibles para este grupo.
-          </div>
-        </div>
-      </div>
-
-      <div class="vf-error" *ngIf="removeError">{{ removeError }}</div>
-    </div>
-
-    <ng-template pTemplate="footer">
-      <div class="vf-dialog__footer">
-        <button class="btn btn--ghost" type="button" (click)="closeRemoveModal()">Cancelar</button>
-        <button
-          class="btn btn--danger"
-          type="button"
-          [disabled]="removeLoading || !removeSelectedId"
-          (click)="confirmRemove()"
-        >
-          {{ removeLoading ? 'Retirando…' : 'Confirmar retiro' }}
-        </button>
-      </div>
-    </ng-template>
-  </p-dialog>
-
-  <!-- ═══════════════════════════════════════════════════════════════════════
-       MODAL: Historial (pendiente de backend)
-  ════════════════════════════════════════════════════════════════════════ -->
-  <p-dialog
-    [(visible)]="historyModalOpen"
-    [modal]="true"
-    [draggable]="false"
-    [resizable]="false"
-    [closable]="true"
-    [dismissableMask]="true"
-    maskStyleClass="vf-bancos-mask"
-    styleClass="vf-bancos-dialog"
-    [style]="{ width: '520px' }"
-    [baseZIndex]="10000"
-    (onHide)="closeHistoryModal()"
-  >
-    <ng-template pTemplate="header">
-      <div class="vf-dialog__header">
-        <div class="vf-dialog__title">
-          <div class="h">Historial de movimientos</div>
-          <div class="s">{{ historyModalComponente ? configFor(historyModalComponente).label : '' }}</div>
-        </div>
-        <span class="chip mono">Próximamente</span>
-      </div>
-    </ng-template>
-
-    <div class="vf-dialog__body">
-      <div class="empty-state">
-        <div class="empty-state__title">Todavía no hay historial conectado</div>
-        <div class="empty-state__sub">Cuando el endpoint esté disponible en el backend, lo mostramos acá con filtros y export.</div>
-      </div>
-    </div>
-
-    <ng-template pTemplate="footer">
-      <div class="vf-dialog__footer">
-        <button class="btn btn--primary" type="button" (click)="closeHistoryModal()">Cerrar</button>
-      </div>
-    </ng-template>
-  </p-dialog>
-
-  <!-- ═══════════════════════════════════════════════════════════════════════
-       MODAL: Editar umbral
-  ════════════════════════════════════════════════════════════════════════ -->
-  <p-dialog
-    [(visible)]="editUmbralOpen"
-    [modal]="true"
-    [draggable]="false"
-    [resizable]="false"
-    [closable]="true"
-    [dismissableMask]="true"
-    maskStyleClass="vf-bancos-mask"
-    styleClass="vf-bancos-dialog"
-    [style]="{ width: '460px' }"
-    [baseZIndex]="10000"
-    (onHide)="closeEditUmbral()"
-  >
-    <ng-template pTemplate="header">
-      <div class="vf-dialog__header">
-        <div class="vf-dialog__title">
-          <div class="h">Editar umbral mínimo</div>
-          <div class="s" *ngIf="editUmbralItem">
-            {{ configFor(editUmbralItem.componente).label }} · {{ editUmbralItem.blood_group }}
-          </div>
-        </div>
-        <span class="chip mono" *ngIf="editUmbralItem">{{ editUmbralItem.blood_group }}</span>
-      </div>
-    </ng-template>
-
-    <div class="vf-dialog__body" *ngIf="editUmbralItem">
-      <div class="vf-field">
-        <label class="vf-label">Umbral mínimo (unidades)</label>
-        <div class="vf-control">
-          <p-inputNumber
-            [(ngModel)]="editUmbralValue"
-            [min]="0"
-            [max]="5000000"
-            [useGrouping]="true"
-            [style]="{ width: '100%' }"
-          ></p-inputNumber>
-          <div class="vf-help">
-            Se usa para colorear el estado y disparar alertas visuales.
-          </div>
-        </div>
-      </div>
-
-      <div class="vf-error" *ngIf="editUmbralError">{{ editUmbralError }}</div>
-    </div>
-
-    <ng-template pTemplate="footer">
-      <div class="vf-dialog__footer">
-        <button class="btn btn--ghost" type="button" (click)="closeEditUmbral()">Cancelar</button>
-        <button
-          class="btn btn--primary"
-          type="button"
-          [disabled]="editUmbralLoading"
-          (click)="confirmEditUmbral()"
-        >
-          {{ editUmbralLoading ? 'Guardando…' : 'Guardar' }}
-        </button>
-      </div>
-    </ng-template>
-  </p-dialog>
-
 </div>
