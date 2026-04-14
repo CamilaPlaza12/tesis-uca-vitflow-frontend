@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import {
   ComponenteSanguineo,
   GrupoSanguineo,
+  HistorialEntry,
   ResumenDashboard,
   UnidadStock,
   UmbralStock,
@@ -38,17 +39,52 @@ export class StockService {
 
   agregarUnidad(
     componente: ComponenteSanguineo,
-    body: {
-      blood_group: GrupoSanguineo;
-      turno_id: string | null;
-      donante_id: string | null;
-    }
-  ): Observable<UnidadStock> {
-    return this.http.post<UnidadStock>(`${this.base}/stock/${componente}/agregar`, body);
+    body: { blood_group: GrupoSanguineo; cantidad: number }
+  ): Observable<UnidadStock[]> {
+    return this.http.post<UnidadStock[]>(`${this.base}/stock/${componente}/agregar`, body);
   }
 
-  retirarUnidad(componente: ComponenteSanguineo, id: string): Observable<UnidadStock> {
-    return this.http.patch<UnidadStock>(`${this.base}/stock/${componente}/${id}/retirar`, {});
+  retirarUnidades(
+    componente: ComponenteSanguineo,
+    unidad_ids: string[],
+    motivo?: string,
+    motivoDetalle?: string
+  ): Observable<UnidadStock[]> {
+    const body: Record<string, unknown> = { unidad_ids };
+    body['motivo'] = motivo || null;
+    body['motivo_detalle'] = motivo === 'otro' && motivoDetalle ? motivoDetalle : null;
+    return this.http.patch<UnidadStock[]>(`${this.base}/stock/${componente}/retirar`, body);
+  }
+
+  getHistorial(params: {
+    componente?: ComponenteSanguineo;
+    accion?: string;
+    desde?: string;
+    hasta?: string;
+  }): Observable<HistorialEntry[]> {
+    let url = `${this.base}/stock/historial`;
+    const qs = new URLSearchParams();
+    if (params.componente) qs.set('componente', params.componente);
+    if (params.accion) qs.set('accion', params.accion);
+    if (params.desde) qs.set('desde', params.desde);
+    if (params.hasta) qs.set('hasta', params.hasta);
+    const q = qs.toString();
+    if (q) url += '?' + q;
+    return this.http.get<HistorialEntry[]>(url);
+  }
+
+  getStockTotales(): Observable<{
+    total: number;
+    globulos_rojos: number;
+    plasma: number;
+    plaquetas: number;
+  }> {
+    return this.http.get<{
+      total: number;
+      globulos_rojos: number;
+      plasma: number;
+      plaquetas: number;
+    }>(`${this.base}/stock/totales`);
   }
 
   getUmbrales(): Observable<UmbralStock[]> {

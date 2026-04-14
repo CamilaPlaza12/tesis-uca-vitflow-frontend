@@ -2,10 +2,9 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { Turno } from '../../../models/turno';
 import { AccionTurno } from './turno-actions.policy';
 import { AvailabilityDay, HospitalAvailability } from '../../../models/disponibilidad';
-import { TurnoService } from '../../../service/turno_service';
+import { TurnoService, UnidadCreada } from '../../../service/turno_service';
 import { AvailabilityService } from '../../../service/availability_service';
-import { StockService } from '../../../service/stock_service';
-import { ComponenteSanguineo, GrupoSanguineo, UnidadStock } from '../../../models/blood-bank.model';
+import { ComponenteSanguineo, GrupoSanguineo } from '../../../models/blood-bank.model';
 import { firstValueFrom } from 'rxjs';
 
 const BLOOD_TYPES: GrupoSanguineo[] = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
@@ -63,14 +62,13 @@ export class Turnos implements OnInit {
   };
   donacionLoading = false;
   donacionError = '';
-  donacionResultado: UnidadStock[] | null = null;
+  donacionResultado: UnidadCreada[] | null = null;
 
   readonly bloodTypes = BLOOD_TYPES;
 
   constructor(
     private turnoService: TurnoService,
     private availabilityService: AvailabilityService,
-    private stockService: StockService,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -204,6 +202,13 @@ export class Turnos implements OnInit {
   }
 
   requestAction(accion: AccionTurno, turno: Turno): void {
+    // Marcar asistencia: ir directo al modal de componentes (el endpoint lo hace todo junto)
+    if (accion === 'COMPLETAR') {
+      this.turnoSeleccionado = turno;
+      this.openDonacionModal(turno);
+      return;
+    }
+
     this.turnoSeleccionado = turno;
     this.accionPendiente = accion;
 
@@ -251,19 +256,6 @@ export class Turnos implements OnInit {
         res = await firstValueFrom(
           this.turnoService.reschedule(t.id, this.reprogramDate, this.reprogramTime)
         );
-      } else if (this.accionPendiente === 'COMPLETAR') {
-        res = await firstValueFrom(this.turnoService.updateStatus(t.id, 'COMPLETADO'));
-
-        // Actualizar el turno en la lista
-        const idx = this.turnos.findIndex((x) => x.id === res.id);
-        if (idx !== -1) this.turnos[idx] = res;
-        this.turnoSeleccionado = res;
-
-        // Cerrar modal de confirmación y abrir modal de donación
-        this.modalOpen = false;
-        this.accionPendiente = null;
-        this.openDonacionModal(res);
-        return;
       } else if (this.accionPendiente === 'NO_PRESENTADO') {
         res = await firstValueFrom(this.turnoService.updateStatus(t.id, 'NO_PRESENTADO'));
       } else {
@@ -326,14 +318,19 @@ export class Turnos implements OnInit {
 
     try {
       const result = await firstValueFrom(
-        this.stockService.confirmarDonacion({
-          turno_id: this.donacionTurno.id,
-          donante_id: this.donacionTurno.donor?.dni ?? '',
+        this.turnoService.confirmarAsistencia(this.donacionTurno.id, {
           blood_group: this.donacionBloodGroup,
           componentes: this.donacionComponentesSeleccionados,
         })
       );
       this.donacionResultado = result.unidades_creadas;
+
+      // Actualizar el turno en la lista al estado COMPLETADO
+      const idx = this.turnos.findIndex((x) => x.id === this.donacionTurno!.id);
+      if (idx !== -1) {
+        this.turnos[idx] = { ...this.turnos[idx], status: 'COMPLETADO' };
+        this.turnoSeleccionado = this.turnos[idx];
+      }
     } catch (e: any) {
       this.donacionError =
         e?.error?.detail ?? e?.message ?? 'Error al registrar la donación.';

@@ -154,9 +154,9 @@
       </div>
 
       <div class="vf-don__result-list">
-        <div class="vf-don__result-item" *ngFor="let u of donacionResultado; let i = index">
+        <div class="vf-don__result-item" *ngFor="let u of donacionResultado">
           <span class="vf-don__result-comp">
-            {{ componenteLabel(donacionComponentesSeleccionados[i] || 'globulos_rojos') }}
+            {{ componenteLabel(u.componente) }}
           </span>
           <span class="mono vf-don__result-group">{{ u.blood_group }}</span>
           <span class="vf-don__result-vence">Vence: {{ formatDate(u.fecha_vencimiento) }}</span>

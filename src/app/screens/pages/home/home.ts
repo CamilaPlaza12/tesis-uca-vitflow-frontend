@@ -91,6 +91,7 @@ export class Home implements OnInit {
     this.loading = true;
     this.loadHomeSummary();
     this.loadStockDashboard();
+    this.loadStockTotales();
   }
 
   private loadHomeSummary(): void {
@@ -99,7 +100,7 @@ export class Home implements OnInit {
         this.stocksRecord = { ...(data.stocks || this.stocksRecord) };
         this.thresholdsRecord = { ...(data.thresholds || {}) };
 
-        this.kpiTotalUnits = data.kpis?.totalUnits ?? 0;
+        // kpiTotalUnits is loaded separately from /stock/totales
         this.kpiUrgentActive = data.kpis?.urgentActive ?? 0;
         this.kpiAppointmentsToday = data.kpis?.appointmentsToday ?? 0;
         this.criticalGroupsCount = data.kpis?.criticalGroupsCount ?? 0;
@@ -114,6 +115,18 @@ export class Home implements OnInit {
         console.error('Error loading home summary:', err);
         this.loading = false;
         this.cdr.detectChanges();
+      },
+    });
+  }
+
+  private loadStockTotales(): void {
+    this.stockService.getStockTotales().subscribe({
+      next: (data) => {
+        this.kpiTotalUnits = data.total ?? 0;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Error loading stock totales:', err);
       },
     });
   }

@@ -40,3 +40,15 @@ export interface UmbralStock {
   blood_group: GrupoSanguineo;
   umbral_minimo: number;
 }
+
+export interface HistorialEntry {
+  id: string;
+  fecha: string;           // backend sends "fecha", ISO 8601
+  usuario_nombre: string;
+  accion: 'agrego' | 'retiro';   // backend sends "agrego"/"retiro"
+  componente: ComponenteSanguineo;
+  blood_group: GrupoSanguineo;
+  cantidad: number;
+  motivo?: string | null;
+  motivo_detalle?: string | null;
+}

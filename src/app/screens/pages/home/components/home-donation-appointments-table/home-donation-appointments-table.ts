@@ -37,6 +37,19 @@ export class HomeDonationAppointmentsTableComponent {
     return null;
   }
 
+  formatAppointmentDate(date_local: string | undefined): string {
+    if (!date_local) return '';
+    // accepts "dd/mm/yyyy" or "yyyy-mm-dd"
+    if (/^\d{2}\/\d{2}\/\d{4}$/.test(date_local)) {
+      return date_local; // already DD/MM/YYYY
+    }
+    if (/^\d{4}-\d{2}-\d{2}$/.test(date_local)) {
+      const [y, m, d] = date_local.split('-');
+      return `${d}/${m}/${y}`;
+    }
+    return date_local;
+  }
+
   toneForStatus(status: DonationAppointmentRow['status']) {
     switch (status) {
       case 'CONFIRMADO':

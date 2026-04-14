@@ -3,6 +3,7 @@ import {
   BloodType,
   ComponenteSanguineo,
   GrupoSanguineo,
+  HistorialEntry,
   UnidadStock,
   UmbralStock,
 } from '../../../models/blood-bank.model';
@@ -82,20 +83,38 @@ export class Bancos implements OnInit {
   addModalOpen = false;
   addModalComponente: ComponenteSanguineo | null = null;
   addBloodGroup: GrupoSanguineo = 'A+';
+  addCantidad = 1;
   addLoading = false;
   addError = '';
+  addSuccessMsg = '';
 
   // Modal: Quitar stock
   removeModalOpen = false;
   removeModalComponente: ComponenteSanguineo | null = null;
   removeBloodGroup: GrupoSanguineo = 'A+';
-  removeSelectedId = '';
+  removeSelectedIds: string[] = [];
+  removeMotivo = '';
+  removeMotivoDetalle = '';
   removeLoading = false;
   removeError = '';
+  removeSuccessMsg = '';
+
+  readonly motivoOptions = [
+    { value: 'transfusion', label: 'Transfusión' },
+    { value: 'trasplante', label: 'Trasplante' },
+    { value: 'operacion', label: 'Operación' },
+    { value: 'otro', label: 'Otro' },
+  ];
 
   // Modal: Historial
   historyModalOpen = false;
   historyModalComponente: ComponenteSanguineo | null = null;
+  historialEntries: HistorialEntry[] = [];
+  historialLoading = false;
+  historialError = '';
+  historialFilterAccion: '' | 'agrego' | 'retiro' = '';
+  historialFilterDesde = '';
+  historialFilterHasta = '';
 
   // Modal: Editar umbral
   editUmbralOpen = false;
@@ -118,6 +137,7 @@ export class Bancos implements OnInit {
   // ─── Load ──────────────────────────────────────────────────────────────────
 
   loadComponente(componente: ComponenteSanguineo): void {
+    if (!componente) return;
     this.loadingComponent[componente] = true;
     this.errorComponent[componente] = '';
 
@@ -231,7 +251,21 @@ export class Bancos implements OnInit {
   }
 
   onRemoveBloodGroupChange(): void {
-    this.removeSelectedId = '';
+    this.removeSelectedIds = [];
+  }
+
+  isUnitSelected(id: string): boolean {
+    return this.removeSelectedIds.includes(id);
+  }
+
+  toggleUnit(id: string, checked: boolean): void {
+    if (checked) {
+      if (!this.removeSelectedIds.includes(id)) {
+        this.removeSelectedIds = [...this.removeSelectedIds, id];
+      }
+    } else {
+      this.removeSelectedIds = this.removeSelectedIds.filter((x) => x !== id);
+    }
   }
 
   // ─── Actions: Agregar ─────────────────────────────────────────────────────
@@ -239,7 +273,9 @@ export class Bancos implements OnInit {
   openAddModal(componente: ComponenteSanguineo): void {
     this.addModalComponente = componente;
     this.addBloodGroup = 'A+';
+    this.addCantidad = 1;
     this.addError = '';
+    this.addSuccessMsg = '';
     this.addLoading = false;
     this.addModalOpen = true;
   }
@@ -247,11 +283,13 @@ export class Bancos implements OnInit {
   closeAddModal(): void {
     this.addModalOpen = false;
     this.addModalComponente = null;
+    this.addSuccessMsg = '';
   }
 
   async confirmAdd(): Promise<void> {
     if (!this.addModalComponente || this.addLoading) return;
 
+    const cantidad = Math.max(1, Math.min(20, Math.floor(Number(this.addCantidad) || 1)));
     this.addLoading = true;
     this.addError = '';
 
@@ -259,16 +297,19 @@ export class Bancos implements OnInit {
       await firstValueFrom(
         this.stockService.agregarUnidad(this.addModalComponente, {
           blood_group: this.addBloodGroup,
-          turno_id: null,
-          donante_id: null,
+          cantidad,
         })
       );
-      this.closeAddModal();
+      this.addSuccessMsg = `Se ${cantidad === 1 ? 'creó 1 unidad' : `crearon ${cantidad} unidades`} de ${this.addBloodGroup} correctamente.`;
+      this.cdr.detectChanges();
       this.loadComponente(this.addModalComponente!);
     } catch (err: any) {
-      this.addError = err?.error?.detail || 'Error al agregar la unidad.';
+      this.addError = err?.error?.detail || 'Error al agregar las unidades.';
     } finally {
-      this.addLoading = false;
+      setTimeout(() => {
+        this.addLoading = false;
+        this.cdr.detectChanges();
+      }, 0);
     }
   }
 
@@ -277,8 +318,11 @@ export class Bancos implements OnInit {
   openRemoveModal(componente: ComponenteSanguineo): void {
     this.removeModalComponente = componente;
     this.removeBloodGroup = 'A+';
-    this.removeSelectedId = '';
+    this.removeSelectedIds = [];
+    this.removeMotivo = '';
+    this.removeMotivoDetalle = '';
     this.removeError = '';
+    this.removeSuccessMsg = '';
     this.removeLoading = false;
     this.removeModalOpen = true;
   }
@@ -286,24 +330,40 @@ export class Bancos implements OnInit {
   closeRemoveModal(): void {
     this.removeModalOpen = false;
     this.removeModalComponente = null;
+    this.removeSuccessMsg = '';
   }
 
   async confirmRemove(): Promise<void> {
-    if (!this.removeModalComponente || !this.removeSelectedId || this.removeLoading) return;
+    if (!this.removeModalComponente || this.removeSelectedIds.length === 0 || this.removeLoading)
+      return;
+    if (this.removeMotivo === 'otro' && !this.removeMotivoDetalle.trim()) {
+      this.removeError = 'Especificá el detalle del motivo.';
+      return;
+    }
 
     this.removeLoading = true;
     this.removeError = '';
 
     try {
       await firstValueFrom(
-        this.stockService.retirarUnidad(this.removeModalComponente, this.removeSelectedId)
+        this.stockService.retirarUnidades(
+          this.removeModalComponente,
+          this.removeSelectedIds,
+          this.removeMotivo || undefined,
+          this.removeMotivoDetalle || undefined
+        )
       );
-      this.closeRemoveModal();
+      const n = this.removeSelectedIds.length;
+      this.removeSuccessMsg = `Se ${n === 1 ? 'retiró 1 unidad' : `retiraron ${n} unidades`} correctamente.`;
+      this.cdr.detectChanges();
       this.loadComponente(this.removeModalComponente!);
     } catch (err: any) {
-      this.removeError = err?.error?.detail || 'Error al retirar la unidad.';
+      this.removeError = err?.error?.detail || 'Error al retirar las unidades.';
     } finally {
-      this.removeLoading = false;
+      setTimeout(() => {
+        this.removeLoading = false;
+        this.cdr.detectChanges();
+      }, 0);
     }
   }
 
@@ -311,12 +371,75 @@ export class Bancos implements OnInit {
 
   openHistoryModal(componente: ComponenteSanguineo): void {
     this.historyModalComponente = componente;
+    this.historialFilterAccion = '';
+    this.historialFilterDesde = this.todayDateString();
+    this.historialFilterHasta = '';
+    this.historialEntries = [];
+    this.historialError = '';
     this.historyModalOpen = true;
+    this.loadHistorial();
+  }
+
+  private todayDateString(): string {
+    const d = new Date();
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
   }
 
   closeHistoryModal(): void {
     this.historyModalOpen = false;
     this.historyModalComponente = null;
+  }
+
+  loadHistorial(): void {
+    this.historialLoading = true;
+    this.historialError = '';
+
+    this.stockService
+      .getHistorial({ componente: this.historyModalComponente ?? undefined })
+      .subscribe({
+        next: (rows) => {
+          this.zone.run(() => {
+            this.historialEntries = rows ?? [];
+            this.historialLoading = false;
+            this.cdr.detectChanges();
+          });
+        },
+        error: (err) => {
+          this.zone.run(() => {
+            this.historialError = err?.error?.detail || 'Error al cargar el historial.';
+            this.historialLoading = false;
+            this.cdr.detectChanges();
+          });
+        },
+      });
+  }
+
+  get filteredHistorial(): HistorialEntry[] {
+    if (!Array.isArray(this.historialEntries)) return [];
+    return this.historialEntries.filter((e) => {
+      if (this.historialFilterAccion && e.accion !== this.historialFilterAccion) return false;
+      const fechaStr = (e.fecha ?? '').slice(0, 10);
+      if (this.historialFilterDesde && fechaStr < this.historialFilterDesde) return false;
+      if (this.historialFilterHasta && fechaStr > this.historialFilterHasta) return false;
+      return true;
+    });
+  }
+
+  historialAccionLabel(accion: 'agrego' | 'retiro'): string {
+    return accion === 'agrego' ? 'Agregó' : 'Retiró';
+  }
+
+  historialComponenteLabel(c: ComponenteSanguineo): string {
+    return this.configFor(c)?.label ?? c;
+  }
+
+  historialMotivoLabel(motivo: string | null | undefined): string {
+    if (!motivo) return '—';
+    const found = this.motivoOptions.find((m) => m.value === motivo);
+    return found ? found.label : motivo;
   }
 
   // ─── Actions: Umbral ──────────────────────────────────────────────────────
@@ -369,6 +492,21 @@ export class Bancos implements OnInit {
         day: '2-digit',
         month: '2-digit',
         year: 'numeric',
+      });
+    } catch {
+      return iso;
+    }
+  }
+
+  formatDateTime(iso: string): string {
+    if (!iso) return '—';
+    try {
+      return new Date(iso).toLocaleString('es-AR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
       });
     } catch {
       return iso;

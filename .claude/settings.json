@@ -2,7 +2,9 @@
   "permissions": {
     "allow": [
       "Read(//c/Users/camil/Documents/GitHub/tesis-uca-vitflow-backend/**)",
-      "Bash(npm run:*)"
+      "Bash(npm run:*)",
+      "Read(//mnt/c/Users/camil/Documents/GitHub/tesis-uca-vitflow-frontend/src/app/**)",
+      "Bash(npx tsc:*)"
     ]
   }
 }

@@ -35,7 +35,7 @@
       {{ errorComponent[comp.key] }}
     </div>
 
-    <!-- 🔥 NUEVO: CARD con chart + botones -->
+    <!-- CARD con chart + botones -->
     <div class="dashboard-card" *ngIf="!loadingComponent[comp.key]">
 
       <!-- Chart -->
@@ -68,7 +68,7 @@
 
     </div>
 
-    <!-- 🔽 Umbrales colapsables -->
+    <!-- Umbrales colapsables -->
     <details class="umbrales-collapse">
       <summary>
         Umbrales mínimos
@@ -126,4 +126,387 @@
     </details>
 
   </section>
+
 </div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     MODAL: Agregar unidad de stock
+════════════════════════════════════════════════════════════════════════ -->
+<p-dialog
+  [(visible)]="addModalOpen"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [closable]="!addLoading"
+  [dismissableMask]="!addLoading"
+  maskStyleClass="vf-bancos-mask"
+  styleClass="vf-bancos-dialog"
+  [style]="{ width: '420px' }"
+  [baseZIndex]="10000"
+  (onHide)="closeAddModal()"
+>
+  <ng-template pTemplate="header">
+    <div class="vf-dialog__header">
+      <div class="vf-dialog__title">
+        <div class="h">Agregar unidades</div>
+        <div class="s" *ngIf="addModalComponente">{{ configFor(addModalComponente).label }}</div>
+      </div>
+      <span class="chip chip--add">+{{ addCantidad }} unidad{{ addCantidad !== 1 ? 'es' : '' }}</span>
+    </div>
+  </ng-template>
+
+  <!-- Success state -->
+  <div class="vf-dialog__body" *ngIf="addSuccessMsg">
+    <div class="vf-success">
+      <i class="pi pi-check-circle"></i>
+      {{ addSuccessMsg }}
+    </div>
+  </div>
+
+  <!-- Form state -->
+  <div class="vf-dialog__body" *ngIf="!addSuccessMsg">
+    <div class="vf-field">
+      <label class="vf-label">Grupo sanguíneo</label>
+      <div class="vf-control">
+        <select class="select" [(ngModel)]="addBloodGroup" [disabled]="addLoading">
+          <option *ngFor="let bt of bloodTypes" [value]="bt">{{ bt }}</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="vf-field">
+      <label class="vf-label">Cantidad</label>
+      <div class="vf-control">
+        <input
+          class="select"
+          type="number"
+          min="1"
+          max="20"
+          [(ngModel)]="addCantidad"
+          [disabled]="addLoading"
+          placeholder="1"
+        />
+        <div class="vf-help">Mínimo 1, máximo 20 unidades por operación.</div>
+      </div>
+    </div>
+
+    <div class="vf-error" *ngIf="addError">{{ addError }}</div>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <div class="vf-dialog__footer">
+      <button class="btn btn--ghost" type="button" [disabled]="addLoading" (click)="closeAddModal()">
+        {{ addSuccessMsg ? 'Cerrar' : 'Cancelar' }}
+      </button>
+      <button
+        *ngIf="!addSuccessMsg"
+        class="btn btn--primary"
+        type="button"
+        [disabled]="addLoading"
+        (click)="confirmAdd()"
+      >
+        <span *ngIf="addLoading" class="pi pi-spin pi-spinner"></span>
+        {{ addLoading ? 'Agregando…' : 'Agregar' }}
+      </button>
+    </div>
+  </ng-template>
+</p-dialog>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     MODAL: Quitar unidad de stock
+════════════════════════════════════════════════════════════════════════ -->
+<p-dialog
+  [(visible)]="removeModalOpen"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [closable]="!removeLoading"
+  [dismissableMask]="!removeLoading"
+  maskStyleClass="vf-bancos-mask"
+  styleClass="vf-bancos-dialog"
+  [style]="{ width: '480px' }"
+  [baseZIndex]="10000"
+  (onHide)="closeRemoveModal()"
+>
+  <ng-template pTemplate="header">
+    <div class="vf-dialog__header">
+      <div class="vf-dialog__title">
+        <div class="h">Quitar unidades</div>
+        <div class="s" *ngIf="removeModalComponente">{{ configFor(removeModalComponente).label }}</div>
+      </div>
+      <span class="chip chip--remove">
+        {{ removeSelectedIds.length > 0 ? '-' + removeSelectedIds.length + ' unidad' + (removeSelectedIds.length !== 1 ? 'es' : '') : 'Sin selección' }}
+      </span>
+    </div>
+  </ng-template>
+
+  <!-- Success state -->
+  <div class="vf-dialog__body" *ngIf="removeSuccessMsg">
+    <div class="vf-success vf-success--danger">
+      <i class="pi pi-check-circle"></i>
+      {{ removeSuccessMsg }}
+    </div>
+  </div>
+
+  <!-- Form state -->
+  <div class="vf-dialog__body" *ngIf="!removeSuccessMsg">
+    <!-- Grupo sanguíneo -->
+    <div class="vf-field">
+      <label class="vf-label">Grupo sanguíneo</label>
+      <div class="vf-control">
+        <select class="select" [(ngModel)]="removeBloodGroup" [disabled]="removeLoading" (ngModelChange)="onRemoveBloodGroupChange()">
+          <option *ngFor="let bt of bloodTypes" [value]="bt">{{ bt }}</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Unidades a retirar (checkboxes) -->
+    <div class="vf-field">
+      <label class="vf-label">Unidades</label>
+      <div class="vf-control">
+        <div class="unit-checkbox-list" *ngIf="removeUnidades.length > 0">
+          <label
+            *ngFor="let u of removeUnidades"
+            class="unit-checkbox-item"
+            [class.unit-checkbox-item--checked]="isUnitSelected(u.id)"
+            [class.unit-checkbox-item--disabled]="removeLoading"
+          >
+            <input
+              type="checkbox"
+              [checked]="isUnitSelected(u.id)"
+              [disabled]="removeLoading"
+              (change)="toggleUnit(u.id, $any($event.target).checked)"
+            />
+            <span class="unit-checkbox-label">
+              <span class="unit-id">{{ u.id.slice(-8) }}</span>
+              <span class="unit-vence">Vence: {{ formatDate(u.fecha_vencimiento) }}</span>
+            </span>
+          </label>
+        </div>
+        <div class="vf-help" *ngIf="removeUnidades.length === 0">
+          No hay unidades disponibles para {{ removeBloodGroup }}.
+        </div>
+        <div class="vf-help" *ngIf="removeUnidades.length > 0 && removeSelectedIds.length === 0">
+          Seleccioná una o más unidades para retirar.
+        </div>
+      </div>
+    </div>
+
+    <!-- Motivo -->
+    <div class="vf-field">
+      <label class="vf-label">Motivo</label>
+      <div class="vf-control">
+        <select class="select" [(ngModel)]="removeMotivo" [disabled]="removeLoading">
+          <option value="">Sin especificar</option>
+          <option *ngFor="let m of motivoOptions" [value]="m.value">{{ m.label }}</option>
+        </select>
+
+        <input
+          *ngIf="removeMotivo === 'otro'"
+          class="select"
+          type="text"
+          [(ngModel)]="removeMotivoDetalle"
+          [disabled]="removeLoading"
+          placeholder="Describí el motivo…"
+        />
+      </div>
+    </div>
+
+    <div class="vf-error" *ngIf="removeError">{{ removeError }}</div>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <div class="vf-dialog__footer">
+      <button class="btn btn--ghost" type="button" [disabled]="removeLoading" (click)="closeRemoveModal()">
+        {{ removeSuccessMsg ? 'Cerrar' : 'Cancelar' }}
+      </button>
+      <button
+        *ngIf="!removeSuccessMsg"
+        class="btn btn--danger"
+        type="button"
+        [disabled]="removeLoading || removeSelectedIds.length === 0"
+        (click)="confirmRemove()"
+      >
+        <span *ngIf="removeLoading" class="pi pi-spin pi-spinner"></span>
+        {{ removeLoading ? 'Retirando…' : 'Retirar' + (removeSelectedIds.length > 1 ? ' ' + removeSelectedIds.length + ' unidades' : ' unidad') }}
+      </button>
+    </div>
+  </ng-template>
+</p-dialog>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     MODAL: Historial
+════════════════════════════════════════════════════════════════════════ -->
+<p-dialog
+  [(visible)]="historyModalOpen"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [closable]="true"
+  [dismissableMask]="true"
+  maskStyleClass="vf-bancos-mask"
+  styleClass="vf-bancos-dialog"
+  [style]="{ width: '760px', 'max-width': '96vw' }"
+  [baseZIndex]="10000"
+  (onHide)="closeHistoryModal()"
+>
+  <ng-template pTemplate="header">
+    <div class="vf-dialog__header">
+      <div class="vf-dialog__title">
+        <div class="h">Historial de movimientos</div>
+        <div class="s" *ngIf="historyModalComponente">
+          {{ configFor(historyModalComponente).label }}
+        </div>
+      </div>
+      <span class="chip">
+        <i class="pi pi-clock" style="margin-right:4px;font-size:11px;"></i>
+        Historial
+      </span>
+    </div>
+  </ng-template>
+
+  <div class="vf-dialog__body vf-dialog__body--historial">
+
+    <!-- Filtros -->
+    <div class="historial-filters">
+      <div class="historial-filter-group">
+        <label class="vf-label">Acción</label>
+        <select class="select select--sm" [(ngModel)]="historialFilterAccion">
+          <option value="">Todos</option>
+          <option value="agrego">Agregó</option>
+          <option value="retiro">Retiró</option>
+        </select>
+      </div>
+      <div class="historial-filter-group">
+        <label class="vf-label">Desde</label>
+        <input class="select select--sm" type="date" [(ngModel)]="historialFilterDesde" />
+      </div>
+      <div class="historial-filter-group">
+        <label class="vf-label">Hasta</label>
+        <input class="select select--sm" type="date" [(ngModel)]="historialFilterHasta" />
+      </div>
+    </div>
+
+    <!-- Spinner -->
+    <div class="historial-loading" *ngIf="historialLoading">
+      <span class="pi pi-spin pi-spinner"></span> Cargando historial…
+    </div>
+
+    <!-- Error -->
+    <div class="vf-error" *ngIf="historialError && !historialLoading">{{ historialError }}</div>
+
+    <!-- Tabla -->
+    <div class="historial-table-wrap" *ngIf="!historialLoading && !historialError">
+      <!-- Empty state -->
+      <div class="empty-state" *ngIf="filteredHistorial.length === 0">
+        <div class="empty-state__title">Sin registros</div>
+        <div class="empty-state__sub">No hay movimientos que coincidan con los filtros seleccionados.</div>
+      </div>
+
+      <table class="table historial-table" *ngIf="filteredHistorial.length > 0">
+        <thead>
+          <tr>
+            <th>Fecha y hora</th>
+            <th>Usuario</th>
+            <th>Acción</th>
+            <th>Componente</th>
+            <th>Grupo</th>
+            <th>Cant.</th>
+            <th>Motivo</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let e of filteredHistorial">
+            <td class="mono" style="white-space:nowrap;">{{ formatDateTime(e.fecha) }}</td>
+            <td>{{ e.usuario_nombre }}</td>
+            <td>
+              <span
+                class="accion-badge"
+                [class.accion-badge--add]="e.accion === 'agrego'"
+                [class.accion-badge--remove]="e.accion === 'retiro'"
+              >
+                {{ historialAccionLabel(e.accion) }}
+              </span>
+            </td>
+            <td>{{ historialComponenteLabel(e.componente) }}</td>
+            <td class="mono">{{ e.blood_group }}</td>
+            <td class="mono">{{ e.cantidad }}</td>
+            <td>
+              <span *ngIf="e.accion === 'retiro' && e.motivo">
+                {{ historialMotivoLabel(e.motivo) }}
+                <span *ngIf="e.motivo_detalle" class="vf-help" style="display:block;">{{ e.motivo_detalle }}</span>
+              </span>
+              <span *ngIf="!(e.accion === 'retiro' && e.motivo)" class="text-muted">—</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <ng-template pTemplate="footer">
+    <div class="vf-dialog__footer">
+      <button class="btn btn--ghost" type="button" (click)="closeHistoryModal()">Cerrar</button>
+    </div>
+  </ng-template>
+</p-dialog>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     MODAL: Editar umbral mínimo
+════════════════════════════════════════════════════════════════════════ -->
+<p-dialog
+  [(visible)]="editUmbralOpen"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [closable]="!editUmbralLoading"
+  [dismissableMask]="!editUmbralLoading"
+  maskStyleClass="vf-bancos-mask"
+  styleClass="vf-bancos-dialog"
+  [style]="{ width: '380px' }"
+  [baseZIndex]="10000"
+  (onHide)="closeEditUmbral()"
+>
+  <ng-template pTemplate="header">
+    <div class="vf-dialog__header">
+      <div class="vf-dialog__title">
+        <div class="h">Editar umbral mínimo</div>
+        <div class="s" *ngIf="editUmbralItem">
+          {{ configFor(editUmbralItem.componente).label }} · {{ editUmbralItem.blood_group }}
+        </div>
+      </div>
+    </div>
+  </ng-template>
+
+  <div class="vf-dialog__body">
+    <div class="vf-field">
+      <label class="vf-label">Umbral mínimo</label>
+      <div class="vf-control">
+        <input
+          class="select"
+          type="number"
+          min="0"
+          [(ngModel)]="editUmbralValue"
+          [disabled]="editUmbralLoading"
+          placeholder="0"
+        />
+        <div class="vf-help">Cantidad mínima de unidades antes de alertar.</div>
+      </div>
+    </div>
+
+    <div class="vf-error" *ngIf="editUmbralError">{{ editUmbralError }}</div>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <div class="vf-dialog__footer">
+      <button class="btn btn--ghost" type="button" [disabled]="editUmbralLoading" (click)="closeEditUmbral()">
+        Cancelar
+      </button>
+      <button class="btn btn--primary" type="button" [disabled]="editUmbralLoading" (click)="confirmEditUmbral()">
+        <span *ngIf="editUmbralLoading" class="pi pi-spin pi-spinner"></span>
+        {{ editUmbralLoading ? 'Guardando…' : 'Guardar' }}
+      </button>
+    </div>
+  </ng-template>
+</p-dialog>

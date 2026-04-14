@@ -7,7 +7,7 @@
     <table class="table">
       <thead>
         <tr>
-          <th>Hora</th>
+          <th>Fecha y hora</th>
           <th>Donación</th>
           <th class="t-center">Estado</th>
         </tr>
@@ -16,6 +16,7 @@
       <tbody>
         <tr *ngFor="let r of rows">
           <td class="mono">
+            <span *ngIf="r.date_local" class="appt-date">{{ formatAppointmentDate(r.date_local) }}</span>
             {{ r.time_local }}
             <span
               *ngIf="dayLabel(r.date_local) as label"
