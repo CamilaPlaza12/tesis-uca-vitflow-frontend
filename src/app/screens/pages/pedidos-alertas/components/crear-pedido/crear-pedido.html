@@ -120,12 +120,16 @@
         <div class="field-block">
           <label>Cantidad solicitada (L)</label>
           <input class="field" type="number" min="0.1" step="0.1" [(ngModel)]="form.litrosSolicitados" />
-          <span class="helper">Se convertirá a ml internamente.</span>
         </div>
 
         <div class="field-block">
           <label>Solicitado por</label>
           <input class="field" type="text" [(ngModel)]="form.solicitadoPor" placeholder="Ej: Dra. López" />
+        </div>
+
+        <div class="field-block">
+          <label>Fecha de vencimiento</label>
+          <input class="field" type="date" [(ngModel)]="form.fechaVencimiento" />
         </div>
 
         <div class="field-block full">

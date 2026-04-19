@@ -3,6 +3,7 @@ import {
   HospitalRequestCreate,
   HospitalRequestPriority,
   HospitalUnit,
+  HospitalRequestType,
 } from '../../../../../models/pedido';
 
 type DropKey = 'servicio' | 'componente' | 'grupo' | 'prioridad';
@@ -39,6 +40,8 @@ export class CrearPedido {
     prioridad: false,
   };
 
+  tiposRequest: HospitalRequestType[] = ['NORMAL', 'CAMPAÑA'];
+
   form = {
     servicio: 'ITU' as HospitalUnit,
     componente: 'Sangre',
@@ -47,6 +50,8 @@ export class CrearPedido {
     solicitadoPor: '',
     comentarios: '',
     litrosSolicitados: 1,
+    fechaVencimiento: '',
+    tipoRequest: 'NORMAL' as HospitalRequestType,
   };
 
   errorMsg = '';
@@ -145,6 +150,11 @@ export class CrearPedido {
       return false;
     }
 
+    if (!this.form.fechaVencimiento) {
+      this.errorMsg = 'Completá la fecha de vencimiento del pedido.';
+      return false;
+    }
+
     return true;
   }
 
@@ -161,10 +171,12 @@ export class CrearPedido {
       hospital_unit: this.form.servicio,
       component: this.form.componente,
       blood_group: this.form.grupoSanguineo,
-      requested_units: litros2, // ✅ ahora va en litros, sin convertir
+      requested_units: litros2,
       priority: this.form.prioridad,
       requested_by: this.form.solicitadoPor.trim(),
-      comments: this.form.comentarios?.trim() || undefined,
+      end_date: new Date(this.form.fechaVencimiento).toISOString(),
+      comments: this.form.comentarios?.trim() || null,
+      request_type: this.form.tipoRequest,
     };
 
     this.pedidoCreado.emit(pedido);
@@ -175,6 +187,8 @@ export class CrearPedido {
     this.form.componente = 'Sangre';
     this.form.grupoSanguineo = 'O-';
     this.form.servicio = 'ITU';
+    this.form.fechaVencimiento = '';
+    this.form.tipoRequest = 'NORMAL';
 
     this.closeModal();
   }

@@ -14,6 +14,8 @@ export type HospitalUnit =
   | 'Quirofano'
   | 'Clinica Medica';
 
+export type HospitalRequestType = 'NORMAL' | 'CAMPAÑA';
+
 export interface HospitalRequestCreate {
   hospital_unit: HospitalUnit;
   component: string;
@@ -21,7 +23,9 @@ export interface HospitalRequestCreate {
   requested_units: number;
   priority: HospitalRequestPriority;
   requested_by: string;
+  end_date: string;
   comments?: string | null;
+  request_type?: HospitalRequestType;
 }
 
 export interface HospitalRequest {
