@@ -18,6 +18,7 @@ export class CrearPedido {
   @Output() pedidoCreado = new EventEmitter<HospitalRequestCreate>();
 
   open = false;
+  today = new Date().toISOString().split('T')[0]; // "YYYY-MM-DD"
 
   servicios: HospitalUnit[] = [
     'ITU',
@@ -174,7 +175,7 @@ export class CrearPedido {
       requested_units: litros2,
       priority: this.form.prioridad,
       requested_by: this.form.solicitadoPor.trim(),
-      end_date: new Date(this.form.fechaVencimiento).toISOString(),
+      end_date: this.form.fechaVencimiento,
       comments: this.form.comentarios?.trim() || null,
       request_type: this.form.tipoRequest,
     };

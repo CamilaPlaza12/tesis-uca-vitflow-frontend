@@ -129,7 +129,7 @@
 
         <div class="field-block">
           <label>Fecha de vencimiento</label>
-          <input class="field" type="date" [(ngModel)]="form.fechaVencimiento" />
+          <input class="field" type="date" [(ngModel)]="form.fechaVencimiento" [min]="today" />
         </div>
 
         <div class="field-block full">
