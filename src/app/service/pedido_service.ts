@@ -10,7 +10,7 @@ import {
 
 @Injectable({ providedIn: 'root' })
 export class PedidoService {
-  private baseUrl = 'http://localhost:8000';
+  private baseUrl = 'https://vitflow-backend.onrender.com';
   private endpoint = `${this.baseUrl}/api/v1/hospital-requests`;
 
   constructor(private http: HttpClient) {}

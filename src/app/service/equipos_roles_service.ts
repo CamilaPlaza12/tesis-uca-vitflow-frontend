@@ -15,7 +15,7 @@ export interface CreateTechnicianRequest {
   providedIn: 'root',
 })
 export class EquipoRolesService {
-  private baseUrl = 'http://localhost:8000/api/v1/users';
+  private baseUrl = 'https://vitflow-backend.onrender.com/api/v1/users';
 
   constructor(private http: HttpClient) {}
 

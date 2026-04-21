@@ -20,7 +20,7 @@ export interface ConfirmarAsistenciaResponse {
 
 @Injectable({ providedIn: 'root' })
 export class TurnoService {
-  private baseUrl = 'http://localhost:8000';
+  private baseUrl = 'https://vitflow-backend.onrender.com';
   private endpoint = `${this.baseUrl}/api/v1/appointments`;
 
   constructor(private http: HttpClient) {}

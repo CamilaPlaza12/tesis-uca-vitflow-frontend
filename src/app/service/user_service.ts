@@ -13,7 +13,7 @@ export class UserService {
   currentUserData: any = null;
   currentUserData$ = new BehaviorSubject<any>(null);
 
-  private baseUrl = 'http://localhost:8000';
+  private baseUrl = 'https://vitflow-backend.onrender.com';
 
   constructor(private http: HttpClient, private authService: AuthService) {}
 
