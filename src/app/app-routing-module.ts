@@ -13,7 +13,7 @@ import { AuthGuard } from './service/auth_guard';
 import { BackofficeRequests } from './backoffice/backoffice-requests/backoffice-requests';
 
 const routes: Routes = [
-  { path: '', redirectTo: 'signin', pathMatch: 'full' },
+  { path: '', component: SignIn },
 
   { path: 'signin', component: SignIn },
   { path: 'register', component: Register },
