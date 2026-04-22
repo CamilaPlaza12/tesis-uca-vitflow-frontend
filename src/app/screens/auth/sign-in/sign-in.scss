@@ -171,9 +171,42 @@
   background: #ffffff;
 }
 
-#email,
-#password {
+#email {
   max-width: 92%;
+}
+
+.password-wrapper {
+  position: relative;
+  max-width: 100%;
+
+  input {
+    width: 100%;
+    box-sizing: border-box;
+    padding-right: 3rem;
+  }
+}
+
+.toggle-password {
+  position: absolute;
+  right: 0.85rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #9ca3af;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  line-height: 1;
+
+  &:hover {
+    color: #374151;
+  }
+
+  i {
+    font-size: 1rem;
+  }
 }
 
 .form-field input:focus {

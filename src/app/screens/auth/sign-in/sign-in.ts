@@ -12,6 +12,7 @@ import { UserService } from '../../../service/user_service';
 export class SignIn {
   form: FormGroup;
   loading = false;
+  showPassword = false;
 
   modalOpen = false;
   modalTitle = '';
