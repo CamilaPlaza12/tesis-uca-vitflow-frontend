@@ -20,7 +20,6 @@ export interface HospitalRequestCreate {
   hospital_unit: HospitalUnit;
   component: string;
   blood_group: string;
-  requested_units: number;
   priority: HospitalRequestPriority;
   requested_by: string;
   end_date: string;
@@ -31,11 +30,10 @@ export interface HospitalRequestCreate {
 export interface HospitalRequest {
   id: string;
   datetime_local: string;
+  end_date: string;
   hospital_unit: HospitalUnit;
   component: string;
   blood_group: string;
-  requested_units: number;
-  collected_units: number;
   priority: HospitalRequestPriority;
   status: HospitalRequestStatus;
   requested_by: string;

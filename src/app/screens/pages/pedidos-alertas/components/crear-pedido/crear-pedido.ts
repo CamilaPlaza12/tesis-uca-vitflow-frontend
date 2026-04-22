@@ -50,7 +50,6 @@ export class CrearPedido {
     prioridad: 'NORMAL' as HospitalRequestPriority,
     solicitadoPor: '',
     comentarios: '',
-    litrosSolicitados: 1,
     fechaVencimiento: '',
     tipoRequest: 'NORMAL' as HospitalRequestType,
   };
@@ -134,20 +133,8 @@ export class CrearPedido {
   }
 
   validar(): boolean {
-    const litros = Number(this.form.litrosSolicitados);
-
     if (!this.form.solicitadoPor || this.form.solicitadoPor.trim().length < 2) {
       this.errorMsg = 'Completá el campo "Solicitado por".';
-      return false;
-    }
-
-    if (!Number.isFinite(litros) || litros <= 0) {
-      this.errorMsg = 'La cantidad solicitada debe ser mayor a 0.';
-      return false;
-    }
-
-    if (litros > 20) {
-      this.errorMsg = 'La cantidad solicitada parece muy alta (máximo 20 L).';
       return false;
     }
 
@@ -163,16 +150,10 @@ export class CrearPedido {
     this.errorMsg = '';
     if (!this.validar()) return;
 
-    const litros = Number(this.form.litrosSolicitados);
-
-    // opcional: limitar a 2 decimales para evitar floats raros
-    const litros2 = Math.round(litros * 100) / 100;
-
     const pedido: HospitalRequestCreate = {
       hospital_unit: this.form.servicio,
       component: this.form.componente,
       blood_group: this.form.grupoSanguineo,
-      requested_units: litros2,
       priority: this.form.prioridad,
       requested_by: this.form.solicitadoPor.trim(),
       end_date: this.form.fechaVencimiento,
@@ -183,7 +164,6 @@ export class CrearPedido {
     this.pedidoCreado.emit(pedido);
 
     this.form.comentarios = '';
-    this.form.litrosSolicitados = 1;
     this.form.prioridad = 'NORMAL';
     this.form.componente = 'Sangre';
     this.form.grupoSanguineo = 'O-';

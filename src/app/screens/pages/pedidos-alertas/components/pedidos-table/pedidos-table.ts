@@ -37,10 +37,10 @@ export class PedidosTable {
     return `${p.component}${bg}`;
   }
 
-  toLitros(ml: number): string {
-    const litros = ml / 1000;
-    const txt = Number.isInteger(litros) ? litros.toString() : litros.toFixed(2);
-    return `${txt} L`;
+  formatFecha(iso: string): string {
+    if (!iso) return '';
+    const [y, m, d] = iso.split('T')[0].split('-');
+    return `${d}/${m}/${y}`;
   }
 
   formatFechaHora(iso: string): string {

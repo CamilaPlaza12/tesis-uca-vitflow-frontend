@@ -24,16 +24,6 @@
         </div>
 
         <div class="row">
-          <span class="k">Cantidad solicitada</span>
-          <span class="v">{{ pedido.requested_units }} unidades</span>
-        </div>
-
-        <div class="row">
-          <span class="k">Cantidad obtenida</span>
-          <span class="v">{{ pedido.collected_units }} unidades</span>
-        </div>
-
-        <div class="row">
           <span class="k">Prioridad</span>
           <span class="v">{{ prioridadLabel(pedido.priority) }}</span>
         </div>
@@ -45,7 +35,15 @@
 
         <div class="row">
           <span class="k">Solicitado por</span>
-          <span class="v">{{ pedido.requested_by }}</span>
+          <span class="v">
+            {{ pedido.requested_by }}
+            <span class="badge badge--auto" *ngIf="pedido.requested_by === 'Sistema'">Automático</span>
+          </span>
+        </div>
+
+        <div class="row">
+          <span class="k">Fecha de vencimiento</span>
+          <span class="v">{{ pedido.end_date | date:'dd/MM/yyyy' }}</span>
         </div>
 
         <div class="row" *ngIf="pedido.comments">
@@ -68,16 +66,6 @@
               <option *ngFor="let s of servicios" [value]="s"></option>
             </datalist>
           </div>
-        </div>
-
-        <div class="row">
-          <span class="k">Cantidad solicitada</span>
-          <div class="v readonly">{{ draft.requested_units }} unidades</div>
-        </div>
-
-        <div class="row">
-          <span class="k">Cantidad obtenida</span>
-          <div class="v readonly">{{ draft.collected_units }} unidades</div>
         </div>
 
         <!-- PRIORIDAD -->

@@ -11,8 +11,8 @@
           <th>Fecha y hora</th>
           <th>Servicio</th>
           <th>Componente</th>
-          <th>Solicitado (L)</th>
-          <th>Obtenido (L)</th>
+          <th>Solicitado por</th>
+          <th>Vence</th>
           <th>Prioridad</th>
           <th>Estado</th>
         </tr>
@@ -42,8 +42,11 @@
           <td class="mono">{{ formatFechaHora(p.datetime_local) }}</td>
           <td>{{ p.hospital_unit }}</td>
           <td>{{ componenteLabel(p) }}</td>
-          <td>{{ p.requested_units | number:'1.0-2' }} L</td>
-          <td>{{ p.collected_units | number:'1.0-2' }} L</td>
+          <td>
+            {{ p.requested_by }}
+            <span class="badge badge--auto" *ngIf="p.requested_by === 'Sistema'">Automático</span>
+          </td>
+          <td class="mono">{{ formatFecha(p.end_date) }}</td>
 
           <td>
             <span
