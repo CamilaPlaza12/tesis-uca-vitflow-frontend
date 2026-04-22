@@ -6,8 +6,8 @@ import { HospitalOnboardingRequest } from '../models/onboarding-request';
 
 @Injectable({ providedIn: 'root' })
 export class OnboardingRequestsService {
-
-  private baseUrl = 'https://vitflow-backend.onrender.com';
+  private baseUrl = 'http://localhost:8000';
+  //private baseUrl = 'https://vitflow-backend.onrender.com';
   private endpoint = `${this.baseUrl}/api/v1/hospital-onboarding/`;
 
   constructor(private http: HttpClient) {}

@@ -5,7 +5,8 @@ import { BloodBank, BloodType } from '../models/blood-bank.model';
 
 @Injectable({ providedIn: 'root' })
 export class BloodBankService {
-  private baseUrl = 'https://vitflow-backend.onrender.com';
+  private baseUrl = 'http://localhost:8000';
+  //private baseUrl = 'https://vitflow-backend.onrender.com';
   private endpoint = `${this.baseUrl}/api/v1/blood-bank`;
 
   constructor(private http: HttpClient) {}
