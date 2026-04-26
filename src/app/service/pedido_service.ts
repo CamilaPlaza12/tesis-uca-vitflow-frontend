@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 import {
   HospitalRequest,
   HospitalRequestCreate,
   UpdateHospitalRequestRequest,
+  TiposSangreDisponibles,
 } from '../models/pedido';
 
 @Injectable({ providedIn: 'root' })
@@ -35,11 +36,11 @@ export class PedidoService {
     return this.http.patch<HospitalRequest>(`${this.endpoint}/${requestId}`, body);
   }
 
-  // (Opcional) helper si querés actualizar SOLO status más cómodo
-  // updateHospitalRequestStatus(
-  //   requestId: string,
-  //   status: HospitalRequestStatus
-  // ): Observable<HospitalRequest> {
-  //   return this.http.patch<HospitalRequest>(`${this.endpoint}/${requestId}`, { status });
-  // }
+  getTiposSangreDisponibles(componente: string): Observable<TiposSangreDisponibles> {
+    const params = new HttpParams().set('componente', componente);
+    return this.http.get<TiposSangreDisponibles>(
+      `${this.endpoint}/tipos-sangre-disponibles`,
+      { params }
+    );
+  }
 }

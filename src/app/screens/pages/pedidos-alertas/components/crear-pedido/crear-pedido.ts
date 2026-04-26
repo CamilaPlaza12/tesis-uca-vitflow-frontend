@@ -1,12 +1,20 @@
-import { Component, EventEmitter, HostListener, Output } from '@angular/core';
+import { Component, EventEmitter, HostListener, Output, ChangeDetectorRef } from '@angular/core';
 import {
+  HospitalRequest,
   HospitalRequestCreate,
   HospitalRequestPriority,
   HospitalUnit,
   HospitalRequestType,
 } from '../../../../../models/pedido';
+import { PedidoService } from '../../../../../service/pedido_service';
 
 type DropKey = 'servicio' | 'componente' | 'grupo' | 'prioridad';
+
+const COMPONENTE_MAP: Record<string, string> = {
+  Sangre: 'SANGRE',
+  Plaquetas: 'PLAQUETAS',
+  Plasma: 'PLASMA',
+};
 
 @Component({
   selector: 'app-crear-pedido',
@@ -15,10 +23,12 @@ type DropKey = 'servicio' | 'componente' | 'grupo' | 'prioridad';
   styleUrl: './crear-pedido.scss',
 })
 export class CrearPedido {
-  @Output() pedidoCreado = new EventEmitter<HospitalRequestCreate>();
+  @Output() pedidoCreado = new EventEmitter<HospitalRequest>();
 
   open = false;
-  today = new Date().toISOString().split('T')[0]; // "YYYY-MM-DD"
+  loading = false;
+  cargandoGrupos = false;
+  today = new Date().toISOString().split('T')[0];
 
   servicios: HospitalUnit[] = [
     'ITU',
@@ -28,7 +38,8 @@ export class CrearPedido {
     'Clinica Medica',
   ];
 
-  componentes: string[] = ['Sangre', 'Plaquetas', 'Plasma'];
+  //componentes: string[] = ['Sangre', 'Plaquetas'];
+    componentes: string[] = ['Sangre'];
 
   grupos: string[] = ['O-', 'O+', 'A-', 'A+', 'B-', 'B+', 'AB-', 'AB+'];
 
@@ -55,6 +66,12 @@ export class CrearPedido {
   };
 
   errorMsg = '';
+  tiposNoDisponibles: string[] = [];
+
+  constructor(
+    private pedidoService: PedidoService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   onClick(): void {
     this.openModal();
@@ -63,12 +80,15 @@ export class CrearPedido {
   openModal(): void {
     this.open = true;
     this.errorMsg = '';
+    this.tiposNoDisponibles = [];
     this.closeAllDropdowns();
     document.body.classList.add('modal-open');
     if (!this.form.solicitadoPor) this.form.solicitadoPor = 'Dra. García';
+    this.loadTiposDisponibles();
   }
 
   closeModal(): void {
+    if (this.loading) return;
     this.open = false;
     this.errorMsg = '';
     this.closeAllDropdowns();
@@ -100,9 +120,11 @@ export class CrearPedido {
   selectComponente(c: string): void {
     this.form.componente = c;
     this.dropdownOpen.componente = false;
+    this.loadTiposDisponibles();
   }
 
   selectGrupo(g: string): void {
+    if (!this.isGrupoDisponible(g)) return;
     this.form.grupoSanguineo = g;
     this.dropdownOpen.grupo = false;
   }
@@ -110,6 +132,31 @@ export class CrearPedido {
   selectPrioridad(p: HospitalRequestPriority): void {
     this.form.prioridad = p;
     this.dropdownOpen.prioridad = false;
+  }
+
+  isGrupoDisponible(g: string): boolean {
+    return !this.tiposNoDisponibles.includes(g);
+  }
+
+  private loadTiposDisponibles(): void {
+    const comp = COMPONENTE_MAP[this.form.componente] ?? this.form.componente.toUpperCase();
+    this.cargandoGrupos = true;
+    this.pedidoService.getTiposSangreDisponibles(comp).subscribe({
+      next: (res) => {
+        this.tiposNoDisponibles = res.no_disponibles;
+        this.cargandoGrupos = false;
+        if (!this.isGrupoDisponible(this.form.grupoSanguineo)) {
+          const primer = this.grupos.find((g) => this.isGrupoDisponible(g));
+          if (primer) this.form.grupoSanguineo = primer;
+        }
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.tiposNoDisponibles = [];
+        this.cargandoGrupos = false;
+        this.cdr.detectChanges();
+      },
+    });
   }
 
   @HostListener('document:click', ['$event'])
@@ -147,10 +194,11 @@ export class CrearPedido {
   }
 
   crear(): void {
+    if (this.loading) return;
     this.errorMsg = '';
     if (!this.validar()) return;
 
-    const pedido: HospitalRequestCreate = {
+    const body: HospitalRequestCreate = {
       hospital_unit: this.form.servicio,
       component: this.form.componente,
       blood_group: this.form.grupoSanguineo,
@@ -159,10 +207,40 @@ export class CrearPedido {
       end_date: this.form.fechaVencimiento,
       comments: this.form.comentarios?.trim() || null,
       request_type: this.form.tipoRequest,
+      tipo: 'manual',
     };
 
-    this.pedidoCreado.emit(pedido);
+    this.loading = true;
+    this.cdr.detectChanges();
 
+    this.pedidoService.createHospitalRequest(body).subscribe({
+      next: (pedido) => {
+        this.loading = false;
+        this.pedidoCreado.emit(pedido);
+        this.resetForm();
+        this.open = false;
+        document.body.classList.remove('modal-open');
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        this.loading = false;
+        if (err.status === 409) {
+          this.errorMsg =
+            err?.error?.detail ||
+            'Ya existe un pedido activo para este tipo de sangre y componente.';
+        } else if (err.status === 400 || err.status === 422) {
+          this.errorMsg = err?.error?.detail || 'Datos inválidos. Revisá el formulario.';
+        } else {
+          this.errorMsg = 'Error al crear el pedido. Intentá de nuevo.';
+        }
+        this.cdr.detectChanges();
+      },
+    });
+  }
+
+  private resetForm(): void {
+    this.errorMsg = '';
+    this.tiposNoDisponibles = [];
     this.form.comentarios = '';
     this.form.prioridad = 'NORMAL';
     this.form.componente = 'Sangre';
@@ -170,7 +248,5 @@ export class CrearPedido {
     this.form.servicio = 'ITU';
     this.form.fechaVencimiento = '';
     this.form.tipoRequest = 'NORMAL';
-
-    this.closeModal();
   }
 }

@@ -51,7 +51,7 @@
               (click)="toggleDropdown('componente')"
               [class.open]="dropdownOpen.componente"
             >
-              <span>{{ form.componente }}</span>
+              <span>{{ 'Sangre' }}</span>
               <span class="chev">▾</span>
             </button>
 
@@ -77,9 +77,10 @@
               type="button"
               (click)="toggleDropdown('grupo')"
               [class.open]="dropdownOpen.grupo"
+              [disabled]="cargandoGrupos"
             >
               <span>{{ form.grupoSanguineo }}</span>
-              <span class="chev">▾</span>
+              <span class="chev">{{ cargandoGrupos ? '…' : '▾' }}</span>
             </button>
 
             <div class="menu" *ngIf="dropdownOpen.grupo">
@@ -89,8 +90,10 @@
                 *ngFor="let g of grupos"
                 (click)="selectGrupo(g)"
                 [class.active]="g === form.grupoSanguineo"
+                [class.opt--disabled]="!isGrupoDisponible(g)"
               >
-                {{ g }}
+                <span>{{ g }}</span>
+                <span *ngIf="!isGrupoDisponible(g)" class="opt-badge">pedido activo</span>
               </button>
             </div>
           </div>
@@ -137,8 +140,10 @@
     </div>
 
     <div class="modal-actions">
-      <button class="btn-ghost" type="button" (click)="closeModal()">Cancelar</button>
-      <button class="btn-primary" type="button" (click)="crear()">Crear pedido</button>
+      <button class="btn-ghost" type="button" (click)="closeModal()" [disabled]="loading">Cancelar</button>
+      <button class="btn-primary" type="button" (click)="crear()" [disabled]="loading">
+        {{ loading ? 'Creando…' : 'Crear pedido' }}
+      </button>
     </div>
   </div>
 </div>

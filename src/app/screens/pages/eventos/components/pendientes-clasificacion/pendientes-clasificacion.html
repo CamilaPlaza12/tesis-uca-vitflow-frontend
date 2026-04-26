@@ -1,0 +1,59 @@
+<div class="pendientes-section">
+  <div class="pendientes-section__header">
+    <i class="pi pi-list-check pendientes-section__icon"></i>
+    <h3 class="pendientes-section__title">Pendientes de clasificación</h3>
+    <span class="pendientes-count" *ngIf="pendientes.length > 0">{{ pendientes.length }}</span>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="cargando" class="loading-state">
+    <i class="pi pi-spinner pi-spin"></i>
+    <span>Cargando...</span>
+  </div>
+
+  <!-- Vacío -->
+  <div *ngIf="!cargando && pendientes.length === 0" class="empty">
+    <i class="pi pi-check-circle empty__icon"></i>
+    <span>No hay donaciones pendientes de clasificar</span>
+  </div>
+
+  <!-- Lista -->
+  <div class="pendientes-list" *ngIf="!cargando && pendientes.length > 0">
+    <div class="pendiente-item" *ngFor="let item of pendientes">
+      <div class="pendiente-info">
+        <span class="pendiente-nombre">{{ getNombre(item) }}</span>
+        <span class="pendiente-hora">{{ formatHora(item.timestamp_donacion) }}</span>
+      </div>
+
+      <div class="pendiente-clasificar">
+        <div class="comp-btns">
+          <button
+            *ngFor="let c of componentes"
+            type="button"
+            class="btn-comp"
+            [class.btn-comp--selected]="item.selectedComponente === c.value"
+            (click)="selectComponente(item, c.value)"
+            [disabled]="item.loading"
+          >
+            {{ c.label }}
+          </button>
+        </div>
+
+        <button
+          type="button"
+          class="btn-guardar"
+          [disabled]="!item.selectedComponente || item.loading"
+          (click)="guardar(item)"
+        >
+          <i class="pi pi-spinner pi-spin" *ngIf="item.loading"></i>
+          <i class="pi pi-check" *ngIf="!item.loading"></i>
+          {{ item.loading ? 'Guardando…' : 'Guardar' }}
+        </button>
+      </div>
+
+      <div class="error-inline" *ngIf="item.error">
+        {{ item.error }}
+      </div>
+    </div>
+  </div>
+</div>

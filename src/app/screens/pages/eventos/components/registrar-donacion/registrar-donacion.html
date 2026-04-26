@@ -1,0 +1,64 @@
+<div class="registro-block">
+  <div class="registro-block__header">
+    <i class="pi pi-heart-fill registro-block__icon"></i>
+    <h3 class="registro-block__title">Registrar donación</h3>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="onRegistrar()" autocomplete="off">
+    <div class="form-row">
+      <div class="input-wrap">
+        <input
+          #dniInput
+          type="text"
+          class="dni-input"
+          formControlName="dni"
+          placeholder="Ingresá el DNI del donante"
+          inputmode="numeric"
+          maxlength="8"
+          (keydown.enter)="onRegistrar()"
+          autocomplete="off"
+        />
+
+        <div class="field-error" *ngIf="dniDuplicado">
+          Este DNI ya fue registrado en este evento
+        </div>
+
+        <div
+          class="field-error"
+          *ngIf="dniCtrl?.invalid && dniCtrl?.touched && !dniDuplicado"
+        >
+          <span *ngIf="dniCtrl?.errors?.['required']">El DNI es requerido</span>
+          <span *ngIf="dniCtrl?.errors?.['pattern'] && !dniCtrl?.errors?.['required']">
+            El DNI debe tener entre 7 y 8 dígitos numéricos
+          </span>
+        </div>
+      </div>
+
+      <button
+        type="button"
+        class="btn-registrar"
+        (click)="onRegistrar()"
+        [disabled]="loading"
+      >
+        <i class="pi pi-plus" *ngIf="!loading"></i>
+        <i class="pi pi-spinner pi-spin" *ngIf="loading"></i>
+        {{ loading ? 'Registrando…' : 'Registrar' }}
+      </button>
+    </div>
+  </form>
+
+  <!-- Toast local -->
+  <div
+    class="toast"
+    *ngIf="toastOpen"
+    [class.toast--success]="toastKind === 'success'"
+    [class.toast--error]="toastKind === 'error'"
+    (click)="closeToast()"
+    role="status"
+    aria-live="polite"
+  >
+    <span class="dot"></span>
+    <span class="txt">{{ toastText }}</span>
+    <span class="x">✕</span>
+  </div>
+</div>

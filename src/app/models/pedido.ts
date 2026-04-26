@@ -16,6 +16,8 @@ export type HospitalUnit =
 
 export type HospitalRequestType = 'NORMAL' | 'CAMPAÑA';
 
+export type PedidoTipo = 'manual' | 'automatico' | 'evento';
+
 export interface HospitalRequestCreate {
   hospital_unit: HospitalUnit;
   component: string;
@@ -25,6 +27,7 @@ export interface HospitalRequestCreate {
   end_date: string;
   comments?: string | null;
   request_type?: HospitalRequestType;
+  tipo?: PedidoTipo;
 }
 
 export interface HospitalRequest {
@@ -38,6 +41,7 @@ export interface HospitalRequest {
   status: HospitalRequestStatus;
   requested_by: string;
   comments?: string | null;
+  tipo?: PedidoTipo;
 }
 
 export interface UpdateHospitalRequestStatusRequest {
@@ -49,4 +53,10 @@ export interface UpdateHospitalRequestRequest {
   priority?: HospitalRequestPriority;
   status?: HospitalRequestStatus;
   comments?: string | null;
+  tipo?: PedidoTipo;
+}
+
+export interface TiposSangreDisponibles {
+  disponibles: string[];
+  no_disponibles: string[];
 }

@@ -1,0 +1,114 @@
+<div class="overlay" *ngIf="open" (click)="onOverlay()">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <div class="modal__header">
+      <div>
+        <h3>Crear evento</h3>
+        <p>Completá los datos del nuevo evento de donación.</p>
+      </div>
+      <button
+        class="icon-btn"
+        type="button"
+        (click)="onCancel()"
+        [disabled]="loading"
+        aria-label="Cerrar"
+      >
+        ✕
+      </button>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <div class="modal__body">
+        <!-- Grid de campos básicos -->
+        <div class="form-grid">
+          <label class="field field--full">
+            <span>Nombre del evento *</span>
+            <input
+              type="text"
+              formControlName="nombre"
+              placeholder="Ej: Campaña de donación — Junio"
+            />
+            <span
+              class="field-error"
+              *ngIf="form.get('nombre')?.invalid && form.get('nombre')?.touched"
+            >
+              Nombre requerido (mínimo 2 caracteres)
+            </span>
+          </label>
+
+          <label class="field">
+            <span>Fecha *</span>
+            <input type="date" formControlName="fecha" [min]="today" />
+            <span
+              class="field-error"
+              *ngIf="form.get('fecha')?.invalid && form.get('fecha')?.touched"
+            >
+              La fecha es requerida
+            </span>
+          </label>
+
+          <label class="field">
+            <span>Lugar</span>
+            <input type="text" formControlName="lugar" placeholder="Ej: Salón principal" />
+          </label>
+
+          <label class="field">
+            <span>Hora inicio</span>
+            <input type="time" formControlName="hora_inicio" />
+          </label>
+
+          <label class="field">
+            <span>Hora fin</span>
+            <input type="time" formControlName="hora_fin" />
+          </label>
+
+          <label class="field">
+            <span>Capacidad esperada</span>
+            <input
+              type="number"
+              formControlName="capacidad_esperada"
+              placeholder="Ej: 100"
+              min="1"
+            />
+          </label>
+        </div>
+
+        <!-- Tipos de sangre combinados -->
+        <div class="checkbox-section" formGroupName="tipos">
+          <span class="checkbox-section__title">Tipos de sangre requeridos *</span>
+          <p class="checkbox-section__hint">
+            Seleccioná los grupos sanguíneos que se aceptarán en el evento.
+          </p>
+          <div class="tipos-grid">
+            <label class="tipo-item" *ngFor="let t of tiposSanguineos">
+              <input type="checkbox" [formControlName]="t.key" />
+              <span class="tipo-label">{{ t.label }}</span>
+            </label>
+          </div>
+          <span
+            class="field-error"
+            *ngIf="tiposGroup.errors?.['noneSelected'] && tiposGroup.touched"
+          >
+            Seleccioná al menos un tipo de sangre
+          </span>
+        </div>
+
+        <div class="error" *ngIf="error">{{ error }}</div>
+      </div>
+
+      <div class="modal__footer">
+        <button
+          type="button"
+          class="btn btn--soft"
+          (click)="onCancel()"
+          [disabled]="loading"
+        >
+          Cancelar
+        </button>
+        <button type="submit" class="btn btn--primary" [disabled]="loading">
+          <i class="pi pi-spinner pi-spin" *ngIf="loading"></i>
+          {{ loading ? 'Creando…' : 'Crear evento' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

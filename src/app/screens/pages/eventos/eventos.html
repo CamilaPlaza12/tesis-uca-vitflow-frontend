@@ -1,0 +1,148 @@
+<div class="page">
+  <!-- Loading -->
+  <div *ngIf="cargando" class="loading-state">
+    <i class="pi pi-spinner pi-spin"></i>
+    <span>Cargando eventos...</span>
+  </div>
+
+  <!-- Estado vacío: sin ningún evento -->
+  <div *ngIf="!cargando && todos.length === 0" class="empty-state">
+    <div class="empty-state__icon">
+      <i class="pi pi-megaphone"></i>
+    </div>
+    <h2 class="empty-state__title">Todavía no hay eventos registrados</h2>
+    <p class="empty-state__desc">Creá un evento para comenzar a registrar donaciones en campañas.</p>
+    <button class="btn btn--primary" (click)="openCrear()">+ Crear nuevo evento</button>
+  </div>
+
+  <!-- Estado con eventos -->
+  <ng-container *ngIf="!cargando && todos.length > 0">
+
+    <!-- Header dinámico según vista -->
+    <header class="header">
+      <div class="header__left">
+        <h1>Eventos</h1>
+        <p>Gestión de campañas de donación de sangre</p>
+      </div>
+      <div class="header__right">
+        <ng-container [ngSwitch]="vista">
+
+          <!-- Dashboard: botón ver historial + nuevo -->
+          <ng-container *ngSwitchCase="'dashboard'">
+            <button class="btn btn--soft" (click)="verHistorial()">
+              <i class="pi pi-clock"></i>
+              Ver historial
+            </button>
+            <button class="btn btn--primary" (click)="openCrear()">+ Nuevo evento</button>
+          </ng-container>
+
+          <!-- Historial: volver al activo (si existe) + nuevo -->
+          <ng-container *ngSwitchCase="'historial'">
+            <button *ngIf="eventoActivo" class="btn btn--soft" (click)="volverAlDashboard()">
+              <i class="pi pi-arrow-left"></i>
+              Volver al evento activo
+            </button>
+            <button class="btn btn--primary" (click)="openCrear()">+ Nuevo evento</button>
+          </ng-container>
+
+          <!-- Detalle: solo volver al historial -->
+          <ng-container *ngSwitchCase="'detalle'">
+            <button class="btn btn--soft" (click)="volverAlHistorial()">
+              <i class="pi pi-arrow-left"></i>
+              Volver al historial
+            </button>
+          </ng-container>
+
+        </ng-container>
+      </div>
+    </header>
+
+    <!-- Vista: dashboard (evento activo) -->
+    <ng-container *ngIf="vista === 'dashboard' && eventoActivo">
+      <app-dashboard-evento
+        [evento]="eventoActivo"
+        (eventoFinalizado)="onEventoFinalizado()"
+        (eventoCancelado)="onEventoCancelado()"
+      ></app-dashboard-evento>
+    </ng-container>
+
+    <!-- Vista: historial (tabla) -->
+    <ng-container *ngIf="vista === 'historial'">
+      <div class="historial-table-wrap">
+        <table class="historial-table">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Fecha</th>
+              <th>Horario</th>
+              <th>Ubicación</th>
+              <th>Estado</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let e of todosOrdenados">
+              <td class="td-nombre">{{ e.nombre }}</td>
+              <td class="td-fecha">{{ formatFecha(e.fecha) }}</td>
+              <td class="td-horario">{{ formatHorario(e.hora_inicio, e.hora_fin) }}</td>
+              <td class="td-lugar">{{ e.lugar || '—' }}</td>
+              <td class="td-estado">
+                <span class="badge" [ngClass]="estadoBadgeClass(e.estado)">
+                  {{ estadoLabel(e.estado) }}
+                </span>
+              </td>
+              <td class="td-accion">
+                <button
+                  class="btn-icono"
+                  (click)="verDetalle(e)"
+                  [disabled]="cargandoDetalle"
+                  title="Ver detalle"
+                >
+                  <i class="pi pi-eye"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </ng-container>
+
+    <!-- Vista: detalle de evento desde historial -->
+    <ng-container *ngIf="vista === 'detalle'">
+      <div *ngIf="cargandoDetalle" class="loading-state">
+        <i class="pi pi-spinner pi-spin"></i>
+        <span>Cargando evento...</span>
+      </div>
+      <app-dashboard-evento
+        *ngIf="!cargandoDetalle && eventoDetalle"
+        [evento]="eventoDetalle"
+        (eventoFinalizado)="onEventoFinalizado()"
+        (eventoCancelado)="onEventoCancelado()"
+      ></app-dashboard-evento>
+    </ng-container>
+
+  </ng-container>
+
+  <!-- Modal Crear Evento -->
+  <app-crear-evento
+    [open]="crearOpen"
+    (cerrar)="closeCrear()"
+    (eventoCreado)="onEventoCreado($event)"
+  ></app-crear-evento>
+
+  <!-- Toast -->
+  <div
+    class="toast"
+    *ngIf="toastOpen"
+    [class.toast--success]="toastKind === 'success'"
+    [class.toast--error]="toastKind === 'error'"
+    [class.toast--info]="toastKind === 'info'"
+    (click)="closeToast()"
+    role="status"
+    aria-live="polite"
+  >
+    <span class="dot"></span>
+    <span class="txt">{{ toastText }}</span>
+    <span class="x">✕</span>
+  </div>
+</div>

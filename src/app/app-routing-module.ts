@@ -23,6 +23,11 @@ const routes: Routes = [
   { path: 'pedidos-alertas', component: PedidosAlertas, canActivate: [AuthGuard]  },
   { path: 'configuracion', component: Configuracion, canActivate: [AuthGuard] },
   { path: 'equipo-roles', component: EquipoRoles, canActivate: [AuthGuard]  },
+  {
+    path: 'eventos',
+    loadChildren: () => import('./screens/pages/eventos/eventos.module').then(m => m.EventosModule),
+    canActivate: [AuthGuard]
+  },
   { path: 'backoffice', component: BackofficeRequests },
 
 

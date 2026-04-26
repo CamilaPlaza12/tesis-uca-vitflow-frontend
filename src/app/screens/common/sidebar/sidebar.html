@@ -67,6 +67,11 @@
       <span class="label" *ngIf="!(collapsed && !isMobile)">Equipos Roles</span>
     </a>
 
+    <a routerLink="/eventos" routerLinkActive="active" class="item" (click)="onNavClick()">
+      <i class="pi pi-megaphone icon"></i>
+      <span class="label" *ngIf="!(collapsed && !isMobile)">Eventos</span>
+    </a>
+
     <a routerLink="/configuracion" routerLinkActive="active" class="item" (click)="onNavClick()">
       <i class="pi pi-cog icon"></i>
       <span class="label" *ngIf="!(collapsed && !isMobile)">Configuración</span>

@@ -1,5 +1,5 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-import { HospitalRequest, HospitalRequestCreate, UpdateHospitalRequestRequest } from '../../../models/pedido';
+import { HospitalRequest, UpdateHospitalRequestRequest } from '../../../models/pedido';
 import { PedidoService } from '../../../service/pedido_service';
 
 @Component({
@@ -39,15 +39,8 @@ export class PedidosAlertas implements OnInit {
     });
   }
 
-  onCrearNuevoPedido(body: HospitalRequestCreate): void {
-    this.hospitalRequestService.createHospitalRequest(body).subscribe({
-      next: (_) => {
-        this.cargarPedidos();
-      },
-      error: (err) => {
-        console.error('Error creando hospital request', err);
-      },
-    });
+  onCrearNuevoPedido(_pedido: HospitalRequest): void {
+    this.cargarPedidos();
   }
 
   onSelectPedido(pedido: HospitalRequest): void {
