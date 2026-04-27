@@ -136,17 +136,55 @@
     </div>
   </div>
 
-  <!-- ✅ Acciones FUERA del card (mismo ancho, abajo) -->
-  <div class="below-actions" *ngIf="!editMode && pedido.status === 'ACTIVO'">
-    <button class="btn-primary" type="button" (click)="empezarEdicion()">
+  <!-- Success message shown after a successful cancellation -->
+  <div class="cancel-success" *ngIf="cancelSuccessMsg">
+    {{ cancelSuccessMsg }}
+  </div>
+
+  <!-- View mode actions -->
+  <div class="below-actions" *ngIf="!editMode && puedeCancelar() && !cancelSuccessMsg">
+    <button class="btn-primary" type="button" (click)="empezarEdicion()" *ngIf="puedeEditar()">
       Editar
+    </button>
+    <button
+      class="btn-danger"
+      type="button"
+      (click)="onClickCancelar()"
+      [disabled]="cancelLoading"
+    >
+      {{ cancelLoading ? 'Cancelando…' : 'Cancelar pedido' }}
     </button>
   </div>
 
+  <!-- Edit mode actions -->
   <div class="below-actions edit-actions" *ngIf="editMode">
     <button class="btn-soft" type="button" (click)="guardar()">Guardar</button>
     <button class="btn-ghost" type="button" (click)="cancelarEdicion()">
       Cancelar
     </button>
   </div>
+
+  <!-- Step 1: First confirmation -->
+  <app-confirm-modal
+    [open]="showCancelStep1"
+    title="¿Cancelar pedido?"
+    message="¿Estás seguro de que querés cancelar este pedido?"
+    confirmText="Continuar"
+    cancelText="Volver"
+    (confirm)="onConfirmStep1()"
+    (cancel)="onAbortCancel()"
+  ></app-confirm-modal>
+
+  <!-- Step 2: Strong warning -->
+  <app-confirm-modal
+    [open]="showCancelStep2"
+    title="Confirmación final"
+    message="Esta acción cancelará TODOS los turnos asociados y notificará a los donantes. Esta acción no se puede deshacer."
+    confirmText="Sí, cancelar pedido"
+    cancelText="Abortar"
+    [loading]="cancelLoading"
+    [error]="cancelError || null"
+    (confirm)="onConfirmStep2()"
+    (cancel)="onAbortCancel()"
+  ></app-confirm-modal>
 </div>

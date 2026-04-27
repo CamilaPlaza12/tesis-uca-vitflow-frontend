@@ -51,10 +51,16 @@ export class PedidosAlertas implements OnInit {
     this.pedidoSeleccionado = null;
   }
   onPedidoActualizado(updated: HospitalRequest): void {
-  this.pedidos = this.pedidos.map(p => (p.id === updated.id ? updated : p));
-  this.pedidoSeleccionado = null;
-  this.cdr.detectChanges();
-}
+    this.pedidos = this.pedidos.map(p => (p.id === updated.id ? updated : p));
+    this.pedidoSeleccionado = null;
+    this.cdr.detectChanges();
+  }
+
+  onPedidoCancelado(updated: HospitalRequest): void {
+    this.pedidos = this.pedidos.map(p => (p.id === updated.id ? updated : p));
+    this.pedidoSeleccionado = updated;
+    this.cdr.detectChanges();
+  }
 
 
 }

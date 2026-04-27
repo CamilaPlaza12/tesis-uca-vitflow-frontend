@@ -6,6 +6,7 @@ import {
   HospitalUnit,
 } from '../../../../../models/pedido';
 import { PedidoService } from '../../../../../service/pedido_service';
+import { CancelRequestResponse } from '../../../../../models/pedido';
 
 type DropKey = 'prioridad' | 'estado';
 
@@ -20,12 +21,19 @@ export class PedidoDetalle {
 
   @Output() cerrar = new EventEmitter<void>();
   @Output() pedidoActualizado = new EventEmitter<HospitalRequest>();
+  @Output() pedidoCancelado = new EventEmitter<HospitalRequest>();
 
   constructor(private pedidoService: PedidoService) {}
 
   editMode = false;
   draft: HospitalRequest | null = null;
   errorMsg = '';
+
+  showCancelStep1 = false;
+  showCancelStep2 = false;
+  cancelLoading = false;
+  cancelError = '';
+  cancelSuccessMsg = '';
 
   servicios: HospitalUnit[] = [
     'ITU',
@@ -89,6 +97,72 @@ export class PedidoDetalle {
     });
   }
 
+  puedeCancelar(): boolean {
+    if (!this.pedido) return false;
+    return !(['CANCELADO', 'COMPLETO', 'FINALIZADO'] as HospitalRequestStatus[]).includes(
+      this.pedido.status
+    );
+  }
+
+  onClickCancelar(): void {
+    if (!this.puedeCancelar() || this.cancelLoading) return;
+    this.cancelError = '';
+    this.cancelSuccessMsg = '';
+    this.showCancelStep1 = true;
+  }
+
+  onConfirmStep1(): void {
+    this.showCancelStep1 = false;
+    this.showCancelStep2 = true;
+  }
+
+  onAbortCancel(): void {
+    this.showCancelStep1 = false;
+    this.showCancelStep2 = false;
+    this.cancelError = '';
+  }
+
+  onConfirmStep2(): void {
+    if (!this.pedido || this.cancelLoading) return;
+    this.cancelLoading = true;
+    this.cancelError = '';
+
+    this.pedidoService.cancelHospitalRequest(this.pedido.id).subscribe({
+      next: (res: CancelRequestResponse) => {
+        this.cancelLoading = false;
+        this.showCancelStep2 = false;
+
+        this.pedido = { ...this.pedido!, status: 'CANCELADO' };
+        this.pedidoCancelado.emit(this.pedido);
+
+        const n = res.cancelled_appointments;
+        const d = res.donor_ids_to_notify.length;
+        if (n === 0) {
+          this.cancelSuccessMsg = 'Pedido cancelado. No había turnos activos.';
+        } else if (d === 0) {
+          this.cancelSuccessMsg = `Pedido cancelado. Se cancelaron ${n} turno${n !== 1 ? 's' : ''}.`;
+        } else {
+          this.cancelSuccessMsg =
+            `Pedido cancelado. Se cancelaron ${n} turno${n !== 1 ? 's' : ''} ` +
+            `y se notificará a ${d} donante${d !== 1 ? 's' : ''}.`;
+        }
+      },
+      error: (err: any) => {
+        this.cancelLoading = false;
+        if (err.status === 401) {
+          this.cancelError = 'Sesión expirada. Volvé a iniciar sesión.';
+        } else if (err.status === 404) {
+          this.cancelError = 'El pedido no fue encontrado.';
+        } else if (err.status === 409) {
+          this.cancelError =
+            err?.error?.detail || 'No se puede cancelar este pedido en su estado actual.';
+        } else {
+          this.cancelError = 'Error al cancelar el pedido. Intentá de nuevo.';
+        }
+      },
+    });
+  }
+
   close(): void {
     this.reset();
     this.cerrar.emit();
@@ -100,6 +174,11 @@ export class PedidoDetalle {
     this.errorMsg = '';
     this.dropdownOpen.prioridad = false;
     this.dropdownOpen.estado = false;
+    this.showCancelStep1 = false;
+    this.showCancelStep2 = false;
+    this.cancelLoading = false;
+    this.cancelError = '';
+    this.cancelSuccessMsg = '';
   }
 
   toggleDropdown(key: DropKey): void {

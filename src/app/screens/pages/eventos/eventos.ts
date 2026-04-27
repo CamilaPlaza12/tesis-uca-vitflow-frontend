@@ -119,9 +119,9 @@ export class EventosComponent implements OnInit {
     this.cargar();
   }
 
-  onEventoCancelado(): void {
+  onEventoCancelado(msg: string): void {
     this.eventoDetalle = null;
-    this.showToast('Evento cancelado correctamente.', 'success');
+    this.showToast(msg || 'Evento cancelado correctamente.', 'success');
     this.cargar();
   }
 

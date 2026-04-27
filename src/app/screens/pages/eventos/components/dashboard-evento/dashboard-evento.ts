@@ -9,6 +9,8 @@ import {
 } from '@angular/core';
 import { Evento, DashboardEvento } from '../../../../../models/evento';
 import { EventosService } from '../../../../../service/eventos_service';
+import { PedidoService } from '../../../../../service/pedido_service';
+import { CancelRequestResponse } from '../../../../../models/pedido';
 
 type ToastKind = 'success' | 'error';
 
@@ -21,7 +23,7 @@ type ToastKind = 'success' | 'error';
 export class DashboardEventoComponent implements OnInit, OnDestroy {
   @Input() evento!: Evento;
   @Output() eventoFinalizado = new EventEmitter<void>();
-  @Output() eventoCancelado = new EventEmitter<void>();
+  @Output() eventoCancelado = new EventEmitter<string>();
 
   dashboard: DashboardEvento | null = null;
   cargandoDashboard = true;
@@ -30,7 +32,8 @@ export class DashboardEventoComponent implements OnInit, OnDestroy {
   finalizarLoading = false;
   finalizarError: string | null = null;
 
-  cancelarConfirmOpen = false;
+  cancelStep1Open = false;
+  cancelStep2Open = false;
   cancelarLoading = false;
   cancelarError: string | null = null;
 
@@ -42,6 +45,7 @@ export class DashboardEventoComponent implements OnInit, OnDestroy {
 
   constructor(
     private eventosService: EventosService,
+    private pedidoService: PedidoService,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -154,16 +158,22 @@ export class DashboardEventoComponent implements OnInit, OnDestroy {
   }
 
   openCancelarConfirm(): void {
-    this.cancelarConfirmOpen = true;
+    this.cancelStep1Open = true;
     this.cancelarError = null;
     document.body.classList.add('modal-open');
   }
 
   closeCancelarConfirm(): void {
     if (this.cancelarLoading) return;
-    this.cancelarConfirmOpen = false;
+    this.cancelStep1Open = false;
+    this.cancelStep2Open = false;
     this.cancelarError = null;
     document.body.classList.remove('modal-open');
+  }
+
+  onConfirmCancelStep1(): void {
+    this.cancelStep1Open = false;
+    this.cancelStep2Open = true;
   }
 
   confirmarCancelar(): void {
@@ -171,17 +181,40 @@ export class DashboardEventoComponent implements OnInit, OnDestroy {
     this.cancelarLoading = true;
     this.cdr.detectChanges();
 
-    this.eventosService.cancelarEvento(this.evento.id).subscribe({
-      next: () => {
+    this.pedidoService.cancelHospitalRequest(this.evento.pedido_id).subscribe({
+      next: (res: CancelRequestResponse) => {
         this.cancelarLoading = false;
-        this.cancelarConfirmOpen = false;
+        this.cancelStep2Open = false;
         document.body.classList.remove('modal-open');
-        this.eventoCancelado.emit();
+
+        const n = res.cancelled_appointments;
+        const d = res.donor_ids_to_notify.length;
+        let msg: string;
+        if (n === 0) {
+          msg = 'Evento cancelado. No había turnos activos.';
+        } else if (d === 0) {
+          msg = `Evento cancelado. Se cancelaron ${n} turno${n !== 1 ? 's' : ''}.`;
+        } else {
+          msg =
+            `Evento cancelado. Se cancelaron ${n} turno${n !== 1 ? 's' : ''} ` +
+            `y se notificará a ${d} donante${d !== 1 ? 's' : ''}.`;
+        }
+
+        this.eventoCancelado.emit(msg);
         this.cdr.detectChanges();
       },
-      error: (err) => {
+      error: (err: any) => {
         this.cancelarLoading = false;
-        this.cancelarError = err?.error?.detail || 'No se pudo cancelar el evento.';
+        if (err.status === 401) {
+          this.cancelarError = 'Sesión expirada. Volvé a iniciar sesión.';
+        } else if (err.status === 404) {
+          this.cancelarError = 'El pedido asociado no fue encontrado.';
+        } else if (err.status === 409) {
+          this.cancelarError =
+            err?.error?.detail || 'No se puede cancelar este pedido en su estado actual.';
+        } else {
+          this.cancelarError = 'Error al cancelar. Intentá de nuevo.';
+        }
         this.cdr.detectChanges();
       },
     });

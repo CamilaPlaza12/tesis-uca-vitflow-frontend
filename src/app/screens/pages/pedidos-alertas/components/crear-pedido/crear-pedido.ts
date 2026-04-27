@@ -77,6 +77,9 @@ export class CrearPedido {
     this.openModal();
   }
 
+  readonly DEFAULT_DESCRIPTION =
+    'Este pedido apuntará a todos los donantes compatibles con el grupo sanguíneo seleccionado.';
+
   openModal(): void {
     this.open = true;
     this.errorMsg = '';
@@ -84,6 +87,7 @@ export class CrearPedido {
     this.closeAllDropdowns();
     document.body.classList.add('modal-open');
     if (!this.form.solicitadoPor) this.form.solicitadoPor = 'Dra. García';
+    if (!this.form.comentarios) this.form.comentarios = this.DEFAULT_DESCRIPTION;
     this.loadTiposDisponibles();
   }
 
@@ -241,7 +245,7 @@ export class CrearPedido {
   private resetForm(): void {
     this.errorMsg = '';
     this.tiposNoDisponibles = [];
-    this.form.comentarios = '';
+    this.form.comentarios = '';  // cleared so openModal() re-populates on next open
     this.form.prioridad = 'NORMAL';
     this.form.componente = 'Sangre';
     this.form.grupoSanguineo = 'O-';

@@ -62,7 +62,7 @@
       <app-dashboard-evento
         [evento]="eventoActivo"
         (eventoFinalizado)="onEventoFinalizado()"
-        (eventoCancelado)="onEventoCancelado()"
+        (eventoCancelado)="onEventoCancelado($event)"
       ></app-dashboard-evento>
     </ng-container>
 
@@ -117,7 +117,7 @@
         *ngIf="!cargandoDetalle && eventoDetalle"
         [evento]="eventoDetalle"
         (eventoFinalizado)="onEventoFinalizado()"
-        (eventoCancelado)="onEventoCancelado()"
+        (eventoCancelado)="onEventoCancelado($event)"
       ></app-dashboard-evento>
     </ng-container>
 

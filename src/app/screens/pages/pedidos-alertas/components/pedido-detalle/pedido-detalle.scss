@@ -258,6 +258,17 @@
   grid-template-columns: 1fr 1fr;
 }
 
+.cancel-success {
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: #ecfdf5;
+  border: 1px solid #d1fae5;
+  color: #065f46;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: center;
+}
+
 @media (max-width: 520px) {
   .detalle-wrap {
     width: 100%;

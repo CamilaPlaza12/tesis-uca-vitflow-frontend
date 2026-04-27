@@ -148,12 +148,34 @@
   </div>
 </div>
 
-<!-- Confirm cancelar evento -->
-<div class="overlay" *ngIf="cancelarConfirmOpen" (click)="closeCancelarConfirm()">
+<!-- Cancelar – Paso 1: primera confirmación -->
+<div class="overlay" *ngIf="cancelStep1Open" (click)="closeCancelarConfirm()">
   <div class="modal" (click)="$event.stopPropagation()">
     <div class="modal__header">
       <div>
-        <h3>Cancelar evento</h3>
+        <h3>¿Cancelar evento?</h3>
+        <p>Esta acción no se puede deshacer.</p>
+      </div>
+      <button class="icon-btn" (click)="closeCancelarConfirm()" aria-label="Cerrar">✕</button>
+    </div>
+    <div class="modal__body">
+      <p class="modal__message">
+        ¿Estás seguro de que querés cancelar <strong>{{ evento.nombre }}</strong>?
+      </p>
+    </div>
+    <div class="modal__footer">
+      <button class="btn btn--soft" (click)="closeCancelarConfirm()">Volver</button>
+      <button class="btn btn--warning" (click)="onConfirmCancelStep1()">Continuar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Cancelar – Paso 2: advertencia fuerte -->
+<div class="overlay" *ngIf="cancelStep2Open" (click)="!cancelarLoading && closeCancelarConfirm()">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <div class="modal__header">
+      <div>
+        <h3>Confirmación final</h3>
         <p>Esta acción no se puede deshacer.</p>
       </div>
       <button class="icon-btn" (click)="closeCancelarConfirm()" [disabled]="cancelarLoading" aria-label="Cerrar">
@@ -161,17 +183,18 @@
       </button>
     </div>
     <div class="modal__body">
-      <p class="modal__message">
-        ¿Estás seguro de que querés cancelar <strong>{{ evento.nombre }}</strong>?
+      <p class="modal__message modal__message--warning">
+        Esta acción cancelará TODOS los turnos asociados y notificará a los donantes.
+        Esta acción no se puede deshacer.
       </p>
       <div class="error" *ngIf="cancelarError">{{ cancelarError }}</div>
     </div>
     <div class="modal__footer">
       <button class="btn btn--soft" (click)="closeCancelarConfirm()" [disabled]="cancelarLoading">
-        Volver
+        Abortar
       </button>
-      <button class="btn btn--warning" (click)="confirmarCancelar()" [disabled]="cancelarLoading">
-        {{ cancelarLoading ? 'Cancelando…' : 'Cancelar evento' }}
+      <button class="btn btn--danger" (click)="confirmarCancelar()" [disabled]="cancelarLoading">
+        {{ cancelarLoading ? 'Cancelando…' : 'Sí, cancelar pedido' }}
       </button>
     </div>
   </div>

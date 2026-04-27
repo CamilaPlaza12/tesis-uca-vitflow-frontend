@@ -60,3 +60,10 @@ export interface TiposSangreDisponibles {
   disponibles: string[];
   no_disponibles: string[];
 }
+
+export interface CancelRequestResponse {
+  id: string;
+  status: 'CANCELADO';
+  cancelled_appointments: number;
+  donor_ids_to_notify: string[];
+}

@@ -7,6 +7,7 @@ import {
   HospitalRequestCreate,
   UpdateHospitalRequestRequest,
   TiposSangreDisponibles,
+  CancelRequestResponse,
 } from '../models/pedido';
 
 @Injectable({ providedIn: 'root' })
@@ -34,6 +35,10 @@ export class PedidoService {
     body: UpdateHospitalRequestRequest
   ): Observable<HospitalRequest> {
     return this.http.patch<HospitalRequest>(`${this.endpoint}/${requestId}`, body);
+  }
+
+  cancelHospitalRequest(requestId: string): Observable<CancelRequestResponse> {
+    return this.http.post<CancelRequestResponse>(`${this.endpoint}/${requestId}/cancel`, null);
   }
 
   getTiposSangreDisponibles(componente: string): Observable<TiposSangreDisponibles> {
