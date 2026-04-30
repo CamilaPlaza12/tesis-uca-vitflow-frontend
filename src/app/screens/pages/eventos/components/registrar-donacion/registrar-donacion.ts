@@ -23,6 +23,8 @@ type ToastKind = 'success' | 'error';
 })
 export class RegistrarDonacionComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() eventoId!: string;
+  @Input() sinClasificar = 0;
+  @Input() cargandoDashboard = true;
   @Output() donacionRegistrada = new EventEmitter<void>();
 
   @ViewChild('dniInput') dniInputRef!: ElementRef<HTMLInputElement>;
@@ -76,8 +78,8 @@ export class RegistrarDonacionComponent implements OnInit, AfterViewInit, OnDest
     this.eventosService.registrarDonacion(this.eventoId, dniValue).subscribe({
       next: (res) => {
         this.loading = false;
-        const label = res.donante_nombre || res.donante_dni;
-        this.showToast(`Donación registrada — ${label}`, 'success');
+        const label = res.full_name || res.dni;
+        this.showToast(`Llegada registrada — ${label}`, 'success');
         this.form.reset();
         this.donacionRegistrada.emit();
         this.cdr.detectChanges();
@@ -91,6 +93,8 @@ export class RegistrarDonacionComponent implements OnInit, AfterViewInit, OnDest
           this.showToast('No se encontró el evento', 'error');
         } else if (err.status === 409) {
           this.showToast('El evento ya no está activo', 'error');
+        } else if (err.status === 422) {
+          this.showToast('Este donante no tiene turno asignado para este evento', 'error');
         } else {
           this.showToast('Error de conexión. Intentá de nuevo.', 'error');
         }

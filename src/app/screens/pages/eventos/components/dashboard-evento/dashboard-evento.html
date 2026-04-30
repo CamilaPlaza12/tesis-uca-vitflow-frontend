@@ -39,49 +39,54 @@
   </div>
 
   <ng-container *ngIf="!cargandoDashboard && dashboard">
-    <!-- KPI cards -->
+    <!-- KPI cards — 2 en fila -->
     <div class="kpis">
+      <!-- Turnos agendados -->
+      <div class="kpi">
+        <div class="kpi__meta">
+          <div class="kpi__label">Turnos agendados</div>
+          <div class="kpi__value">{{ cargandoTurnos ? '—' : turnosAgendados }}</div>
+          <div class="kpi__sub" *ngIf="!cargandoTurnos && turnosCount">
+            <span class="kpi__sub-item kpi__sub-item--prog">{{ turnosCount.by_status['PROGRAMADO'] ?? 0 }} programados</span>
+            <span class="kpi__sub-sep">·</span>
+            <span class="kpi__sub-item kpi__sub-item--conf">{{ turnosCount.by_status['CONFIRMADO'] ?? 0 }} confirmados</span>
+            <ng-container *ngIf="(turnosCount.by_status['PENDIENTE_CLASIFICACION'] ?? 0) > 0">
+              <span class="kpi__sub-sep">·</span>
+              <span class="kpi__sub-item kpi__sub-item--pend">{{ turnosCount.by_status['PENDIENTE_CLASIFICACION'] }} en espera</span>
+            </ng-container>
+          </div>
+        </div>
+        <div class="kpi__icon">📅</div>
+      </div>
+
+      <!-- Donaciones registradas + badge pendientes -->
       <div class="kpi">
         <div class="kpi__meta">
           <div class="kpi__label">Donaciones registradas</div>
           <div class="kpi__value">{{ dashboard.total_donaciones_registradas }}</div>
+          <div class="kpi__pending" *ngIf="dashboard.pendientes_clasificacion > 0">
+            <i class="pi pi-clock"></i>
+            {{ dashboard.pendientes_clasificacion }} pendientes de clasificar
+          </div>
         </div>
         <div class="kpi__icon">🩸</div>
       </div>
-
-      <div class="kpi">
-        <div class="kpi__meta">
-          <div class="kpi__label">Capacidad esperada</div>
-          <div class="kpi__value">{{ dashboard.capacidad_esperada != null ? dashboard.capacidad_esperada : '—' }}</div>
-        </div>
-        <div class="kpi__icon">👥</div>
-      </div>
-
-      <div class="kpi kpi--alert" [class.kpi--alert-active]="dashboard.pendientes_clasificacion > 0">
-        <div class="kpi__meta">
-          <div class="kpi__label">Pendientes de clasificar</div>
-          <div class="kpi__value">{{ dashboard.pendientes_clasificacion }}</div>
-        </div>
-        <div class="kpi__icon">⏳</div>
-      </div>
     </div>
 
-    <!-- Barra de progreso -->
+    <!-- Barra de progreso: turnos agendados vs capacidad esperada -->
     <div class="progress-section" *ngIf="dashboard.capacidad_esperada">
       <div class="progress-info">
-        <span>{{ dashboard.total_donaciones_registradas }} / {{ dashboard.capacidad_esperada }} donantes</span>
-        <span class="progress-pct">{{ dashboard.porcentaje_avance }}%</span>
+        <span>{{ turnosAgendados }} / {{ dashboard.capacidad_esperada }} donantes</span>
+        <span class="progress-pct">{{ porcentajeAsistencia }}%</span>
       </div>
       <div class="progress-bar">
-        <div
-          class="progress-fill"
-          [style.width.%]="dashboard.porcentaje_avance > 100 ? 100 : dashboard.porcentaje_avance"
-        ></div>
+        <div class="progress-fill" [style.width.%]="porcentajeAsistencia"></div>
       </div>
     </div>
 
     <!-- Breakdown por componente -->
     <div class="breakdown">
+      <div class="breakdown__title">Recaudación</div>
       <div class="breakdown-item">
         <span class="breakdown-label">Plasma</span>
         <span class="breakdown-val">{{ dashboard.por_componente.plasma }}</span>
@@ -98,25 +103,82 @@
         <span class="breakdown-label">Sangre entera</span>
         <span class="breakdown-val">{{ dashboard.por_componente.sangre_entera }}</span>
       </div>
-      <div class="breakdown-item breakdown-item--muted">
-        <span class="breakdown-label">Sin clasificar</span>
-        <span class="breakdown-val">{{ dashboard.por_componente.sin_clasificar }}</span>
-      </div>
     </div>
   </ng-container>
 
-  <!-- Área principal: registrar + pendientes (solo si no es solo lectura) -->
+  <!-- Área principal: registrar donación + tabla de turnos -->
   <div class="main-grid" *ngIf="!soloLectura">
     <app-registrar-donacion
       [eventoId]="evento.id"
+      [sinClasificar]="dashboard?.pendientes_clasificacion ?? 0"
+      [cargandoDashboard]="cargandoDashboard"
       (donacionRegistrada)="onDonacionRegistrada()"
     ></app-registrar-donacion>
 
-    <app-pendientes-clasificacion
-      [eventoId]="evento.id"
-      (clasificacionRealizada)="onClasificacionRealizada()"
-    ></app-pendientes-clasificacion>
+    <!-- Tabla de turnos del evento -->
+    <div class="turnos-list">
+      <div class="turnos-list__header">
+        <span class="turnos-list__title">
+          <i class="pi pi-calendar"></i>
+          Turnos del evento
+        </span>
+        <i class="pi pi-spinner pi-spin turnos-list__spinner" *ngIf="cargandoTurnosList"></i>
+      </div>
+      <div class="turnos-search-wrap">
+        <input
+          type="text"
+          class="turnos-search"
+          placeholder="Buscar por DNI..."
+          [value]="searchDni"
+          (input)="searchDni = $any($event.target).value"
+          inputmode="numeric"
+          autocomplete="off"
+        />
+      </div>
+      <div class="turnos-table-wrap">
+        <table class="turnos-table" *ngIf="!cargandoTurnosList">
+          <thead>
+            <tr>
+              <th>Donante</th>
+              <th>DNI</th>
+              <th>Hora</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              *ngFor="let turno of turnosFiltered"
+              [class.turno-row--highlighted]="searchDni.trim() && turno.dni === searchDni.trim()"
+            >
+              <td class="td-nombre">{{ turno.full_name }}</td>
+              <td class="td-mono">{{ turno.dni }}</td>
+              <td class="td-mono">{{ turno.time_local }}</td>
+              <td>
+                <span class="turno-badge" [ngClass]="turnoStatusClass(turno.status)">
+                  {{ turnoStatusLabel(turno.status) }}
+                </span>
+              </td>
+            </tr>
+            <tr *ngIf="turnosList.length === 0 && !searchDni.trim()">
+              <td colspan="4" class="td-empty">Sin turnos registrados</td>
+            </tr>
+            <tr *ngIf="turnosFiltered.length === 0 && searchDni.trim()">
+              <td colspan="4" class="td-empty td-empty--search">
+                No se encontró en la lista de turnos
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
+
+  <!-- Pendientes de clasificación -->
+  <app-pendientes-clasificacion
+    *ngIf="!soloLectura"
+    [eventoId]="evento.id"
+    (clasificacionRealizada)="onClasificacionRealizada()"
+  ></app-pendientes-clasificacion>
 </div>
 
 <!-- Confirm finalizar evento -->

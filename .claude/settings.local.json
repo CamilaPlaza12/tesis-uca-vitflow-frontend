@@ -3,7 +3,9 @@
     "allow": [
       "Bash(npm --version)",
       "PowerShell(Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned -Force)",
-      "Bash(xargs grep *)"
+      "Bash(xargs grep *)",
+      "Bash(curl -s \"http://localhost:8000/api/v1/eventos/\")",
+      "Bash(npm start *)"
     ]
   }
 }

@@ -4,8 +4,10 @@ import { Observable, catchError, of } from 'rxjs';
 import {
   Evento,
   EventoResumen,
-  RegistroDonacion,
   DashboardEvento,
+  TurnosCount,
+  Turno,
+  PendienteClasificacion,
   CrearEventoDTO,
   EditarEventoDTO,
 } from '../models/evento';
@@ -56,42 +58,40 @@ export class EventosService {
     return this.http.get<DashboardEvento>(`${this.base}/eventos/${eventoId}/dashboard`);
   }
 
+  // Registra llegada del donante → turno pasa a PENDIENTE_CLASIFICACION
   registrarDonacion(
     eventoId: string,
     dni: string
-  ): Observable<{
-    registro_id: string;
-    donante_dni: string;
-    donante_nombre: string | null;
-    timestamp_donacion: string;
-    mensaje: string;
-  }> {
-    return this.http.post<{
-      registro_id: string;
-      donante_dni: string;
-      donante_nombre: string | null;
-      timestamp_donacion: string;
-      mensaje: string;
-    }>(`${this.base}/eventos/${eventoId}/registrar-donacion`, { dni });
+  ): Observable<Turno> {
+    return this.http.post<Turno>(
+      `${this.base}/eventos/${eventoId}/registrar-donacion`,
+      { dni }
+    );
   }
 
-  getDonaciones(eventoId: string): Observable<RegistroDonacion[]> {
-    return this.http.get<RegistroDonacion[]>(`${this.base}/eventos/${eventoId}/donaciones`);
-  }
-
-  getPendientesClasificacion(eventoId: string): Observable<RegistroDonacion[]> {
-    return this.http.get<RegistroDonacion[]>(
+  // Turnos en estado PENDIENTE_CLASIFICACION para el evento
+  getPendientesClasificacion(eventoId: string): Observable<PendienteClasificacion[]> {
+    return this.http.get<PendienteClasificacion[]>(
       `${this.base}/eventos/${eventoId}/pendientes-clasificacion`
     );
   }
 
+  getTurnosCount(requestId: string): Observable<TurnosCount> {
+    return this.http.get<TurnosCount>(`${this.base}/appointments/request/${requestId}/count`);
+  }
+
+  getTurnos(requestId: string): Observable<Turno[]> {
+    return this.http.get<Turno[]>(`${this.base}/appointments/request/${requestId}`);
+  }
+
+  // Clasifica donación → turno pasa a COMPLETADO y actualiza stock
   clasificarDonacion(
-    registroId: string,
-    componente: string
-  ): Observable<RegistroDonacion & { mensaje: string }> {
-    return this.http.patch<RegistroDonacion & { mensaje: string }>(
-      `${this.base}/registros-donacion/${registroId}/clasificar`,
-      { componente_donado: componente }
+    turnoId: string,
+    componentes: string[]
+  ): Observable<Turno & { mensaje?: string }> {
+    return this.http.post<Turno & { mensaje?: string }>(
+      `${this.base}/appointments/${turnoId}/confirmar-asistencia`,
+      { componentes }
     );
   }
 }

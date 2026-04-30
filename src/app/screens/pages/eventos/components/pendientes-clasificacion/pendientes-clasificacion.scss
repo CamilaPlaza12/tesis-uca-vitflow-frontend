@@ -77,74 +77,118 @@
   color: #22c55e;
 }
 
-/* Lista */
-.pendientes-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  max-height: 480px;
+/* Tabla scrolleable */
+.tabla-wrap {
   overflow-y: auto;
+  max-height: 380px;
+  border: 1px solid #f1f5f9;
+  border-radius: 12px;
 }
 
-/* Item */
-.pendiente-item {
-  border: 1px solid #f1f4f8;
-  border-radius: 14px;
-  padding: 14px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  background: #fbfcfe;
+.pendientes-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+
+  thead th {
+    position: sticky;
+    top: 0;
+    background: #f8fafc;
+    padding: 9px 14px;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 850;
+    color: #5b6b7a;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid #f1f5f9;
+    z-index: 1;
+  }
+
+  tbody tr {
+    border-bottom: 1px solid #f8fafc;
+    transition: background 100ms ease;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    &:hover {
+      background: #fafcff;
+    }
+
+    &.row--loading {
+      opacity: 0.6;
+      pointer-events: none;
+    }
+  }
+
+  td {
+    padding: 10px 14px;
+    vertical-align: middle;
+  }
 }
 
-.pendiente-info {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
+/* Columnas */
+.col-donante {
+  min-width: 160px;
+  max-width: 220px;
 }
 
-.pendiente-nombre {
-  font-size: 13.5px;
+.col-tipo {
+  width: 100%;
+}
+
+.col-accion {
+  white-space: nowrap;
+  padding-right: 10px;
+}
+
+/* Donante: nombre + meta */
+.donante-nombre {
+  display: block;
+  font-size: 13px;
   font-weight: 750;
   color: #0f2b3a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
 }
 
-.pendiente-hora {
-  font-size: 12.5px;
-  font-weight: 700;
-  color: #5b6b7a;
-  background: #f1f5f9;
-  border-radius: 8px;
-  padding: 3px 8px;
-}
-
-/* Clasificar row */
-.pendiente-clasificar {
-  display: flex;
+.donante-meta {
+  display: inline-flex;
   align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
+  gap: 4px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #94a3b8;
+  margin-top: 2px;
+}
+
+.meta-sep {
+  color: #cbd5e1;
 }
 
 /* Botones de componente */
 .comp-btns {
   display: flex;
-  gap: 6px;
+  gap: 5px;
   flex-wrap: wrap;
-  flex: 1;
 }
 
 .btn-comp {
-  padding: 6px 11px;
-  border-radius: 10px;
+  padding: 5px 10px;
+  border-radius: 8px;
   border: 1px solid #e6ecf3;
   background: #fff;
   color: #334155;
-  font-size: 12.5px;
+  font-size: 12px;
   font-weight: 750;
   cursor: pointer;
   transition: background 120ms ease, border-color 120ms ease;
+  font-family: inherit;
+  white-space: nowrap;
 
   &:hover:not(:disabled) {
     background: #f1f5f9;
@@ -164,13 +208,19 @@
   font-weight: 800;
 }
 
-/* Guardar */
+.btn-comp--entera.btn-comp--selected {
+  background: rgba(239, 68, 68, 0.08);
+  border-color: rgba(239, 68, 68, 0.22);
+  color: #b91c1c;
+}
+
+/* Botón guardar */
 .btn-guardar {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  padding: 7px 12px;
-  border-radius: 10px;
+  padding: 6px 12px;
+  border-radius: 9px;
   border: 1px solid rgba(34, 197, 94, 0.25);
   background: rgba(34, 197, 94, 0.1);
   color: #15803d;
@@ -179,6 +229,7 @@
   cursor: pointer;
   white-space: nowrap;
   transition: background 120ms ease;
+  font-family: inherit;
 
   &:hover:not(:disabled) {
     background: rgba(34, 197, 94, 0.15);
@@ -190,13 +241,14 @@
   }
 }
 
-/* Error inline */
+/* Error inline dentro de la celda */
 .error-inline {
-  padding: 8px 10px;
-  border-radius: 10px;
+  margin-top: 4px;
+  padding: 5px 8px;
+  border-radius: 8px;
   background: #fff1f2;
   border: 1px solid #fee2e2;
   color: #b91c1c;
-  font-size: 12.5px;
+  font-size: 11.5px;
   font-weight: 700;
 }

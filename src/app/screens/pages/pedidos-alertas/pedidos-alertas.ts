@@ -1,5 +1,6 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-import { HospitalRequest, UpdateHospitalRequestRequest } from '../../../models/pedido';
+import { forkJoin } from 'rxjs';
+import { HospitalRequest } from '../../../models/pedido';
 import { PedidoService } from '../../../service/pedido_service';
 
 @Component({
@@ -24,18 +25,42 @@ export class PedidosAlertas implements OnInit {
 
   private cargarPedidos(): void {
     this.cargando = true;
-    
+
     this.hospitalRequestService.getHospitalRequests().subscribe({
-      next: (data: any) => {
-        this.pedidos = data;
-        this.cargando = false;
-        this.cdr.detectChanges();
+      next: (data: HospitalRequest[]) => {
+        const hoy = new Date().toISOString().slice(0, 10);
+        const vencidos = data.filter(p => p.status === 'ACTIVO' && p.end_date <= hoy);
+
+        if (vencidos.length === 0) {
+          this.pedidos = data;
+          this.cargando = false;
+          this.cdr.detectChanges();
+          return;
+        }
+
+        forkJoin(
+          vencidos.map(p =>
+            this.hospitalRequestService.updateHospitalRequest(p.id, { status: 'FINALIZADO' })
+          )
+        ).subscribe({
+          next: (actualizados) => {
+            const map = new Map(actualizados.map(p => [p.id, p]));
+            this.pedidos = data.map(p => map.get(p.id) ?? p);
+            this.cargando = false;
+            this.cdr.detectChanges();
+          },
+          error: () => {
+            this.pedidos = data;
+            this.cargando = false;
+            this.cdr.detectChanges();
+          },
+        });
       },
       error: (err) => {
         console.error(err);
         this.cargando = false;
         this.cdr.detectChanges();
-      }
+      },
     });
   }
 

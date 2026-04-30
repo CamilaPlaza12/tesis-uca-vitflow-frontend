@@ -7,7 +7,7 @@ import {
   OnDestroy,
   ChangeDetectorRef,
 } from '@angular/core';
-import { Evento, DashboardEvento } from '../../../../../models/evento';
+import { Evento, DashboardEvento, TurnosCount, Turno } from '../../../../../models/evento';
 import { EventosService } from '../../../../../service/eventos_service';
 import { PedidoService } from '../../../../../service/pedido_service';
 import { CancelRequestResponse } from '../../../../../models/pedido';
@@ -27,6 +27,13 @@ export class DashboardEventoComponent implements OnInit, OnDestroy {
 
   dashboard: DashboardEvento | null = null;
   cargandoDashboard = true;
+
+  turnosCount: TurnosCount | null = null;
+  cargandoTurnos = true;
+
+  turnosList: Turno[] = [];
+  cargandoTurnosList = true;
+  searchDni = '';
 
   finalizarConfirmOpen = false;
   finalizarLoading = false;
@@ -51,9 +58,13 @@ export class DashboardEventoComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.cargarDashboard();
+    this.cargarTurnos();
+    this.cargarTurnosList();
     if (this.evento.estado === 'ACTIVO') {
       this.pollingInterval = setInterval(() => {
         this.cargarDashboard();
+        this.cargarTurnos();
+        this.cargarTurnosList();
       }, 30000);
     }
   }
@@ -61,6 +72,34 @@ export class DashboardEventoComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     if (this.pollingInterval) clearInterval(this.pollingInterval);
     if (this.toastTimer) clearTimeout(this.toastTimer);
+  }
+
+  private cargarTurnosList(): void {
+    this.eventosService.getTurnos(this.evento.pedido_id).subscribe({
+      next: (data) => {
+        this.turnosList = data;
+        this.cargandoTurnosList = false;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.cargandoTurnosList = false;
+        this.cdr.detectChanges();
+      },
+    });
+  }
+
+  private cargarTurnos(): void {
+    this.eventosService.getTurnosCount(this.evento.pedido_id).subscribe({
+      next: (data) => {
+        this.turnosCount = data;
+        this.cargandoTurnos = false;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.cargandoTurnos = false;
+        this.cdr.detectChanges();
+      },
+    });
   }
 
   private cargarDashboard(): void {
@@ -117,6 +156,8 @@ export class DashboardEventoComponent implements OnInit, OnDestroy {
 
   onDonacionRegistrada(): void {
     this.cargarDashboard();
+    this.cargarTurnos();
+    this.cargarTurnosList();
   }
 
   onClasificacionRealizada(): void {
@@ -218,6 +259,49 @@ export class DashboardEventoComponent implements OnInit, OnDestroy {
         this.cdr.detectChanges();
       },
     });
+  }
+
+  get turnosFiltered(): Turno[] {
+    const q = this.searchDni.trim();
+    if (!q) return this.turnosList;
+    return this.turnosList.filter((t) => t.dni.includes(q));
+  }
+
+  get turnosAgendados(): number {
+    if (!this.turnosCount) return 0;
+    return (
+      (this.turnosCount.by_status['PROGRAMADO'] ?? 0) +
+      (this.turnosCount.by_status['CONFIRMADO'] ?? 0) +
+      (this.turnosCount.by_status['PENDIENTE_CLASIFICACION'] ?? 0) +
+      (this.turnosCount.by_status['COMPLETADO'] ?? 0)
+    );
+  }
+
+  get porcentajeAsistencia(): number {
+    if (!this.dashboard?.capacidad_esperada || !this.turnosAgendados) return 0;
+    return Math.min(Math.round((this.turnosAgendados / this.dashboard.capacidad_esperada) * 100), 100);
+  }
+
+  turnoStatusLabel(status: string): string {
+    switch (status) {
+      case 'PROGRAMADO': return 'Programado';
+      case 'CONFIRMADO': return 'Confirmado';
+      case 'PENDIENTE_CLASIFICACION': return 'Pendiente de clasificar';
+      case 'CANCELADO': return 'Cancelado';
+      case 'COMPLETADO': return 'Completado';
+      default: return status;
+    }
+  }
+
+  turnoStatusClass(status: string): string {
+    switch (status) {
+      case 'PROGRAMADO': return 'turno-badge--programado';
+      case 'CONFIRMADO': return 'turno-badge--confirmado';
+      case 'PENDIENTE_CLASIFICACION': return 'turno-badge--pendiente';
+      case 'CANCELADO': return 'turno-badge--cancelado';
+      case 'COMPLETADO': return 'turno-badge--completado';
+      default: return '';
+    }
   }
 
   get subtitulo(): string {

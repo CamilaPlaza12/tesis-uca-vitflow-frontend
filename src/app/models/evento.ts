@@ -52,6 +52,34 @@ export interface DashboardEvento {
   };
 }
 
+export interface TurnosCount {
+  total: number;
+  by_status: {
+    PROGRAMADO?: number;
+    CONFIRMADO?: number;
+    COMPLETADO?: number;
+    [key: string]: number | undefined;
+  };
+}
+
+export interface Turno {
+  id: string;
+  full_name: string;
+  dni: string;
+  status: 'PROGRAMADO' | 'CONFIRMADO' | 'PENDIENTE_CLASIFICACION' | 'CANCELADO' | 'COMPLETADO';
+  time_local: string;
+  date_local: string;
+}
+
+export interface PendienteClasificacion {
+  turno_id: string;
+  donante_dni: string;
+  donante_nombre: string | null;
+  status: string;
+  date_local: string;
+  time_local: string;
+}
+
 export interface CrearEventoDTO {
   nombre: string;
   fecha: string;

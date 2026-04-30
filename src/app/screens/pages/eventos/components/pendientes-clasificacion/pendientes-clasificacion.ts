@@ -6,11 +6,11 @@ import {
   OnInit,
   ChangeDetectorRef,
 } from '@angular/core';
-import { RegistroDonacion } from '../../../../../models/evento';
+import { PendienteClasificacion } from '../../../../../models/evento';
 import { EventosService } from '../../../../../service/eventos_service';
 
-interface PendienteItem extends RegistroDonacion {
-  selectedComponente: string;
+interface PendienteItem extends PendienteClasificacion {
+  selectedComponentes: string[];
   loading: boolean;
   error: string | null;
 }
@@ -29,10 +29,9 @@ export class PendientesClasificacionComponent implements OnInit {
   cargando = true;
 
   readonly componentes = [
-    { value: 'PLASMA', label: 'Plasma' },
-    { value: 'PLAQUETAS', label: 'Plaquetas' },
-    { value: 'GLOBULOS_ROJOS', label: 'Glóbulos rojos' },
-    { value: 'SANGRE_ENTERA', label: 'Sangre entera' },
+    { value: 'plasma', label: 'Plasma' },
+    { value: 'plaquetas', label: 'Plaquetas' },
+    { value: 'globulos_rojos', label: 'Glóbulos rojos' },
   ];
 
   constructor(
@@ -48,9 +47,9 @@ export class PendientesClasificacionComponent implements OnInit {
     this.cargando = true;
     this.eventosService.getPendientesClasificacion(this.eventoId).subscribe({
       next: (data) => {
-        this.pendientes = data.map((r) => ({
-          ...r,
-          selectedComponente: '',
+        this.pendientes = data.map((t) => ({
+          ...t,
+          selectedComponentes: [],
           loading: false,
           error: null,
         }));
@@ -64,24 +63,30 @@ export class PendientesClasificacionComponent implements OnInit {
     });
   }
 
-  selectComponente(item: PendienteItem, componente: string): void {
-    item.selectedComponente = componente;
+  isSelected(item: PendienteItem, value: string): boolean {
+    return item.selectedComponentes.includes(value);
+  }
+
+  toggleComponente(item: PendienteItem, value: string): void {
     item.error = null;
+    if (item.selectedComponentes.includes(value)) {
+      item.selectedComponentes = item.selectedComponentes.filter((c) => c !== value);
+    } else {
+      item.selectedComponentes = [...item.selectedComponentes, value];
+    }
   }
 
   guardar(item: PendienteItem): void {
-    if (!item.selectedComponente || item.loading) return;
+    if (item.selectedComponentes.length === 0 || item.loading) return;
     item.loading = true;
     item.error = null;
     this.cdr.detectChanges();
 
     this.eventosService
-      .clasificarDonacion(item.registro_id, item.selectedComponente)
+      .clasificarDonacion(item.turno_id, item.selectedComponentes)
       .subscribe({
         next: () => {
-          this.pendientes = this.pendientes.filter(
-            (p) => p.registro_id !== item.registro_id
-          );
+          this.pendientes = this.pendientes.filter((p) => p.turno_id !== item.turno_id);
           this.clasificacionRealizada.emit();
           this.cdr.detectChanges();
         },
@@ -93,13 +98,7 @@ export class PendientesClasificacionComponent implements OnInit {
       });
   }
 
-  formatHora(ts: string): string {
-    if (!ts) return '';
-    const d = new Date(ts);
-    return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
-  }
-
-  getNombre(item: RegistroDonacion): string {
+  getNombre(item: PendienteClasificacion): string {
     return item.donante_nombre || item.donante_dni;
   }
 }
