@@ -32,6 +32,12 @@
     <span>Este evento no es hoy. Solo podés cancelarlo.</span>
   </div>
 
+  <!-- Aviso evento finalizado: aún se puede clasificar pendientes -->
+  <div class="aviso-readonly aviso-readonly--finalizado" *ngIf="evento.estado === 'FINALIZADO'">
+    <i class="pi pi-info-circle"></i>
+    <span>El evento está finalizado. Todavía podés ingresar donantes y clasificar pendientes que quedaron sin procesar.</span>
+  </div>
+
   <!-- Loading skeleton -->
   <div *ngIf="cargandoDashboard" class="loading-state">
     <i class="pi pi-spinner pi-spin"></i>
@@ -107,7 +113,7 @@
   </ng-container>
 
   <!-- Área principal: registrar donación + tabla de turnos -->
-  <div class="main-grid" *ngIf="!soloLectura">
+  <div class="main-grid" *ngIf="puedeOperar">
     <app-registrar-donacion
       [eventoId]="evento.id"
       [sinClasificar]="dashboard?.pendientes_clasificacion ?? 0"
@@ -175,7 +181,7 @@
 
   <!-- Pendientes de clasificación -->
   <app-pendientes-clasificacion
-    *ngIf="!soloLectura"
+    *ngIf="puedeOperar"
     [eventoId]="evento.id"
     (clasificacionRealizada)="onClasificacionRealizada()"
   ></app-pendientes-clasificacion>

@@ -132,6 +132,12 @@ export class DashboardEventoComponent implements OnInit, OnDestroy {
     return !this.esHoy;
   }
 
+  // Permite registrar donantes y clasificar pendientes tanto en ACTIVO (hoy) como en FINALIZADO
+  get puedeOperar(): boolean {
+    if (this.evento.estado === 'FINALIZADO') return true;
+    return this.evento.estado === 'ACTIVO' && this.esHoy;
+  }
+
   get puedeCancelar(): boolean {
     return this.evento.estado === 'ACTIVO' && !this.esHoy;
   }
