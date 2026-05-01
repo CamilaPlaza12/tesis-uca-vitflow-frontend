@@ -42,6 +42,7 @@ export interface HospitalRequest {
   requested_by: string;
   comments?: string | null;
   tipo?: PedidoTipo;
+  pending_classifications_count?: number;
 }
 
 export interface UpdateHospitalRequestStatusRequest {
@@ -66,4 +67,20 @@ export interface CancelRequestResponse {
   status: 'CANCELADO';
   cancelled_appointments: number;
   donor_ids_to_notify: string[];
+}
+
+export interface PendingClassificationItem {
+  appointment_id: string;
+  donor_id: string | null;
+  donor_name: string;
+  donor_dni: string;
+  donor_blood_type: string | null;
+  date_local: string;
+  status: string;
+}
+
+export interface PendingClassificationsResponse {
+  request_id: string;
+  total: number;
+  items: PendingClassificationItem[];
 }

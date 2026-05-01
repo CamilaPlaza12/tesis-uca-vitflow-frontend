@@ -111,6 +111,8 @@
     [reprogramDate]="reprogramDate"
     [reprogramTime]="reprogramTime"
     [reprogramMinDate]="reprogramMinDate"
+    [reprogramAvailableDates]="reprogramAvailableDates"
+    [reprogramAvailableTimes]="reprogramAvailableTimes"
     (reprogramDateChange)="reprogramDate = $event"
     (reprogramTimeChange)="reprogramTime = $event"
     (confirm)="confirmModal()"
@@ -126,7 +128,7 @@
     [draggable]="false"
     [resizable]="false"
     [closable]="!donacionLoading"
-    [dismissableMask]="!donacionLoading && donacionResultado === null"
+    [dismissableMask]="!donacionLoading && !donacionTieneResultado"
     maskStyleClass="vf-donacion-mask"
     styleClass="vf-donacion-dialog"
     [style]="{ width: '520px' }"
@@ -141,7 +143,7 @@
             {{ donacionTurno.donor.full_name }} · {{ donacionTurno.date_local }}
           </div>
         </div>
-        <span class="vf-don__chip">Donación completada</span>
+        <span class="vf-don__chip">Pendiente de clasificación</span>
       </div>
     </ng-template>
 
@@ -150,11 +152,11 @@
       <div class="vf-don__success">
         <i class="pi pi-check-circle"></i>
         <div class="vf-don__success-title">¡Unidades registradas!</div>
-        <div class="vf-don__success-sub">Se crearon {{ donacionResultado.length }} unidad(es) en el banco de sangre.</div>
+        <div class="vf-don__success-sub">Se crearon {{ donacionResultado.unidades_creadas.length }} unidad(es) en el banco de sangre.</div>
       </div>
 
       <div class="vf-don__result-list">
-        <div class="vf-don__result-item" *ngFor="let u of donacionResultado">
+        <div class="vf-don__result-item" *ngFor="let u of donacionResultado.unidades_creadas">
           <span class="vf-don__result-comp">
             {{ componenteLabel(u.componente) }}
           </span>
@@ -165,12 +167,12 @@
     </div>
 
     <!-- Formulario de selección -->
-    <div class="vf-don__body" *ngIf="!donacionResultado">
+    <div class="vf-don__body" *ngIf="!donacionTieneResultado">
       <div class="vf-don__field">
         <label class="vf-don__label">Grupo sanguíneo del donante</label>
-        <select class="vf-don__select" [(ngModel)]="donacionBloodGroup" [disabled]="donacionLoading">
-          <option *ngFor="let bt of bloodTypes" [value]="bt">{{ bt }}</option>
-        </select>
+        <div class="vf-don__blood-readonly">
+          <span class="mono">{{ donacionBloodGroup || '—' }}</span>
+        </div>
       </div>
 
       <div class="vf-don__field">
@@ -226,11 +228,11 @@
           [disabled]="donacionLoading"
           (click)="closeDonacionModal()"
         >
-          {{ donacionResultado ? 'Cerrar' : 'Omitir' }}
+          {{ donacionTieneResultado ? 'Cerrar' : 'Omitir' }}
         </button>
 
         <button
-          *ngIf="!donacionResultado"
+          *ngIf="!donacionTieneResultado"
           class="btn btn--primary"
           type="button"
           [disabled]="!donacionPuedeConfirmar"

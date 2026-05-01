@@ -15,11 +15,12 @@ export class ConfirmModal implements OnChanges {
   @Input() loading = false;
   @Input() error: string | null = null;
 
-  // ✅ NUEVO: modo reprogramar + bindings
   @Input() reprogram = false;
   @Input() reprogramDate = '';
   @Input() reprogramTime = '';
   @Input() reprogramMinDate = '';
+  @Input() reprogramAvailableDates: string[] = [];
+  @Input() reprogramAvailableTimes: string[] = [];
 
   @Output() confirm = new EventEmitter<void>();
   @Output() cancel = new EventEmitter<void>();
@@ -62,5 +63,12 @@ export class ConfirmModal implements OnChanges {
   onReprogramTimeInput(v: string): void {
     this.reprogramTime = v;
     this.reprogramTimeChange.emit(v);
+  }
+
+  formatDateLabel(iso: string): string {
+    if (!iso) return '';
+    const [y, m, d] = iso.split('-');
+    const date = new Date(+y, +m - 1, +d);
+    return date.toLocaleDateString('es-AR', { weekday: 'short', day: '2-digit', month: '2-digit' });
   }
 }

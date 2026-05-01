@@ -5,6 +5,7 @@ export type AppointmentStatus =
   | 'CONFIRMADO'
   | 'CANCELADO'
   | 'COMPLETADO'
+  | 'PENDIENTE_CLASIFICACION'
   | 'NO_PRESENTADO';
 
 export interface Donor {

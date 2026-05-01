@@ -14,6 +14,10 @@ export class PedidosAlertas implements OnInit {
   pedidoSeleccionado: HospitalRequest | null = null;
   cargando = true;
 
+  // Mapa pedidoId → cantidad de PENDIENTE_CLASIFICACION
+  // Se construye a partir del campo pending_classifications_count que ya viene en cada pedido
+  pendientesMap: Record<string, number> = {};
+
   constructor(
     private hospitalRequestService: PedidoService,
     private cdr: ChangeDetectorRef
@@ -29,28 +33,31 @@ export class PedidosAlertas implements OnInit {
     this.hospitalRequestService.getHospitalRequests().subscribe({
       next: (data: HospitalRequest[]) => {
         const hoy = new Date().toISOString().slice(0, 10);
-        const vencidos = data.filter(p => p.status === 'ACTIVO' && p.end_date <= hoy);
+        const vencidos = data.filter((p) => p.status === 'ACTIVO' && p.end_date <= hoy);
 
         if (vencidos.length === 0) {
           this.pedidos = data;
+          this.pendientesMap = this.buildPendientesMap(data);
           this.cargando = false;
           this.cdr.detectChanges();
           return;
         }
 
         forkJoin(
-          vencidos.map(p =>
+          vencidos.map((p) =>
             this.hospitalRequestService.updateHospitalRequest(p.id, { status: 'FINALIZADO' })
           )
         ).subscribe({
           next: (actualizados) => {
-            const map = new Map(actualizados.map(p => [p.id, p]));
-            this.pedidos = data.map(p => map.get(p.id) ?? p);
+            const map = new Map(actualizados.map((p) => [p.id, p]));
+            this.pedidos = data.map((p) => map.get(p.id) ?? p);
+            this.pendientesMap = this.buildPendientesMap(this.pedidos);
             this.cargando = false;
             this.cdr.detectChanges();
           },
           error: () => {
             this.pedidos = data;
+            this.pendientesMap = this.buildPendientesMap(data);
             this.cargando = false;
             this.cdr.detectChanges();
           },
@@ -64,6 +71,15 @@ export class PedidosAlertas implements OnInit {
     });
   }
 
+  private buildPendientesMap(pedidos: HospitalRequest[]): Record<string, number> {
+    const map: Record<string, number> = {};
+    pedidos.forEach((p) => {
+      const count = p.pending_classifications_count ?? 0;
+      if (count > 0) map[p.id] = count;
+    });
+    return map;
+  }
+
   onCrearNuevoPedido(_pedido: HospitalRequest): void {
     this.cargarPedidos();
   }
@@ -75,17 +91,26 @@ export class PedidosAlertas implements OnInit {
   onCerrarDetalle(): void {
     this.pedidoSeleccionado = null;
   }
+
   onPedidoActualizado(updated: HospitalRequest): void {
-    this.pedidos = this.pedidos.map(p => (p.id === updated.id ? updated : p));
+    this.pedidos = this.pedidos.map((p) => (p.id === updated.id ? updated : p));
     this.pedidoSeleccionado = null;
     this.cdr.detectChanges();
   }
 
   onPedidoCancelado(updated: HospitalRequest): void {
-    this.pedidos = this.pedidos.map(p => (p.id === updated.id ? updated : p));
+    this.pedidos = this.pedidos.map((p) => (p.id === updated.id ? updated : p));
     this.pedidoSeleccionado = updated;
     this.cdr.detectChanges();
   }
 
-
+  onPendientesChanged(pedidoId: string, newCount: number): void {
+    if (newCount <= 0) {
+      const { [pedidoId]: _, ...rest } = this.pendientesMap;
+      this.pendientesMap = rest;
+    } else {
+      this.pendientesMap = { ...this.pendientesMap, [pedidoId]: newCount };
+    }
+    this.cdr.detectChanges();
+  }
 }

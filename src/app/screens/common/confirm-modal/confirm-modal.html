@@ -14,30 +14,54 @@
       <!-- ✅ mensaje normal -->
       <p class="message" *ngIf="!reprogram">{{ message }}</p>
 
-      <!-- ✅ modo reprogramar -->
+      <!-- modo reprogramar -->
       <div class="reprogram-form" *ngIf="reprogram">
         <p class="message">{{ message }}</p>
 
         <label class="rf-label">Nueva fecha</label>
-        <input
-          class="rf-input"
-          type="date"
-          [min]="reprogramMinDate"
-          [value]="reprogramDate"
-          (input)="onReprogramDateInput(($any($event.target)).value)"
-        />
+
+        <ng-container *ngIf="reprogramAvailableDates.length > 0; else freeDateInput">
+          <select
+            class="rf-input"
+            [value]="reprogramDate"
+            (change)="onReprogramDateInput(($any($event.target)).value)"
+          >
+            <option value="" disabled>Seleccioná una fecha</option>
+            <option *ngFor="let d of reprogramAvailableDates" [value]="d">
+              {{ formatDateLabel(d) }}
+            </option>
+          </select>
+        </ng-container>
+        <ng-template #freeDateInput>
+          <input
+            class="rf-input"
+            type="date"
+            [min]="reprogramMinDate"
+            [value]="reprogramDate"
+            (input)="onReprogramDateInput(($any($event.target)).value)"
+          />
+        </ng-template>
 
         <label class="rf-label">Nueva hora</label>
-        <input
-          class="rf-input"
-          type="time"
-          [value]="reprogramTime"
-          (input)="onReprogramTimeInput(($any($event.target)).value)"
-        />
 
-        <div class="rf-hint">
-          * Por ahora podés elegir cualquier hora. Después lo conectamos con disponibilidad real.
-        </div>
+        <ng-container *ngIf="reprogramAvailableTimes.length > 0; else freeTimeInput">
+          <select
+            class="rf-input"
+            [value]="reprogramTime"
+            (change)="onReprogramTimeInput(($any($event.target)).value)"
+          >
+            <option value="" disabled>Seleccioná un horario</option>
+            <option *ngFor="let t of reprogramAvailableTimes" [value]="t">{{ t }}</option>
+          </select>
+        </ng-container>
+        <ng-template #freeTimeInput>
+          <input
+            class="rf-input"
+            type="time"
+            [value]="reprogramTime"
+            (input)="onReprogramTimeInput(($any($event.target)).value)"
+          />
+        </ng-template>
       </div>
 
       <div class="error" *ngIf="error">

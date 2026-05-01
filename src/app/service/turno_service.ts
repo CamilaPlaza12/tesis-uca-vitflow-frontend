@@ -12,9 +12,16 @@ export interface UnidadCreada {
   estado: string;
 }
 
-export interface ConfirmarAsistenciaResponse {
+// POST /confirmar-asistencia — sin body, mueve a PENDIENTE_CLASIFICACION
+export interface MarcarAsistenciaResponse {
   appointment_id: string;
-  status: string;
+  status: string; // "PENDIENTE_CLASIFICACION"
+}
+
+// POST /classify-components — registra componentes, mueve a COMPLETADO
+export interface ClasificarComponentesResponse {
+  appointment_id: string;
+  status: string; // "COMPLETADO"
   unidades_creadas: UnidadCreada[];
 }
 
@@ -49,13 +56,22 @@ export class TurnoService {
     return this.http.get<Turno[]>(`${this.endpoint}/search/${desde}/${hasta}`);
   }
 
-  confirmarAsistencia(
-    appointmentId: string,
-    body: { blood_group: string; componentes: ComponenteSanguineo[] }
-  ): Observable<ConfirmarAsistenciaResponse> {
-    return this.http.post<ConfirmarAsistenciaResponse>(
+  // Paso 1: donante llegó → PENDIENTE_CLASIFICACION. Sin body.
+  confirmarAsistencia(appointmentId: string): Observable<MarcarAsistenciaResponse> {
+    return this.http.post<MarcarAsistenciaResponse>(
       `${this.endpoint}/${appointmentId}/confirmar-asistencia`,
-      body
+      null
+    );
+  }
+
+  // Paso 2: registrar componentes → COMPLETADO
+  clasificarComponentes(
+    appointmentId: string,
+    componentes: ComponenteSanguineo[]
+  ): Observable<ClasificarComponentesResponse> {
+    return this.http.post<ClasificarComponentesResponse>(
+      `${this.endpoint}/${appointmentId}/classify-components`,
+      { componentes }
     );
   }
 }

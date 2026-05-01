@@ -108,6 +108,7 @@
               [class.status--completado]="t.status === 'COMPLETADO'"
               [class.status--no-presentado]="t.status === 'NO_PRESENTADO'"
               [class.status--cancelado]="t.status === 'CANCELADO'"
+              [class.status--pendiente-clasificacion]="t.status === 'PENDIENTE_CLASIFICACION'"
             >
               {{ estadoHuman(t.status) }}
             </span>

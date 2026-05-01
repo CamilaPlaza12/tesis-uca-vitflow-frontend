@@ -8,6 +8,7 @@ import {
   UpdateHospitalRequestRequest,
   TiposSangreDisponibles,
   CancelRequestResponse,
+  PendingClassificationsResponse,
 } from '../models/pedido';
 
 @Injectable({ providedIn: 'root' })
@@ -46,6 +47,12 @@ export class PedidoService {
     return this.http.get<TiposSangreDisponibles>(
       `${this.endpoint}/tipos-sangre-disponibles`,
       { params }
+    );
+  }
+
+  getPendingClassifications(requestId: string): Observable<PendingClassificationsResponse> {
+    return this.http.get<PendingClassificationsResponse>(
+      `${this.endpoint}/${requestId}/pending-classifications`
     );
   }
 }

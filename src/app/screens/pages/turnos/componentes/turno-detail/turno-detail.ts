@@ -3,6 +3,7 @@ import { Turno } from '../../../../../models/turno';
 import {
   AccionTurno,
   canCancel,
+  canClasificar,
   canConfirm,
   canMarkCompleted,
   canMarkNoShow,
@@ -39,6 +40,22 @@ export class TurnoDetail {
 
   canMarkNoShow(): boolean {
     return canMarkNoShow(this.turno);
+  }
+
+  canClasificar(): boolean {
+    return canClasificar(this.turno);
+  }
+
+  statusLabel(): string {
+    const labels: Record<string, string> = {
+      PROGRAMADO: 'Programado',
+      CONFIRMADO: 'Confirmado',
+      COMPLETADO: 'Completado',
+      CANCELADO: 'Cancelado',
+      NO_PRESENTADO: 'No se presentó',
+      PENDIENTE_CLASIFICACION: 'Pendiente de clasificación',
+    };
+    return labels[this.turno.status] ?? this.turno.status;
   }
 
   emitAction(a: AccionTurno): void {

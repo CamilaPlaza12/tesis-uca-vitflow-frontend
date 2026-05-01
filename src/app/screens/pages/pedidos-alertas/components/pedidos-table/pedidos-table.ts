@@ -11,6 +11,7 @@ export class PedidosTable {
   @Input() pedidos: HospitalRequest[] = [];
   @Input() pedidoSeleccionadoId: string | null = null;
   @Input() cargando = false;
+  @Input() pendientesMap: Record<string, number> = {};
 
   @Output() selectPedido = new EventEmitter<HospitalRequest>();
 

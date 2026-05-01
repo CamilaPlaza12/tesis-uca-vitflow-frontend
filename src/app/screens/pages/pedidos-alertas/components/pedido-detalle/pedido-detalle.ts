@@ -1,12 +1,24 @@
-import { Component, EventEmitter, HostListener, Input, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  HostListener,
+  Input,
+  OnChanges,
+  Output,
+  SimpleChanges,
+} from '@angular/core';
 import {
   HospitalRequest,
   HospitalRequestPriority,
   HospitalRequestStatus,
   HospitalUnit,
+  CancelRequestResponse,
+  PendingClassificationItem,
 } from '../../../../../models/pedido';
 import { PedidoService } from '../../../../../service/pedido_service';
-import { CancelRequestResponse } from '../../../../../models/pedido';
+import { TurnoService } from '../../../../../service/turno_service';
+import { ComponenteSanguineo } from '../../../../../models/blood-bank.model';
+import { firstValueFrom } from 'rxjs';
 
 type DropKey = 'prioridad' | 'estado';
 
@@ -16,14 +28,18 @@ type DropKey = 'prioridad' | 'estado';
   templateUrl: './pedido-detalle.html',
   styleUrl: './pedido-detalle.scss',
 })
-export class PedidoDetalle {
+export class PedidoDetalle implements OnChanges {
   @Input() pedido: HospitalRequest | null = null;
 
   @Output() cerrar = new EventEmitter<void>();
   @Output() pedidoActualizado = new EventEmitter<HospitalRequest>();
   @Output() pedidoCancelado = new EventEmitter<HospitalRequest>();
+  @Output() pendientesChanged = new EventEmitter<number>();
 
-  constructor(private pedidoService: PedidoService) {}
+  constructor(
+    private pedidoService: PedidoService,
+    private turnoService: TurnoService
+  ) {}
 
   editMode = false;
   draft: HospitalRequest | null = null;
@@ -34,6 +50,22 @@ export class PedidoDetalle {
   cancelLoading = false;
   cancelError = '';
   cancelSuccessMsg = '';
+
+  // ─── Pendientes de clasificación ─────────────────────────────────────────
+  pendientesModalOpen = false;
+  pendientesLoaded = false;
+  cargandoPendientes = false;
+  pendientesClasificacion: PendingClassificationItem[] = [];
+
+  clasificarTurno: PendingClassificationItem | null = null;
+  clasificarComponentes: Record<ComponenteSanguineo, boolean> = {
+    globulos_rojos: false,
+    plasma: false,
+    plaquetas: false,
+  };
+  clasificarLoading = false;
+  clasificarError = '';
+  clasificarExito = false;
 
   servicios: HospitalUnit[] = [
     'ITU',
@@ -50,6 +82,136 @@ export class PedidoDetalle {
     prioridad: false,
     estado: false,
   };
+
+  readonly componenteOpciones: { value: ComponenteSanguineo; label: string; hint: string }[] = [
+    { value: 'globulos_rojos', label: 'Glóbulos Rojos', hint: '42 días de vida útil' },
+    { value: 'plasma', label: 'Plasma', hint: '365 días de vida útil' },
+    { value: 'plaquetas', label: 'Plaquetas', hint: '5 días de vida útil' },
+  ];
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['pedido'] && !changes['pedido'].firstChange) {
+      this.pendientesClasificacion = [];
+      this.pendientesLoaded = false;
+      this.cargandoPendientes = false;
+      this.pendientesModalOpen = false;
+      this.clasificarTurno = null;
+      this.reset();
+    }
+  }
+
+  // ─── Conteo visible de pendientes ────────────────────────────────────────
+
+  get pendingCount(): number {
+    if (this.pendientesLoaded) return this.pendientesClasificacion.length;
+    return this.pedido?.pending_classifications_count ?? 0;
+  }
+
+  // ─── Popup de pendientes ─────────────────────────────────────────────────
+
+  openPendientesModal(): void {
+    this.pendientesModalOpen = true;
+    if (!this.pendientesLoaded) {
+      this.loadPendientesClasificacion();
+    }
+  }
+
+  closePendientesModal(): void {
+    if (this.clasificarLoading) return;
+    this.pendientesModalOpen = false;
+    this.clasificarTurno = null;
+    this.clasificarError = '';
+    this.clasificarExito = false;
+  }
+
+  private loadPendientesClasificacion(): void {
+    if (!this.pedido) return;
+    this.cargandoPendientes = true;
+    this.pendientesClasificacion = [];
+
+    this.pedidoService.getPendingClassifications(this.pedido.id).subscribe({
+      next: (res) => {
+        this.pendientesClasificacion = res.items;
+        this.cargandoPendientes = false;
+        this.pendientesLoaded = true;
+      },
+      error: () => {
+        this.pendientesClasificacion = [];
+        this.cargandoPendientes = false;
+        this.pendientesLoaded = true;
+      },
+    });
+  }
+
+  // ─── Clasificación ───────────────────────────────────────────────────────
+
+  openClasificar(turno: PendingClassificationItem): void {
+    this.clasificarTurno = turno;
+    this.clasificarComponentes = { globulos_rojos: false, plasma: false, plaquetas: false };
+    this.clasificarError = '';
+    this.clasificarExito = false;
+    this.clasificarLoading = false;
+  }
+
+  closeClasificar(): void {
+    if (this.clasificarLoading) return;
+    this.clasificarTurno = null;
+    this.clasificarError = '';
+    this.clasificarExito = false;
+  }
+
+  get clasificarComponentesSeleccionados(): ComponenteSanguineo[] {
+    return (Object.keys(this.clasificarComponentes) as ComponenteSanguineo[]).filter(
+      (k) => this.clasificarComponentes[k]
+    );
+  }
+
+  get clasificarPuedeConfirmar(): boolean {
+    return this.clasificarComponentesSeleccionados.length > 0 && !this.clasificarLoading;
+  }
+
+  async confirmarClasificacion(): Promise<void> {
+    if (!this.clasificarTurno || !this.clasificarPuedeConfirmar) return;
+
+    this.clasificarLoading = true;
+    this.clasificarError = '';
+
+    try {
+      await firstValueFrom(
+        this.turnoService.clasificarComponentes(
+          this.clasificarTurno.appointment_id,
+          this.clasificarComponentesSeleccionados
+        )
+      );
+
+      const removedId = this.clasificarTurno!.appointment_id;
+      this.clasificarExito = true;
+      this.pendientesClasificacion = this.pendientesClasificacion.filter(
+        (t) => t.appointment_id !== removedId
+      );
+      this.pendientesChanged.emit(this.pendientesClasificacion.length);
+
+      setTimeout(() => {
+        this.clasificarTurno = null;
+        this.clasificarExito = false;
+      }, 1500);
+    } catch (e: any) {
+      this.clasificarError = e?.error?.detail ?? e?.message ?? 'Error al clasificar.';
+    } finally {
+      this.clasificarLoading = false;
+    }
+  }
+
+  componenteLabel(c: ComponenteSanguineo): string {
+    const labels: Record<ComponenteSanguineo, string> = {
+      globulos_rojos: 'Glóbulos Rojos',
+      plasma: 'Plasma',
+      plaquetas: 'Plaquetas',
+    };
+    return labels[c];
+  }
+
+  // ─── Edición pedido ───────────────────────────────────────────────────────
 
   empezarEdicion(): void {
     if (!this.pedido) return;
@@ -84,10 +246,7 @@ export class PedidoDetalle {
 
     this.pedidoService.updateHospitalRequest(this.pedido.id, body).subscribe({
       next: (updated: HospitalRequest) => {
-        // 1) aviso al padre
         this.pedidoActualizado.emit(updated);
-
-        // 2) cierro el detalle (así al reabrir ya se ve con el refresh del padre)
         this.close();
       },
       error: (err: any) => {

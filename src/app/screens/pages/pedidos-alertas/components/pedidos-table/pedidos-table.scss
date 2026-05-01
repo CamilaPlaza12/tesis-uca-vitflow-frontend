@@ -113,6 +113,29 @@
     color: #a10f3b;
     border-color: #ffd0dd;
   }
+
+  &.badge--clasificar {
+    background: #fef3c7;
+    color: #92400e;
+    border-color: #fde68a;
+    margin-left: 6px;
+    padding: 3px 7px;
+    font-size: 11px;
+  }
+}
+
+.count-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #fff7ed;
+  color: #c2410c;
+  border: 1.5px solid #fed7aa;
+  font-size: 12px;
+  font-weight: 850;
 }
 
 .status {

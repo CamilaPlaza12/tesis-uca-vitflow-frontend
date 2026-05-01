@@ -299,3 +299,328 @@
     grid-template-columns: 150px 1fr;
   }
 }
+
+// ─── Botón trigger "A clasificar" ────────────────────────────────────────────
+
+.btn-pendientes-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1.5px solid #fed7aa;
+  background: #fff7ed;
+  cursor: pointer;
+  transition: background 120ms ease, border-color 120ms ease;
+
+  &:hover {
+    background: #ffedd5;
+    border-color: #fdba74;
+  }
+
+  &__label {
+    font-size: 13.5px;
+    font-weight: 750;
+    color: #c2410c;
+  }
+
+  &__count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: #c2410c;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 850;
+  }
+}
+
+// ─── Popup pendientes de clasificación ───────────────────────────────────────
+
+.pend-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  z-index: 8000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.pend-modal {
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.2);
+  width: 540px;
+  max-width: 100%;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.pend-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 18px 20px 14px;
+  border-bottom: 1px solid #eef2f6;
+  flex-shrink: 0;
+}
+
+.pend-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: #1f2a37;
+}
+
+.pend-sub {
+  font-size: 12.5px;
+  color: #7b8a99;
+  margin-top: 2px;
+}
+
+.pend-loading,
+.pend-empty {
+  padding: 20px;
+  font-size: 13px;
+  color: #7b8a99;
+  text-align: center;
+}
+
+.pend-table-wrap {
+  overflow-y: auto;
+  overflow-x: auto;
+  flex: 1 1 auto;
+}
+
+.pend-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+
+  th {
+    position: sticky;
+    top: 0;
+    background: #fbfcfe;
+    text-align: left;
+    color: #607080;
+    font-weight: 750;
+    font-size: 12px;
+    letter-spacing: 0.02em;
+    padding: 8px 16px;
+    border-bottom: 1px solid #eef2f6;
+  }
+
+  td {
+    padding: 10px 16px;
+    border-bottom: 1px solid #f2f5f9;
+    color: #1f2a37;
+    font-weight: 600;
+  }
+
+  tbody tr:last-child td {
+    border-bottom: 0;
+  }
+
+  .mono {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 12.5px;
+  }
+}
+
+.btn-clasificar {
+  background: rgba(59, 130, 246, 0.1);
+  color: #1d4ed8;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: 8px;
+  padding: 5px 10px;
+  font-size: 12.5px;
+  font-weight: 750;
+  cursor: pointer;
+  white-space: nowrap;
+
+  &:hover {
+    background: rgba(59, 130, 246, 0.18);
+    border-color: rgba(59, 130, 246, 0.35);
+  }
+}
+
+// ─── Modal clasificación ─────────────────────────────────────────────────────
+
+.clasificar-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  z-index: 9000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.clasificar-modal {
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.2);
+  width: 460px;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  overflow: hidden;
+}
+
+.clas-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 20px 20px 16px;
+  border-bottom: 1px solid #eef2f6;
+}
+
+.clas-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: #1f2a37;
+}
+
+.clas-sub {
+  font-size: 12.5px;
+  color: #7b8a99;
+  margin-top: 2px;
+}
+
+.clas-exito {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 24px 20px;
+  background: #ecfdf5;
+  color: #065f46;
+  font-size: 13.5px;
+  font-weight: 700;
+
+  .clas-exito-icon {
+    font-size: 20px;
+  }
+}
+
+.clas-body {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.clas-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.clas-label {
+  font-size: 13px;
+  font-weight: 750;
+  color: #415162;
+}
+
+.clas-blood-readonly {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: #f6f8fb;
+  border-radius: 10px;
+  border: 1px solid #eef2f6;
+
+  .mono {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-weight: 750;
+    font-size: 14px;
+    color: #1f2a37;
+  }
+}
+
+.clas-blood-hint {
+  font-size: 12px;
+  color: #7b8a99;
+}
+
+.clas-checks {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.clas-check {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #eef2f6;
+  cursor: pointer;
+
+  &:hover {
+    background: #f6f8fb;
+  }
+
+  input[type='checkbox'] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+  }
+}
+
+.clas-check-name {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #1f2a37;
+  flex: 1;
+}
+
+.clas-check-hint {
+  font-size: 11.5px;
+  color: #7b8a99;
+}
+
+.clas-warn {
+  font-size: 12.5px;
+  color: #92400e;
+  background: #fef3c7;
+  border: 1px solid #fde68a;
+  border-radius: 8px;
+  padding: 8px 10px;
+  margin-top: 4px;
+}
+
+.clas-error {
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #fff1f2;
+  border: 1px solid #fee2e2;
+  color: #b91c1c;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.clas-footer {
+  display: flex;
+  gap: 10px;
+  padding: 16px 20px;
+  border-top: 1px solid #eef2f6;
+  justify-content: flex-end;
+
+  button {
+    min-width: 120px;
+  }
+}

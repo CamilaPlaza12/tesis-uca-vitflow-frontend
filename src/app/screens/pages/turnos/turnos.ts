@@ -1,13 +1,11 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { Turno } from '../../../models/turno';
-import { AccionTurno } from './turno-actions.policy';
+import { AccionTurno, canClasificar } from './turno-actions.policy';
 import { AvailabilityDay, HospitalAvailability } from '../../../models/disponibilidad';
-import { TurnoService, UnidadCreada } from '../../../service/turno_service';
+import { TurnoService, UnidadCreada, ClasificarComponentesResponse } from '../../../service/turno_service';
 import { AvailabilityService } from '../../../service/availability_service';
-import { ComponenteSanguineo, GrupoSanguineo } from '../../../models/blood-bank.model';
+import { ComponenteSanguineo } from '../../../models/blood-bank.model';
 import { firstValueFrom } from 'rxjs';
-
-const BLOOD_TYPES: GrupoSanguineo[] = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
 
 @Component({
   selector: 'app-turnos',
@@ -51,10 +49,10 @@ export class Turnos implements OnInit {
   loadingHistorico = false;
   errorHistorico = '';
 
-  // ─── Donación: selección de componentes ────────────────────────────────────
+  // ─── Clasificación de componentes ──────────────────────────────────────────
   donacionModalOpen = false;
   donacionTurno: Turno | null = null;
-  donacionBloodGroup: string = 'A+';
+  donacionBloodGroup: string = '';
   donacionComponentes: Record<ComponenteSanguineo, boolean> = {
     globulos_rojos: false,
     plasma: false,
@@ -62,9 +60,7 @@ export class Turnos implements OnInit {
   };
   donacionLoading = false;
   donacionError = '';
-  donacionResultado: UnidadCreada[] | null = null;
-
-  readonly bloodTypes = BLOOD_TYPES;
+  donacionResultado: ClasificarComponentesResponse | null = null;
 
   constructor(
     private turnoService: TurnoService,
@@ -121,6 +117,52 @@ export class Turnos implements OnInit {
 
   get isReprogramAction(): boolean {
     return this.accionPendiente === 'REPROGRAMAR';
+  }
+
+  // ─── Disponibilidad para reprogramación ────────────────────────────────────
+
+  get reprogramAvailableDates(): string[] {
+    if (!this.disponibilidad) return [];
+    const enabledNums = this.disponibilidad
+      .filter((d) => d.enabled && d.timeSlots.length > 0)
+      .map((d) => this.weekdayToNumber(d.day));
+
+    const dates: string[] = [];
+    const base = new Date();
+    for (let i = 1; i <= 60; i++) {
+      const d = new Date(base.getFullYear(), base.getMonth(), base.getDate() + i);
+      if (enabledNums.includes(d.getDay())) {
+        dates.push(this.toDateStr(d));
+      }
+    }
+    return dates;
+  }
+
+  get reprogramAvailableTimes(): string[] {
+    if (!this.disponibilidad || !this.reprogramDate) return [];
+    const [y, m, day] = this.reprogramDate.split('-').map(Number);
+    const date = new Date(y, m - 1, day);
+    const weekdayName = this.getWeekdayName(date.getDay());
+    const dayConfig = this.disponibilidad.find((x) => x.day === weekdayName);
+    if (!dayConfig?.enabled) return [];
+    return dayConfig.timeSlots.map((s) => s.time);
+  }
+
+  private weekdayToNumber(day: string): number {
+    const map: Record<string, number> = {
+      Domingo: 0,
+      Lunes: 1,
+      Martes: 2,
+      Miercoles: 3,
+      Jueves: 4,
+      Viernes: 5,
+      Sabado: 6,
+    };
+    return map[day] ?? -1;
+  }
+
+  private getWeekdayName(dayNum: number): string {
+    return ['Domingo', 'Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado'][dayNum];
   }
 
   private blurActiveElement(): void {
@@ -202,8 +244,8 @@ export class Turnos implements OnInit {
   }
 
   requestAction(accion: AccionTurno, turno: Turno): void {
-    // Marcar asistencia: ir directo al modal de componentes (el endpoint lo hace todo junto)
-    if (accion === 'COMPLETAR') {
+    // CLASIFICAR: abre el modal de componentes (turno ya en PENDIENTE_CLASIFICACION)
+    if (accion === 'CLASIFICAR') {
       this.turnoSeleccionado = turno;
       this.openDonacionModal(turno);
       return;
@@ -224,8 +266,18 @@ export class Turnos implements OnInit {
       const tomorrow = new Date();
       tomorrow.setDate(tomorrow.getDate() + 1);
       this.reprogramMinDate = this.toDateStr(tomorrow);
-      this.reprogramDate = this.reprogramMinDate;
-      this.reprogramTime = turno.time_local || '09:00';
+
+      // Usar primera fecha disponible por disponibilidad del hospital
+      const availableDates = this.reprogramAvailableDates;
+      this.reprogramDate = availableDates[0] ?? this.reprogramMinDate;
+
+      // Primera hora disponible para esa fecha
+      const [y, m, day] = this.reprogramDate.split('-').map(Number);
+      const date = new Date(y, m - 1, day);
+      const weekdayName = this.getWeekdayName(date.getDay());
+      const dayConfig = this.disponibilidad?.find((x) => x.day === weekdayName);
+      const firstTime = dayConfig?.enabled ? dayConfig.timeSlots[0]?.time : null;
+      this.reprogramTime = firstTime ?? turno.time_local ?? '09:00';
     }
 
     this.modalOpen = true;
@@ -250,6 +302,11 @@ export class Turnos implements OnInit {
 
       if (this.accionPendiente === 'CONFIRMAR') {
         res = await firstValueFrom(this.turnoService.updateStatus(t.id, 'CONFIRMADO'));
+      } else if (this.accionPendiente === 'COMPLETAR') {
+        // Paso 1: confirmar asistencia → PENDIENTE_CLASIFICACION (sin body)
+        await firstValueFrom(this.turnoService.confirmarAsistencia(t.id));
+        // El backend actualiza last_donation_date; actualizamos el turno localmente
+        res = { ...t, status: 'PENDIENTE_CLASIFICACION' as const };
       } else if (this.accionPendiente === 'CANCELAR') {
         res = await firstValueFrom(this.turnoService.updateStatus(t.id, 'CANCELADO'));
       } else if (this.accionPendiente === 'REPROGRAMAR') {
@@ -262,8 +319,9 @@ export class Turnos implements OnInit {
         throw new Error('Acción no reconocida');
       }
 
-      const idx = this.turnos.findIndex((x) => x.id === res.id);
-      if (idx !== -1) this.turnos[idx] = res;
+      // Actualización inmutable para disparar change detection + sincronizar detalle
+      this.turnos = this.turnos.map((x) => (x.id === res.id ? res : x));
+      this.turnoSeleccionado = res;
 
       this.modalOpen = false;
       this.accionPendiente = null;
@@ -275,13 +333,12 @@ export class Turnos implements OnInit {
   }
 
   // =========================
-  // Donación: selección de componentes
+  // Clasificación de componentes
   // =========================
 
   openDonacionModal(turno: Turno): void {
     this.donacionTurno = turno;
-    this.donacionBloodGroup =
-      turno.blood_group || turno.donor?.blood_group || 'A+';
+    this.donacionBloodGroup = turno.blood_group || turno.donor?.blood_group || '';
     this.donacionComponentes = {
       globulos_rojos: false,
       plasma: false,
@@ -298,6 +355,10 @@ export class Turnos implements OnInit {
     this.donacionModalOpen = false;
     this.donacionTurno = null;
     this.donacionResultado = null;
+  }
+
+  get donacionTieneResultado(): boolean {
+    return this.donacionResultado !== null;
   }
 
   get donacionComponentesSeleccionados(): ComponenteSanguineo[] {
@@ -318,19 +379,20 @@ export class Turnos implements OnInit {
 
     try {
       const result = await firstValueFrom(
-        this.turnoService.confirmarAsistencia(this.donacionTurno.id, {
-          blood_group: this.donacionBloodGroup,
-          componentes: this.donacionComponentesSeleccionados,
-        })
+        this.turnoService.clasificarComponentes(
+          this.donacionTurno.id,
+          this.donacionComponentesSeleccionados
+        )
       );
-      this.donacionResultado = result.unidades_creadas;
+      this.donacionResultado = result;
 
-      // Actualizar el turno en la lista al estado COMPLETADO
-      const idx = this.turnos.findIndex((x) => x.id === this.donacionTurno!.id);
-      if (idx !== -1) {
-        this.turnos[idx] = { ...this.turnos[idx], status: 'COMPLETADO' };
-        this.turnoSeleccionado = this.turnos[idx];
-      }
+      // Actualizar turno a COMPLETADO de forma inmutable
+      const id = this.donacionTurno.id;
+      this.turnos = this.turnos.map((x) =>
+        x.id === id ? { ...x, status: 'COMPLETADO' as const } : x
+      );
+      const updated = this.turnos.find((x) => x.id === id);
+      if (updated) this.turnoSeleccionado = updated;
     } catch (e: any) {
       this.donacionError =
         e?.error?.detail ?? e?.message ?? 'Error al registrar la donación.';
@@ -351,11 +413,8 @@ export class Turnos implements OnInit {
   formatDate(iso: string): string {
     if (!iso) return '—';
     try {
-      return new Date(iso).toLocaleDateString('es-AR', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-      });
+      const [y, m, d] = iso.split('-');
+      return `${d}/${m}/${y}`;
     } catch {
       return iso;
     }
@@ -407,7 +466,7 @@ export class Turnos implements OnInit {
   private getModalConfirmText(accion: AccionTurno): string {
     if (accion === 'CONFIRMAR') return 'Confirmar';
     if (accion === 'CANCELAR') return 'Cancelar turno';
-    if (accion === 'COMPLETAR') return 'Completar';
+    if (accion === 'COMPLETAR') return 'Confirmar asistencia';
     if (accion === 'NO_PRESENTADO') return 'Marcar ausencia';
     return 'Reprogramar';
   }
@@ -416,7 +475,8 @@ export class Turnos implements OnInit {
     const base = `Donante: ${turno.donor?.full_name ?? '—'} · ${turno.date_local} ${turno.time_local}`;
     if (accion === 'CONFIRMAR') return `${base}\n¿Confirmás este turno?`;
     if (accion === 'CANCELAR') return `${base}\n¿Querés cancelar este turno?`;
-    if (accion === 'COMPLETAR') return `${base}\n¿El donante completó la donación?`;
+    if (accion === 'COMPLETAR')
+      return `${base}\n¿El donante se presentó? El turno pasará a "Pendiente de clasificación".`;
     if (accion === 'NO_PRESENTADO') return `${base}\n¿El donante no se presentó?`;
     return `${base}\n¿Reprogramar?`;
   }

@@ -89,6 +89,7 @@ export class TurnosTable {
     if (s === 'CONFIRMADO') return 'Confirmado';
     if (s === 'COMPLETADO') return 'Completado';
     if (s === 'NO_PRESENTADO') return 'No presentado';
+    if (s === 'PENDIENTE_CLASIFICACION') return 'Pend. clasificación';
     return 'Cancelado';
   }
 

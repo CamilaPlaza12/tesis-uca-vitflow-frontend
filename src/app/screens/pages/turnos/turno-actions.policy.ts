@@ -8,6 +8,7 @@ export type AccionTurno =
   | 'REPROGRAMAR'
   | 'CANCELAR'
   | 'COMPLETAR'
+  | 'CLASIFICAR'
   | 'NO_PRESENTADO';
 
 function getTurnoDateTime(turno: Turno): Date {
@@ -46,13 +47,16 @@ export function canCancel(turno: Turno): boolean {
 }
 
 export function canMarkCompleted(turno: Turno): boolean {
-  // ✅ estado -> status
   if (!['PROGRAMADO', 'CONFIRMADO'].includes(turno.status)) return false;
-  return withinActionWindow(turno);
+  // Permitir carga operativa tardía: cualquier turno pasado puede marcarse como asistido
+  return getTurnoDateTime(turno).getTime() <= new Date().getTime();
 }
 
 export function canMarkNoShow(turno: Turno): boolean {
-  // ✅ estado -> status
   if (!['PROGRAMADO', 'CONFIRMADO'].includes(turno.status)) return false;
-  return withinActionWindow(turno);
+  return getTurnoDateTime(turno).getTime() <= new Date().getTime();
+}
+
+export function canClasificar(turno: Turno): boolean {
+  return turno.status === 'PENDIENTE_CLASIFICACION';
 }

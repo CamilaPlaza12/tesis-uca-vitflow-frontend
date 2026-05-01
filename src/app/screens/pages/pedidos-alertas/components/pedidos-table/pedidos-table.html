@@ -8,12 +8,12 @@
     <table class="table">
       <thead>
         <tr>
-          <th>Fecha y hora</th>
-          <th>Servicio</th>
+          <th>Fecha</th>
           <th>Componente</th>
           <th>Solicitado por</th>
           <th>Vence</th>
           <th>Prioridad</th>
+          <th>A clasificar</th>
           <th>Estado</th>
         </tr>
       </thead>
@@ -39,8 +39,7 @@
           [class.selected]="p.id === pedidoSeleccionadoId"
           (click)="onRowClick(p)"
         >
-          <td class="mono">{{ formatFechaHora(p.datetime_local) }}</td>
-          <td>{{ p.hospital_unit }}</td>
+          <td class="mono">{{ formatFecha(p.datetime_local) }}</td>
           <td>{{ componenteLabel(p) }}</td>
           <td>
             {{ p.requested_by }}
@@ -58,6 +57,17 @@
               {{ prioridadLabel(p.priority) }}
             </span>
           </td>
+
+          <td>
+            <span
+              class="count-badge"
+              *ngIf="pendientesMap[p.id] > 0"
+              title="Turnos pendientes de clasificación"
+            >
+              {{ pendientesMap[p.id] }}
+            </span>
+          </td>
+
           <td>
             <span
               class="status"
