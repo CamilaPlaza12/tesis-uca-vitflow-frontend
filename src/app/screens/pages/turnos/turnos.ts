@@ -310,6 +310,14 @@ export class Turnos implements OnInit {
       } else if (this.accionPendiente === 'CANCELAR') {
         res = await firstValueFrom(this.turnoService.updateStatus(t.id, 'CANCELADO'));
       } else if (this.accionPendiente === 'REPROGRAMAR') {
+        const availDates = this.reprogramAvailableDates;
+        if (availDates.length > 0 && !availDates.includes(this.reprogramDate)) {
+          throw new Error('La fecha seleccionada ya no está disponible. Por favor, elegí otra fecha.');
+        }
+        const availTimes = this.reprogramAvailableTimes;
+        if (availTimes.length > 0 && !availTimes.includes(this.reprogramTime)) {
+          throw new Error('El horario seleccionado ya no está disponible para esa fecha. Por favor, elegí otro horario.');
+        }
         res = await firstValueFrom(
           this.turnoService.reschedule(t.id, this.reprogramDate, this.reprogramTime)
         );
@@ -329,6 +337,7 @@ export class Turnos implements OnInit {
       this.modalError = e?.error?.detail ?? e?.message ?? 'Ocurrió un error inesperado.';
     } finally {
       this.modalLoading = false;
+      this.cdr.detectChanges();
     }
   }
 

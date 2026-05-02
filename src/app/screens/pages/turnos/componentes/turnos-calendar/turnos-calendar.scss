@@ -203,6 +203,12 @@
   color: #991b1b;
 }
 
+.turno.pendiente_clasificacion {
+  background: rgba(245, 158, 11, 0.08);
+  border-color: rgba(245, 158, 11, 0.30);
+  color: #b45309;
+}
+
 .turno:hover {
   filter: brightness(0.97);
 }
@@ -295,6 +301,12 @@
 
 .chip:hover {
   background: #f8fbff;
+}
+
+.chip.pendiente_clasificacion {
+  background: rgba(245, 158, 11, 0.07);
+  border-color: rgba(245, 158, 11, 0.28);
+  color: #b45309;
 }
 
 .chip__time {
@@ -394,6 +406,12 @@
 
 .mini:hover {
   filter: brightness(0.97);
+}
+
+.mini.pendiente_clasificacion {
+  background: rgba(245, 158, 11, 0.08);
+  border-color: rgba(245, 158, 11, 0.28);
+  color: #b45309;
 }
 
 .more {

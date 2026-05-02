@@ -52,6 +52,7 @@
           [class.cancelado]="t.status === 'CANCELADO'"
           [class.completado]="t.status === 'COMPLETADO'"
           [class.no_presentado]="t.status === 'NO_PRESENTADO'"
+          [class.pendiente_clasificacion]="t.status === 'PENDIENTE_CLASIFICACION'"
         >
           <div class="turno__hora">{{ t.time_local }}</div>
           <div class="turno__nombre">{{ t.donor.full_name }}</div>
@@ -78,6 +79,7 @@
             type="button"
             *ngFor="let t of turnosDeFecha(d)"
             (click)="onSelect(t)"
+            [class.pendiente_clasificacion]="t.status === 'PENDIENTE_CLASIFICACION'"
           >
             <span class="chip__time">{{ t.time_local }}</span>
             <span class="chip__name">{{ t.donor.full_name }}</span>
@@ -117,6 +119,7 @@
             type="button"
             *ngFor="let t of previewTurnos(c.key, 2)"
             (click)="onSelect(t)"
+            [class.pendiente_clasificacion]="t.status === 'PENDIENTE_CLASIFICACION'"
           >
             {{ t.time_local }} · {{ t.donor.full_name }}
           </button>
