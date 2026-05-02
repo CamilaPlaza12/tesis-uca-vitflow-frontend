@@ -8,7 +8,6 @@ import { Component, Input } from '@angular/core';
 })
 export class HomeKpisComponent {
   @Input() totalUnits = 0;
-  @Input() urgentActive = 0;
   @Input() appointmentsToday = 0;
 
   // opcional, el extra “críticos”

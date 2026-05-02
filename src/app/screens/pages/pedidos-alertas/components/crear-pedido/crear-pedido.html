@@ -7,7 +7,7 @@
     <div class="modal-top">
       <div>
         <h3>Crear nuevo pedido</h3>
-        <p>Se creará automáticamente con estado <b>ACTIVO</b>.</p>
+        <p>Apuntará a todos los donantes compatibles con el grupo sanguíneo seleccionado.</p>
       </div>
 
       <button class="icon-btn" type="button" (click)="closeModal()">✕</button>
@@ -95,27 +95,6 @@
                 <span>{{ g }}</span>
                 <span *ngIf="!isGrupoDisponible(g)" class="opt-badge">pedido activo</span>
               </button>
-            </div>
-          </div>
-        </div>
-
-        <div class="field-block">
-          <label>Prioridad</label>
-          <div class="dropdown">
-            <button
-              class="drop-btn"
-              type="button"
-              (click)="toggleDropdown('prioridad')"
-              [class.open]="dropdownOpen.prioridad"
-            >
-              <span>{{ prioridadLabel(form.prioridad) }}</span>
-              <span class="chev">▾</span>
-            </button>
-
-            <div class="menu" *ngIf="dropdownOpen.prioridad">
-              <button class="opt" type="button" (click)="selectPrioridad('NORMAL')" [class.active]="form.prioridad==='NORMAL'">Normal</button>
-              <button class="opt" type="button" (click)="selectPrioridad('URGENTE')" [class.active]="form.prioridad==='URGENTE'">Urgente</button>
-              <button class="opt" type="button" (click)="selectPrioridad('CRITICA')" [class.active]="form.prioridad==='CRITICA'">Crítica</button>
             </div>
           </div>
         </div>

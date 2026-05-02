@@ -19,13 +19,13 @@
         </div>
 
         <div class="row">
-          <span class="k">Componente</span>
-          <span class="v">{{ pedido.component }} {{ pedido.blood_group }}</span>
+          <span class="k">Grupo sanguíneo</span>
+          <span class="v mono">{{ pedido.blood_group }}</span>
         </div>
 
         <div class="row">
-          <span class="k">Prioridad</span>
-          <span class="v">{{ prioridadLabel(pedido.priority) }}</span>
+          <span class="k">Componente</span>
+          <span class="v">{{ pedido.component }}</span>
         </div>
 
         <div class="row">
@@ -37,7 +37,6 @@
           <span class="k">Solicitado por</span>
           <span class="v">
             {{ pedido.requested_by }}
-            <span class="badge badge--auto" *ngIf="pedido.requested_by === 'Sistema'">Automático</span>
           </span>
         </div>
 
@@ -65,22 +64,6 @@
             <datalist id="serviciosList">
               <option *ngFor="let s of servicios" [value]="s"></option>
             </datalist>
-          </div>
-        </div>
-
-        <div class="row">
-          <span class="k">Prioridad</span>
-          <div class="v">
-            <div class="dropdown">
-              <button class="drop-btn" type="button" (click)="toggleDropdown('prioridad')">
-                {{ prioridadLabel(draft.priority) }} ▾
-              </button>
-              <div class="menu" *ngIf="dropdownOpen.prioridad">
-                <button class="opt" *ngFor="let p of prioridades" (click)="selectPrioridad(p)">
-                  {{ prioridadLabel(p) }}
-                </button>
-              </div>
-            </div>
           </div>
         </div>
 

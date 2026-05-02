@@ -9,7 +9,6 @@ import {
 } from '@angular/core';
 import {
   HospitalRequest,
-  HospitalRequestPriority,
   HospitalRequestStatus,
   HospitalUnit,
   CancelRequestResponse,
@@ -20,7 +19,7 @@ import { TurnoService } from '../../../../../service/turno_service';
 import { ComponenteSanguineo } from '../../../../../models/blood-bank.model';
 import { firstValueFrom } from 'rxjs';
 
-type DropKey = 'prioridad' | 'estado';
+type DropKey = 'estado';
 
 @Component({
   selector: 'app-pedido-detalle',
@@ -68,18 +67,16 @@ export class PedidoDetalle implements OnChanges {
   clasificarExito = false;
 
   servicios: HospitalUnit[] = [
-    'ITU',
+    'Urgencias',
     'Terapia Intensiva',
     'Guardia',
     'Quirofano',
     'Clinica Medica',
   ];
 
-  prioridades: HospitalRequestPriority[] = ['NORMAL', 'URGENTE', 'CRITICA'];
   estados: HospitalRequestStatus[] = ['ACTIVO', 'COMPLETO', 'CANCELADO', 'FINALIZADO'];
 
   dropdownOpen: Record<DropKey, boolean> = {
-    prioridad: false,
     estado: false,
   };
 
@@ -239,7 +236,6 @@ export class PedidoDetalle implements OnChanges {
 
     const body = {
       hospital_unit: this.draft.hospital_unit,
-      priority: this.draft.priority,
       status: this.draft.status,
       comments: this.draft.comments?.trim() || null,
     };
@@ -331,7 +327,6 @@ export class PedidoDetalle implements OnChanges {
     this.editMode = false;
     this.draft = null;
     this.errorMsg = '';
-    this.dropdownOpen.prioridad = false;
     this.dropdownOpen.estado = false;
     this.showCancelStep1 = false;
     this.showCancelStep2 = false;
@@ -342,15 +337,8 @@ export class PedidoDetalle implements OnChanges {
 
   toggleDropdown(key: DropKey): void {
     const next = !this.dropdownOpen[key];
-    this.dropdownOpen.prioridad = false;
     this.dropdownOpen.estado = false;
     this.dropdownOpen[key] = next;
-  }
-
-  selectPrioridad(p: HospitalRequestPriority): void {
-    if (!this.draft) return;
-    this.draft.priority = p;
-    this.dropdownOpen.prioridad = false;
   }
 
   selectEstado(e: HospitalRequestStatus): void {
@@ -363,14 +351,7 @@ export class PedidoDetalle implements OnChanges {
   onDocClick(ev: MouseEvent): void {
     const target = ev.target as HTMLElement | null;
     if (!target || target.closest('.dropdown')) return;
-    this.dropdownOpen.prioridad = false;
     this.dropdownOpen.estado = false;
-  }
-
-  prioridadLabel(p: HospitalRequestPriority): string {
-    if (p === 'CRITICA') return 'Crítica';
-    if (p === 'URGENTE') return 'Urgente';
-    return 'Normal';
   }
 
   estadoLabel(e: HospitalRequestStatus): string {

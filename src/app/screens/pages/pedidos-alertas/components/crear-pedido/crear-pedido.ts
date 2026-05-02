@@ -2,19 +2,13 @@ import { Component, EventEmitter, HostListener, Output, ChangeDetectorRef } from
 import {
   HospitalRequest,
   HospitalRequestCreate,
-  HospitalRequestPriority,
   HospitalUnit,
   HospitalRequestType,
 } from '../../../../../models/pedido';
 import { PedidoService } from '../../../../../service/pedido_service';
 
-type DropKey = 'servicio' | 'componente' | 'grupo' | 'prioridad';
+type DropKey = 'servicio' | 'componente' | 'grupo';
 
-const COMPONENTE_MAP: Record<string, string> = {
-  Sangre: 'SANGRE',
-  Plaquetas: 'PLAQUETAS',
-  Plasma: 'PLASMA',
-};
 
 @Component({
   selector: 'app-crear-pedido',
@@ -31,7 +25,7 @@ export class CrearPedido {
   today = new Date().toISOString().split('T')[0];
 
   servicios: HospitalUnit[] = [
-    'ITU',
+    'Urgencias',
     'Terapia Intensiva',
     'Guardia',
     'Quirofano',
@@ -43,22 +37,18 @@ export class CrearPedido {
 
   grupos: string[] = ['O-', 'O+', 'A-', 'A+', 'B-', 'B+', 'AB-', 'AB+'];
 
-  prioridades: HospitalRequestPriority[] = ['NORMAL', 'URGENTE', 'CRITICA'];
-
   dropdownOpen: Record<DropKey, boolean> = {
     servicio: false,
     componente: false,
     grupo: false,
-    prioridad: false,
   };
 
   tiposRequest: HospitalRequestType[] = ['NORMAL', 'CAMPAÑA'];
 
   form = {
-    servicio: 'ITU' as HospitalUnit,
+    servicio: 'Urgencias' as HospitalUnit,
     componente: 'Sangre',
     grupoSanguineo: 'O-',
-    prioridad: 'NORMAL' as HospitalRequestPriority,
     solicitadoPor: '',
     comentarios: '',
     fechaVencimiento: '',
@@ -87,7 +77,7 @@ export class CrearPedido {
     this.closeAllDropdowns();
     document.body.classList.add('modal-open');
     if (!this.form.solicitadoPor) this.form.solicitadoPor = 'Dra. García';
-    if (!this.form.comentarios) this.form.comentarios = this.DEFAULT_DESCRIPTION;
+    if (!this.form.comentarios) this.form.comentarios = '';
     this.loadTiposDisponibles();
   }
 
@@ -107,7 +97,6 @@ export class CrearPedido {
     this.dropdownOpen.servicio = false;
     this.dropdownOpen.componente = false;
     this.dropdownOpen.grupo = false;
-    this.dropdownOpen.prioridad = false;
   }
 
   toggleDropdown(key: DropKey): void {
@@ -124,7 +113,6 @@ export class CrearPedido {
   selectComponente(c: string): void {
     this.form.componente = c;
     this.dropdownOpen.componente = false;
-    this.loadTiposDisponibles();
   }
 
   selectGrupo(g: string): void {
@@ -133,21 +121,17 @@ export class CrearPedido {
     this.dropdownOpen.grupo = false;
   }
 
-  selectPrioridad(p: HospitalRequestPriority): void {
-    this.form.prioridad = p;
-    this.dropdownOpen.prioridad = false;
-  }
-
   isGrupoDisponible(g: string): boolean {
     return !this.tiposNoDisponibles.includes(g);
   }
 
   private loadTiposDisponibles(): void {
-    const comp = COMPONENTE_MAP[this.form.componente] ?? this.form.componente.toUpperCase();
     this.cargandoGrupos = true;
-    this.pedidoService.getTiposSangreDisponibles(comp).subscribe({
-      next: (res) => {
-        this.tiposNoDisponibles = res.no_disponibles;
+    this.pedidoService.getHospitalRequests().subscribe({
+      next: (requests) => {
+        this.tiposNoDisponibles = requests
+          .filter((r) => r.status === 'ACTIVO')
+          .map((r) => r.blood_group);
         this.cargandoGrupos = false;
         if (!this.isGrupoDisponible(this.form.grupoSanguineo)) {
           const primer = this.grupos.find((g) => this.isGrupoDisponible(g));
@@ -177,12 +161,6 @@ export class CrearPedido {
     if (this.open) this.closeModal();
   }
 
-  prioridadLabel(p: HospitalRequestPriority): string {
-    if (p === 'CRITICA') return 'Crítica';
-    if (p === 'URGENTE') return 'Urgente';
-    return 'Normal';
-  }
-
   validar(): boolean {
     if (!this.form.solicitadoPor || this.form.solicitadoPor.trim().length < 2) {
       this.errorMsg = 'Completá el campo "Solicitado por".';
@@ -191,6 +169,11 @@ export class CrearPedido {
 
     if (!this.form.fechaVencimiento) {
       this.errorMsg = 'Completá la fecha de vencimiento del pedido.';
+      return false;
+    }
+
+    if (!this.isGrupoDisponible(this.form.grupoSanguineo)) {
+      this.errorMsg = 'Ya existe un pedido activo para el grupo sanguíneo seleccionado.';
       return false;
     }
 
@@ -206,7 +189,7 @@ export class CrearPedido {
       hospital_unit: this.form.servicio,
       component: this.form.componente,
       blood_group: this.form.grupoSanguineo,
-      priority: this.form.prioridad,
+      priority: 'NORMAL',
       requested_by: this.form.solicitadoPor.trim(),
       end_date: this.form.fechaVencimiento,
       comments: this.form.comentarios?.trim() || null,
@@ -231,7 +214,7 @@ export class CrearPedido {
         if (err.status === 409) {
           this.errorMsg =
             err?.error?.detail ||
-            'Ya existe un pedido activo para este tipo de sangre y componente.';
+            'Ya existe un pedido activo para este grupo sanguíneo.';
         } else if (err.status === 400 || err.status === 422) {
           this.errorMsg = err?.error?.detail || 'Datos inválidos. Revisá el formulario.';
         } else {
@@ -245,11 +228,10 @@ export class CrearPedido {
   private resetForm(): void {
     this.errorMsg = '';
     this.tiposNoDisponibles = [];
-    this.form.comentarios = '';  // cleared so openModal() re-populates on next open
-    this.form.prioridad = 'NORMAL';
+    this.form.comentarios = '';
     this.form.componente = 'Sangre';
     this.form.grupoSanguineo = 'O-';
-    this.form.servicio = 'ITU';
+    this.form.servicio = 'Urgencias';
     this.form.fechaVencimiento = '';
     this.form.tipoRequest = 'NORMAL';
   }

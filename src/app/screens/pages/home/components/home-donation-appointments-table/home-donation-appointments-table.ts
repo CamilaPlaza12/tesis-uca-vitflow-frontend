@@ -57,6 +57,8 @@ export class HomeDonationAppointmentsTableComponent {
         return 'success';
       case 'PROGRAMADO':
         return 'warning';
+      case 'PENDIENTE_CLASIFICACION':
+        return 'info';
       case 'CANCELADO':
       case 'NO_PRESENTADO':
         return 'danger';

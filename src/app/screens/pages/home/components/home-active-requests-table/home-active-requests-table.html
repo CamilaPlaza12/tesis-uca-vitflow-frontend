@@ -8,11 +8,9 @@
       <table class="table">
         <thead>
           <tr>
-            <th>Fecha</th>
             <th>Servicio</th>
+            <th>Grupo sanguíneo</th>
             <th>Componente</th>
-            <th class="t-center">Cantidad</th>
-            <th class="t-center">Prioridad</th>
             <th class="t-center">Estado</th>
             <th>Finalización</th>
           </tr>
@@ -20,23 +18,17 @@
 
         <tbody>
           <tr *ngFor="let r of rows">
-            <td class="mono">{{ r.date }}</td>
             <td>{{ r.hospital_unit }}</td>
-            <td>{{ r.component }} {{ r.blood_group }}</td>
-            <td class="t-center mono">{{ r.requested_units }}</td>
-            <td class="t-center">
-              <app-pill-badge
-                [text]="r.priority"
-                [tone]="toneForPriority(r.priority)"
-              ></app-pill-badge>
-            </td>
+            <td class="mono">{{ r.blood_group }}</td>
+            <td>{{ r.component }}</td>
+
             <td class="t-center">
               <app-pill-badge
                 [text]="r.status"
                 [tone]="toneForStatus(r.status)"
               ></app-pill-badge>
             </td>
-            <td class="mono">{{ r.fecha_fin ?? '—' }}</td>
+            <td class="mono">{{ formatEndDate(r) }}</td>
           </tr>
 
           <tr *ngIf="rows.length === 0">

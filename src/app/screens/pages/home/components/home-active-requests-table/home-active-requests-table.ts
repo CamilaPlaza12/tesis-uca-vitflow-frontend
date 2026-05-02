@@ -11,13 +11,15 @@ export class HomeActiveRequestsTableComponent {
   @Input() title = '';
   @Input() rows: ActiveRequestRow[] = [];
 
-  toneForPriority(p: ActiveRequestRow['priority']) {
-    if (p === 'URGENTE' || p === 'CRITICA') return 'danger';
-    return 'neutral';
-  }
-
   toneForStatus(s: ActiveRequestRow['status']) {
     if (s === 'ACTIVO') return 'info';
     return 'success';
+  }
+
+  formatEndDate(r: ActiveRequestRow): string {
+    const raw = r.fecha_fin || r.end_date;
+    if (!raw) return '—';
+    const [y, m, d] = raw.split('T')[0].split('-');
+    return `${d}/${m}/${y}`;
   }
 }

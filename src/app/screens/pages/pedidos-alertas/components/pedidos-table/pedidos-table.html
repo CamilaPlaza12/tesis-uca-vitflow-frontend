@@ -9,10 +9,10 @@
       <thead>
         <tr>
           <th>Fecha</th>
+          <th>Grupo sanguíneo</th>
           <th>Componente</th>
           <th>Solicitado por</th>
           <th>Vence</th>
-          <th>Prioridad</th>
           <th>A clasificar</th>
           <th>Estado</th>
         </tr>
@@ -40,23 +40,10 @@
           (click)="onRowClick(p)"
         >
           <td class="mono">{{ formatFecha(p.datetime_local) }}</td>
-          <td>{{ componenteLabel(p) }}</td>
-          <td>
-            {{ p.requested_by }}
-            <span class="badge badge--auto" *ngIf="p.requested_by === 'Sistema'">Automático</span>
-          </td>
+          <td class="mono">{{ p.blood_group }}</td>
+          <td>{{ p.component }}</td>
+          <td>{{ p.requested_by }}</td>
           <td class="mono">{{ formatFecha(p.end_date) }}</td>
-
-          <td>
-            <span
-              class="badge"
-              [class.badge--normal]="p.priority === 'NORMAL'"
-              [class.badge--urgente]="p.priority === 'URGENTE'"
-              [class.badge--critica]="p.priority === 'CRITICA'"
-            >
-              {{ prioridadLabel(p.priority) }}
-            </span>
-          </td>
 
           <td>
             <span

@@ -63,9 +63,9 @@ export class Bancos implements OnInit {
   };
 
   loadingComponent: Record<ComponenteSanguineo, boolean> = {
-    globulos_rojos: false,
-    plasma: false,
-    plaquetas: false,
+    globulos_rojos: true,
+    plasma: true,
+    plaquetas: true,
   };
 
   errorComponent: Record<ComponenteSanguineo, string> = {
@@ -76,7 +76,7 @@ export class Bancos implements OnInit {
 
   // Umbrales
   umbrales: UmbralStock[] = [];
-  loadingUmbrales = false;
+  loadingUmbrales = true;
   errorUmbrales = '';
 
   // Modal: Agregar stock
@@ -241,6 +241,14 @@ export class Bancos implements OnInit {
     return 'OK';
   }
 
+  get canConfirmRemove(): boolean {
+    if (this.removeLoading) return false;
+    if (this.removeSelectedIds.length === 0) return false;
+    if (!this.removeMotivo) return false;
+    if (this.removeMotivo === 'otro' && !this.removeMotivoDetalle.trim()) return false;
+    return true;
+  }
+
   // ─── Remove modal: unidades selector ──────────────────────────────────────
 
   get removeUnidades(): UnidadStock[] {
@@ -302,7 +310,8 @@ export class Bancos implements OnInit {
       );
       this.addSuccessMsg = `Se ${cantidad === 1 ? 'creó 1 unidad' : `crearon ${cantidad} unidades`} de ${this.addBloodGroup} correctamente.`;
       this.cdr.detectChanges();
-      this.loadComponente(this.addModalComponente!);
+      const compAdd = this.addModalComponente;
+      setTimeout(() => { if (compAdd) this.loadComponente(compAdd); }, 0);
     } catch (err: any) {
       this.addError = err?.error?.detail || 'Error al agregar las unidades.';
     } finally {
@@ -336,6 +345,10 @@ export class Bancos implements OnInit {
   async confirmRemove(): Promise<void> {
     if (!this.removeModalComponente || this.removeSelectedIds.length === 0 || this.removeLoading)
       return;
+    if (!this.removeMotivo) {
+      this.removeError = 'El motivo es obligatorio.';
+      return;
+    }
     if (this.removeMotivo === 'otro' && !this.removeMotivoDetalle.trim()) {
       this.removeError = 'Especificá el detalle del motivo.';
       return;
@@ -356,7 +369,8 @@ export class Bancos implements OnInit {
       const n = this.removeSelectedIds.length;
       this.removeSuccessMsg = `Se ${n === 1 ? 'retiró 1 unidad' : `retiraron ${n} unidades`} correctamente.`;
       this.cdr.detectChanges();
-      this.loadComponente(this.removeModalComponente!);
+      const compRemove = this.removeModalComponente;
+      setTimeout(() => { if (compRemove) this.loadComponente(compRemove); }, 0);
     } catch (err: any) {
       this.removeError = err?.error?.detail || 'Error al retirar las unidades.';
     } finally {

@@ -19,23 +19,12 @@ export class PedidosTable {
     this.selectPedido.emit(pedido);
   }
 
-  prioridadLabel(p: HospitalRequest['priority']): string {
-    if (p === 'CRITICA') return 'Crítica';
-    if (p === 'URGENTE') return 'Urgente';
-    return 'Normal';
-  }
-
   estadoLabel(e: HospitalRequest['status']): string {
     if (e === 'ACTIVO') return 'Activo';
     if (e === 'COMPLETO') return 'Completo';
     if (e === 'CANCELADO') return 'Cancelado';
     if (e === 'FINALIZADO') return 'Finalizado';
     return e;
-  }
-
-  componenteLabel(p: HospitalRequest): string {
-    const bg = p.blood_group ? ` ${p.blood_group}` : '';
-    return `${p.component}${bg}`;
   }
 
   formatFecha(iso: string): string {

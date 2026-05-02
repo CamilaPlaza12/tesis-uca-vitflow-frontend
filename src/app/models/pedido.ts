@@ -8,7 +8,7 @@ export type HospitalRequestStatus =
   | 'FINALIZADO';
 
 export type HospitalUnit =
-  | 'ITU'
+  | 'Urgencias'
   | 'Terapia Intensiva'
   | 'Guardia'
   | 'Quirofano'
@@ -34,6 +34,7 @@ export interface HospitalRequest {
   id: string;
   datetime_local: string;
   end_date: string;
+  requested_units?: number;
   hospital_unit: HospitalUnit;
   component: string;
   blood_group: string;

@@ -7,8 +7,10 @@
     <table class="table">
       <thead>
         <tr>
-          <th>Fecha y hora</th>
+          <th>Fecha</th>
+          <th>Hora</th>
           <th>Donación</th>
+          <th>Grupo</th>
           <th class="t-center">Estado</th>
         </tr>
       </thead>
@@ -16,8 +18,7 @@
       <tbody>
         <tr *ngFor="let r of rows">
           <td class="mono">
-            <span *ngIf="r.date_local" class="appt-date">{{ formatAppointmentDate(r.date_local) }}</span>
-            {{ r.time_local }}
+            <span *ngIf="r.date_local">{{ formatAppointmentDate(r.date_local) }}</span>
             <span
               *ngIf="dayLabel(r.date_local) as label"
               class="day-badge"
@@ -25,7 +26,9 @@
               [class.day-badge--manana]="label === 'manana'"
             >{{ label === 'hoy' ? 'Hoy' : 'Mañana' }}</span>
           </td>
+          <td class="mono">{{ r.time_local }}</td>
           <td>{{ r.donation_type }}</td>
+          <td class="mono">{{ r.blood_group || '—' }}</td>
           <td class="t-center">
             <app-pill-badge
               [text]="r.status"
@@ -35,7 +38,7 @@
         </tr>
 
         <tr *ngIf="rows.length === 0">
-          <td colspan="3" class="empty">No hay turnos para mostrar</td>
+          <td colspan="5" class="empty">No hay turnos para mostrar</td>
         </tr>
       </tbody>
     </table>

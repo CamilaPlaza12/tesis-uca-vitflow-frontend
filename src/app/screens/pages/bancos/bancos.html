@@ -294,10 +294,10 @@
 
     <!-- Motivo -->
     <div class="vf-field">
-      <label class="vf-label">Motivo</label>
+      <label class="vf-label">Motivo <span style="color:#e55;">*</span></label>
       <div class="vf-control">
         <select class="select" [(ngModel)]="removeMotivo" [disabled]="removeLoading">
-          <option value="">Sin especificar</option>
+          <option value="" disabled>Seleccioná un motivo</option>
           <option *ngFor="let m of motivoOptions" [value]="m.value">{{ m.label }}</option>
         </select>
 
@@ -324,7 +324,7 @@
         *ngIf="!removeSuccessMsg"
         class="btn btn--danger"
         type="button"
-        [disabled]="removeLoading || removeSelectedIds.length === 0"
+        [disabled]="!canConfirmRemove"
         (click)="confirmRemove()"
       >
         <span *ngIf="removeLoading" class="pi pi-spin pi-spinner"></span>
