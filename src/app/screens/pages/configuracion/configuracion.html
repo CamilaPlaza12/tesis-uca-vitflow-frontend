@@ -2,7 +2,7 @@
   <header class="header">
     <div class="header__left">
       <h1>Configuración</h1>
-      <p class="subtitle">Perfil y datos del hospital. Nada raro, nada técnico, nada de UID.</p>
+      <p class="subtitle">Perfil y datos del hospital.</p>
     </div>
   </header>
 
@@ -24,31 +24,6 @@
         </div>
 
         <div class="card__body">
-          <div class="profileRow">
-            <div class="avatar">
-              <ng-container *ngIf="avatarUrl; else initials">
-                <img [src]="avatarUrl" alt="Foto de perfil" />
-              </ng-container>
-              <ng-template #initials>
-                <span class="initials">{{ getInitials() }}</span>
-              </ng-template>
-            </div>
-
-            <div class="avatarActions">
-              <div class="avatarTitle">Foto de perfil</div>
-              <div class="avatarSub">Se ve en tu panel y en comunicaciones internas.</div>
-
-              <label class="pillBtn">
-                Subir imagen
-                <input type="file" accept="image/*" (change)="onAvatarFilePicked($event)" hidden />
-              </label>
-
-              <button class="pillBtn pillBtn--muted" type="button" (click)="avatarUrl = null" [disabled]="!avatarUrl">
-                Quitar
-              </button>
-            </div>
-          </div>
-
           <div class="formGrid">
             <div class="field">
               <div class="k">Email</div>
@@ -89,53 +64,39 @@
         </div>
       </div>
 
+      <!-- Información del sistema -->
       <div class="card">
         <div class="card__head">
           <div class="headL">
             <div class="iconBubble">⚙️</div>
             <div>
-              <div class="title">Preferencias</div>
-              <div class="hint">Cómo querés que te avise y se vea la app</div>
+              <div class="title">Información del sistema</div>
+              <div class="hint">Versión y estado de VitFlow</div>
             </div>
           </div>
+          <div class="badge badge--ok">Operativo</div>
         </div>
 
         <div class="card__body">
-          <div class="toggleRow">
-            <div class="tL">
-              <div class="tTitle">Alertas por email</div>
-              <div class="tSub">Recibí notificaciones de pedidos y cambios relevantes.</div>
-            </div>
-            <label class="switch">
-              <input type="checkbox" [(ngModel)]="prefs.emailAlerts" />
-              <span class="slider"></span>
-            </label>
+          <div class="kv">
+            <div class="k">Aplicación</div>
+            <div class="v">VitFlow</div>
           </div>
-
-          <div class="toggleRow">
-            <div class="tL">
-              <div class="tTitle">Solo urgentes</div>
-              <div class="tSub">Filtra avisos para ver únicamente lo crítico.</div>
-            </div>
-            <label class="switch">
-              <input type="checkbox" [(ngModel)]="prefs.urgentOnly" />
-              <span class="slider"></span>
-            </label>
+          <div class="kv">
+            <div class="k">Versión</div>
+            <div class="v">v1.0.0</div>
           </div>
-
-          <div class="toggleRow">
-            <div class="tL">
-              <div class="tTitle">Interfaz compacta</div>
-              <div class="tSub">Reduce paddings en tablas y tarjetas (útil en pantallas chicas).</div>
-            </div>
-            <label class="switch">
-              <input type="checkbox" [(ngModel)]="prefs.compactUI" />
-              <span class="slider"></span>
-            </label>
+          <div class="kv">
+            <div class="k">Entorno</div>
+            <div class="v">Producción</div>
           </div>
-
-          <div class="note">
-            Esto por ahora es visual/hardcode. Después lo persistimos por usuario.
+          <div class="kv">
+            <div class="k">Módulos activos</div>
+            <div class="v">Stock · Turnos · Pedidos · Eventos · Equipo</div>
+          </div>
+          <div class="kv">
+            <div class="k">Soporte</div>
+            <div class="v">vitflow@soporte.com</div>
           </div>
         </div>
       </div>
@@ -195,42 +156,6 @@
           </button>
           <div class="muted">
             Tip: si te desconectás seguido, revisá el navegador (autocompletar/usuarios).
-          </div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card__head">
-          <div class="headL">
-            <div class="iconBubble">ℹ️</div>
-            <div>
-              <div class="title">Información</div>
-              <div class="hint">Atajos útiles para no perderte</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="card__body">
-          <div class="infoList">
-            <div class="infoItem">
-              <div class="iTitle">Centro de ayuda</div>
-              <div class="iSub">Guías rápidas para pedidos, stock y turnos.</div>
-              <button class="linkBtn" type="button">Abrir</button>
-            </div>
-
-            <div class="infoItem">
-              <div class="iTitle">Política de privacidad</div>
-              <div class="iSub">Qué guardamos y por qué (spoiler: lo necesario).</div>
-              <button class="linkBtn" type="button">Ver</button>
-            </div>
-
-            <div class="infoItem infoItem--version">
-              <div>
-                <div class="iTitle">Versión</div>
-                <div class="iSub">VitFlow v0.1 (tesis build)</div>
-              </div>
-              <div class="chipSmall">beta</div>
-            </div>
           </div>
         </div>
       </div>

@@ -1,6 +1,9 @@
 import { Component, OnInit, ChangeDetectorRef, HostListener } from '@angular/core';
+import { Router } from '@angular/router';
+import { filter, take } from 'rxjs/operators';
 import { HospitalUser, MemberRole, MemberStatus } from '../../../models/hospital-user';
 import { EquipoRolesService } from '../../../service/equipos_roles_service';
+import { UserService } from '../../../service/user_service';
 
 type ToastKind = 'success' | 'error' | 'info';
 
@@ -41,11 +44,24 @@ export class EquipoRoles implements OnInit {
 
   constructor(
     private cdr: ChangeDetectorRef,
-    private equipoRolesService: EquipoRolesService
+    private equipoRolesService: EquipoRolesService,
+    private userService: UserService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
-    this.cargarMiembros();
+    this.userService.currentUserData$
+      .pipe(
+        filter((data) => data !== null),
+        take(1)
+      )
+      .subscribe((data) => {
+        if (data?.user?.role !== 'HOSPITAL_ADMIN') {
+          this.router.navigate(['/home']);
+          return;
+        }
+        this.cargarMiembros();
+      });
   }
 
   @HostListener('document:keydown.escape')

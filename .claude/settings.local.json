@@ -5,7 +5,9 @@
       "PowerShell(Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned -Force)",
       "Bash(xargs grep *)",
       "Bash(curl -s \"http://localhost:8000/api/v1/eventos/\")",
-      "Bash(npm start *)"
+      "Bash(npm start *)",
+      "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\camil\\\\OneDrive\\\\Documentos\\\\GitHub\\\\tesis-uca-vitflow-frontend\\\\src\\\\app\\\\screens\\\\pages\\\\configuracion\" -Recurse -File)",
+      "Bash(Select-Object -ExpandProperty FullName)"
     ]
   }
 }

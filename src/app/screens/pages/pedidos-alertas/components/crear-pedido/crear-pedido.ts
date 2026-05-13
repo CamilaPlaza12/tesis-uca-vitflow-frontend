@@ -130,7 +130,7 @@ export class CrearPedido {
     this.pedidoService.getHospitalRequests().subscribe({
       next: (requests) => {
         this.tiposNoDisponibles = requests
-          .filter((r) => r.status === 'ACTIVO')
+          .filter((r) => r.status === 'ACTIVO' && r.tipo === 'manual')
           .map((r) => r.blood_group);
         this.cargandoGrupos = false;
         if (!this.isGrupoDisponible(this.form.grupoSanguineo)) {
@@ -173,7 +173,7 @@ export class CrearPedido {
     }
 
     if (!this.isGrupoDisponible(this.form.grupoSanguineo)) {
-      this.errorMsg = 'Ya existe un pedido activo para el grupo sanguíneo seleccionado.';
+      this.errorMsg = 'Ya existe un pedido manual activo para ese grupo sanguíneo.';
       return false;
     }
 

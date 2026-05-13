@@ -21,6 +21,12 @@
   padding: 10px 14px 14px;
 }
 
+.table-scroll {
+  max-height: 210px;
+  overflow-y: auto;
+  overflow-x: auto;
+}
+
 .table {
   width: 100%;
   border-collapse: collapse;
@@ -28,6 +34,10 @@
 }
 
 th {
+  position: sticky;
+  top: 0;
+  background: #fff;
+  z-index: 1;
   text-align: left;
   color: #4a6574;
   font-size: 12.5px;

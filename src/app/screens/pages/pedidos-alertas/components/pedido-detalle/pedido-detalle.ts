@@ -1,4 +1,5 @@
 import {
+  ChangeDetectorRef,
   Component,
   EventEmitter,
   HostListener,
@@ -37,7 +38,8 @@ export class PedidoDetalle implements OnChanges {
 
   constructor(
     private pedidoService: PedidoService,
-    private turnoService: TurnoService
+    private turnoService: TurnoService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   editMode = false;
@@ -131,11 +133,13 @@ export class PedidoDetalle implements OnChanges {
         this.pendientesClasificacion = res.items;
         this.cargandoPendientes = false;
         this.pendientesLoaded = true;
+        this.cdr.detectChanges();
       },
       error: () => {
         this.pendientesClasificacion = [];
         this.cargandoPendientes = false;
         this.pendientesLoaded = true;
+        this.cdr.detectChanges();
       },
     });
   }

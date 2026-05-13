@@ -15,14 +15,6 @@ export class Configuracion implements OnInit {
   editingPhone = false;
   phoneDraft = '';
 
-  avatarUrl: string | null = null;
-
-  prefs = {
-    emailAlerts: true,
-    urgentOnly: false,
-    compactUI: false,
-  };
-
   logoutOpen = false;
 
   constructor(private userService: UserService) {}
@@ -106,27 +98,4 @@ export class Configuracion implements OnInit {
     await this.userService.logout();
   }
 
-  onAvatarFilePicked(ev: Event): void {
-    const input = ev.target as HTMLInputElement | null;
-    const file = input?.files?.[0];
-    if (!file) return;
-
-    if (!file.type.startsWith('image/')) return;
-
-    const reader = new FileReader();
-    reader.onload = () => {
-      this.avatarUrl = String(reader.result || '');
-    };
-    reader.readAsDataURL(file);
-
-    if (input) input.value = '';
-  }
-
-  getInitials(): string {
-    const a = (this.user.firstName || '').trim();
-    const b = (this.user.lastName || '').trim();
-    const one = a ? a[0] : 'U';
-    const two = b ? b[0] : '';
-    return (one + two).toUpperCase();
-  }
 }

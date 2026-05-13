@@ -1,9 +1,13 @@
 .kpis {
   height: 100%;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: 1fr 1fr;
   gap: 14px;
-  align-content: stretch;
+  align-content: start;
+}
+
+.kpi--wide {
+  grid-column: 1 / -1;
 }
 
 /* Card base */
@@ -25,7 +29,7 @@
     0 14px 34px rgba(15, 23, 42, 0.06),
     0 1px 0 rgba(255, 255, 255, 0.7) inset;
 
-  min-height: 175px;
+  min-height: 120px;
 
   transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
 }
@@ -113,8 +117,8 @@
   font-size: 20px;
 }
 
-/* Variantes: un toque de identidad por card (sin romper paleta) */
-.kpi:nth-child(1)::before {
+/* Variantes de color por card */
+.kpi--wide::before {
   background: linear-gradient(90deg, rgba(255, 91, 77, 0.55), rgba(255, 91, 77, 0.18));
 }
 

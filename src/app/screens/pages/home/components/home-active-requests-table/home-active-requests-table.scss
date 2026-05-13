@@ -22,17 +22,22 @@
 }
 
 .tableWrap {
+  max-height: 210px;
+  overflow-y: auto;
   overflow-x: auto;
 }
 
 .table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 720px;
   table-layout: fixed;
 }
 
 th {
+  position: sticky;
+  top: 0;
+  background: #fff;
+  z-index: 1;
   text-align: left;
   color: #4a6574;
   font-size: 12.5px;

@@ -45,29 +45,27 @@
           <td class="mono">{{ m.dni }}</td>
 
           <td (click)="$event.stopPropagation()">
-            <div class="dd" [class.dd--open]="roleOpenId === m.uid">
-              <button type="button" class="dd__btn" (click)="toggleRoleMenu(m)">
-                <span class="dd__value">{{ roleLabel(m.role) }}</span>
-                <span class="chev">▾</span>
-              </button>
+            <ng-container *ngIf="m.role === 'HOSPITAL_ADMIN'; else roleDropdown">
+              <span class="role-readonly">Administrador</span>
+            </ng-container>
+            <ng-template #roleDropdown>
+              <div class="dd" [class.dd--open]="roleOpenId === m.uid">
+                <button type="button" class="dd__btn" (click)="toggleRoleMenu(m)">
+                  <span class="dd__value">{{ roleLabel(m.role) }}</span>
+                  <span class="chev">▾</span>
+                </button>
 
-              <div class="dd__menu" *ngIf="roleOpenId === m.uid">
-                <button
-                  type="button"
-                  class="dd__item"
-                  (click)="setRole(m, 'TECHNICIAN')"
-                >
-                  Técnico
-                </button>
-                <button
-                  type="button"
-                  class="dd__item"
-                  (click)="setRole(m, 'HOSPITAL_ADMIN')"
-                >
-                  Administrador
-                </button>
+                <div class="dd__menu" *ngIf="roleOpenId === m.uid">
+                  <button
+                    type="button"
+                    class="dd__item"
+                    (click)="setRole(m, 'TECHNICIAN')"
+                  >
+                    Técnico
+                  </button>
+                </div>
               </div>
-            </div>
+            </ng-template>
           </td>
 
           <td>

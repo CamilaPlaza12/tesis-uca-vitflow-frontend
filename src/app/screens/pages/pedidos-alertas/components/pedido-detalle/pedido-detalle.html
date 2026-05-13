@@ -157,13 +157,16 @@
   <div class="pend-modal" (click)="$event.stopPropagation()">
 
     <div class="pend-top">
-      <div>
+      <div class="pend-top__left">
         <div class="pend-title">Pendientes de clasificación</div>
-        <div class="pend-sub" *ngIf="!cargandoPendientes">
-          {{ pendientesClasificacion.length }} turno(s)
-        </div>
+        <div class="pend-sub">Seleccioná un donante para registrar los componentes obtenidos</div>
       </div>
-      <button class="icon-btn" type="button" (click)="closePendientesModal()" [disabled]="clasificarLoading">✕</button>
+      <div class="pend-top__right">
+        <span class="pend-count-badge" *ngIf="!cargandoPendientes">
+          {{ pendientesClasificacion.length }}
+        </span>
+        <button class="icon-btn" type="button" (click)="closePendientesModal()" [disabled]="clasificarLoading">✕</button>
+      </div>
     </div>
 
     <div class="pend-loading" *ngIf="cargandoPendientes">Cargando…</div>
@@ -172,29 +175,22 @@
       Sin donaciones pendientes de clasificación.
     </div>
 
-    <div class="pend-table-wrap" *ngIf="!cargandoPendientes && pendientesClasificacion.length > 0">
-      <table class="pend-table">
-        <thead>
-          <tr>
-            <th>DNI</th>
-            <th>Nombre</th>
-            <th>Fecha</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let t of pendientesClasificacion">
-            <td class="mono">{{ t.donor_dni }}</td>
-            <td>{{ t.donor_name }}</td>
-            <td class="mono">{{ t.date_local }}</td>
-            <td>
-              <button class="btn-clasificar" type="button" (click)="openClasificar(t)">
-                Clasificar
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+    <div class="pend-list-wrap" *ngIf="!cargandoPendientes && pendientesClasificacion.length > 0">
+      <div class="pend-list">
+        <div class="pend-row" *ngFor="let t of pendientesClasificacion">
+          <div class="pend-avatar">{{ t.donor_name.charAt(0).toUpperCase() }}</div>
+          <div class="pend-info">
+            <div class="pend-name">{{ t.donor_name }}</div>
+            <div class="pend-meta">
+              <span class="pend-chip pend-chip--dni">DNI {{ t.donor_dni }}</span>
+              <span class="pend-chip">{{ t.date_local }}</span>
+            </div>
+          </div>
+          <button class="btn-clasificar" type="button" (click)="openClasificar(t)">
+            Clasificar
+          </button>
+        </div>
+      </div>
     </div>
 
   </div>
@@ -223,7 +219,7 @@
       <div class="clas-field">
         <label class="clas-label">Grupo sanguíneo</label>
         <div class="clas-blood-readonly">
-          <span class="mono">{{ clasificarTurno.donor_blood_type || '—' }}</span>
+          <span class="mono">{{ clasificarTurno.donor_blood_type || pedido?.blood_group || '—' }}</span>
         </div>
       </div>
 
