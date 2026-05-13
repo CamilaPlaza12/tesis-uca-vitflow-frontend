@@ -244,6 +244,19 @@
   }
 }
 
+.mini--icon {
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  i {
+    font-size: 15px;
+  }
+}
+
 .mini--danger {
   background: #fff1f2;
   border-color: #fee2e2;

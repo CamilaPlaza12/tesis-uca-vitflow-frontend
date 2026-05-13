@@ -1,4 +1,4 @@
-<div class="card" (click)="closeRoleMenu()">
+<div class="card">
   <div class="card__header">
     <h2>Miembros del hospital</h2>
     <span class="hint">{{ miembros.length }} en lista</span>
@@ -44,28 +44,8 @@
           <td class="mono">{{ m.email }}</td>
           <td class="mono">{{ m.dni }}</td>
 
-          <td (click)="$event.stopPropagation()">
-            <ng-container *ngIf="m.role === 'HOSPITAL_ADMIN'; else roleDropdown">
-              <span class="role-readonly">Administrador</span>
-            </ng-container>
-            <ng-template #roleDropdown>
-              <div class="dd" [class.dd--open]="roleOpenId === m.uid">
-                <button type="button" class="dd__btn" (click)="toggleRoleMenu(m)">
-                  <span class="dd__value">{{ roleLabel(m.role) }}</span>
-                  <span class="chev">▾</span>
-                </button>
-
-                <div class="dd__menu" *ngIf="roleOpenId === m.uid">
-                  <button
-                    type="button"
-                    class="dd__item"
-                    (click)="setRole(m, 'TECHNICIAN')"
-                  >
-                    Técnico
-                  </button>
-                </div>
-              </div>
-            </ng-template>
+          <td>
+            <span class="role-readonly">{{ roleLabel(m.role) }}</span>
           </td>
 
           <td>
@@ -83,13 +63,14 @@
 
           <td (click)="$event.stopPropagation()">
             <button
-              class="mini"
+              class="mini mini--icon"
               [class.mini--danger]="m.status !== 'SUSPENDED'"
               [class.mini--success]="m.status === 'SUSPENDED'"
               (click)="toggleEstado.emit(m)"
               [disabled]="m.role === 'HOSPITAL_ADMIN'"
+              [title]="m.status === 'SUSPENDED' ? 'Reactivar acceso' : 'Suspender acceso'"
             >
-              {{ m.status === 'SUSPENDED' ? 'Reactivar' : 'Suspender' }}
+              <i [class]="m.status === 'SUSPENDED' ? 'pi pi-check-circle' : 'pi pi-ban'"></i>
             </button>
           </td>
 

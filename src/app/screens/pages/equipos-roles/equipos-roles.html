@@ -56,46 +56,53 @@
             <input type="email" [(ngModel)]="invite_email" placeholder="nombre@hospital.org" />
           </label>
 
-          <label class="field">
+          <label class="field" [class.field--error]="dniError">
             <span>DNI *</span>
-            <input type="text" [(ngModel)]="invite_dni" placeholder="Ej: 40123456" />
+            <input
+              type="text"
+              [(ngModel)]="invite_dni"
+              (input)="sanitizeDni($event)"
+              placeholder="Ej: 40123456"
+              maxlength="8"
+            />
+            <span class="field__error" *ngIf="dniError">{{ dniError }}</span>
           </label>
 
           <label class="field">
             <span>Nombre *</span>
-            <input type="text" [(ngModel)]="invite_nombre" placeholder="Nombre" />
+            <input
+              type="text"
+              [(ngModel)]="invite_nombre"
+              (input)="sanitizeNombre($event)"
+              placeholder="Nombre"
+            />
           </label>
 
           <label class="field">
             <span>Apellido *</span>
-            <input type="text" [(ngModel)]="invite_apellido" placeholder="Apellido" />
+            <input
+              type="text"
+              [(ngModel)]="invite_apellido"
+              (input)="sanitizeApellido($event)"
+              placeholder="Apellido"
+            />
           </label>
 
-          <label class="field">
+          <label class="field" [class.field--error]="phoneError">
             <span>Teléfono *</span>
-            <input type="text" [(ngModel)]="invite_phone" placeholder="Ej: 1122334455" />
+            <input
+              type="text"
+              [(ngModel)]="invite_phone"
+              (input)="sanitizePhone($event)"
+              placeholder="Ej: 1122334455"
+              maxlength="15"
+            />
+            <span class="field__error" *ngIf="phoneError">{{ phoneError }}</span>
           </label>
 
           <div class="field">
             <span>Rol</span>
-
-            <div class="dd">
-              <button
-                type="button"
-                class="dd__btn dd__btn--fixed"
-                (click)="toggleInviteRoleOpen()"
-                [disabled]="inviteLoading"
-              >
-                <span class="dd__value">{{ roleLabel(selectedInviteRole) }}</span>
-                <span class="chev">▾</span>
-              </button>
-
-              <div class="dd__menu dd__menu--fixed" *ngIf="inviteRoleOpen">
-                <button type="button" class="dd__item" (click)="setInviteRole('TECHNICIAN')">
-                  Técnico
-                </button>
-              </div>
-            </div>
+            <div class="role-static">Técnico</div>
           </div>
         </div>
 
@@ -107,14 +114,7 @@
           <button
             class="btn btn--primary"
             (click)="submitInvitar()"
-            [disabled]="
-              inviteLoading ||
-              !invite_email.trim() ||
-              !invite_dni.trim() ||
-              !invite_nombre.trim() ||
-              !invite_apellido.trim() ||
-              !invite_phone.trim()
-            "
+            [disabled]="inviteLoading || !inviteFormValid"
           >
             {{ inviteLoading ? 'Enviando...' : 'Enviar invitación' }}
           </button>

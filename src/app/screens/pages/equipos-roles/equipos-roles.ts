@@ -22,7 +22,6 @@ export class EquipoRoles implements OnInit {
   modalInvitarOpen = false;
   inviteLoading = false;
 
-  inviteRoleOpen = false;
   selectedInviteRole: MemberRole = 'TECHNICIAN';
 
   invite_email = '';
@@ -102,13 +101,11 @@ export class EquipoRoles implements OnInit {
 
   openInvitar(): void {
     this.modalInvitarOpen = true;
-    this.inviteRoleOpen = false;
   }
 
   closeInvitar(): void {
     this.modalInvitarOpen = false;
     this.inviteLoading = false;
-    this.inviteRoleOpen = false;
 
     this.invite_email = '';
     this.invite_dni = '';
@@ -118,13 +115,56 @@ export class EquipoRoles implements OnInit {
     this.selectedInviteRole = 'TECHNICIAN';
   }
 
-  toggleInviteRoleOpen(): void {
-    this.inviteRoleOpen = !this.inviteRoleOpen;
+  sanitizeDni(event: Event): void {
+    const el = event.target as HTMLInputElement;
+    const cleaned = el.value.replace(/\D/g, '').slice(0, 8);
+    this.invite_dni = cleaned;
+    el.value = cleaned;
   }
 
-  setInviteRole(role: MemberRole): void {
-    this.selectedInviteRole = role;
-    this.inviteRoleOpen = false;
+  sanitizePhone(event: Event): void {
+    const el = event.target as HTMLInputElement;
+    const cleaned = el.value.replace(/\D/g, '').slice(0, 15);
+    this.invite_phone = cleaned;
+    el.value = cleaned;
+  }
+
+  sanitizeNombre(event: Event): void {
+    const el = event.target as HTMLInputElement;
+    const cleaned = el.value.replace(/[0-9]/g, '');
+    this.invite_nombre = cleaned;
+    el.value = cleaned;
+  }
+
+  sanitizeApellido(event: Event): void {
+    const el = event.target as HTMLInputElement;
+    const cleaned = el.value.replace(/[0-9]/g, '');
+    this.invite_apellido = cleaned;
+    el.value = cleaned;
+  }
+
+  get dniError(): string {
+    const v = this.invite_dni.trim();
+    if (!v) return '';
+    if (v.length < 7) return 'Mínimo 7 dígitos.';
+    return '';
+  }
+
+  get phoneError(): string {
+    const v = this.invite_phone.trim();
+    if (!v) return '';
+    if (v.length < 8) return 'Mínimo 8 dígitos.';
+    return '';
+  }
+
+  get inviteFormValid(): boolean {
+    return !!(
+      this.invite_email.trim() &&
+      this.invite_dni.trim().length >= 7 &&
+      this.invite_nombre.trim() &&
+      this.invite_apellido.trim() &&
+      this.invite_phone.trim().length >= 8
+    );
   }
 
   submitInvitar(): void {
@@ -134,13 +174,8 @@ export class EquipoRoles implements OnInit {
     const lastName = this.invite_apellido.trim();
     const phone = this.invite_phone.trim();
 
-    if (!email || !dni || !firstName || !lastName || !phone) return;
+    if (!this.inviteFormValid) return;
     if (this.inviteLoading) return;
-
-    if (this.selectedInviteRole !== 'TECHNICIAN') {
-      this.showToast('Por ahora solo se pueden invitar técnicos.', 'info');
-      return;
-    }
 
     this.inviteLoading = true;
     this.cdr.detectChanges();

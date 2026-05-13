@@ -46,6 +46,10 @@
   overflow: hidden;
 }
 
+.card--fill {
+  flex: 1;
+}
+
 .card__head {
   padding: 16px 20px;
   display: flex;
