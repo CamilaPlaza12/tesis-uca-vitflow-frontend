@@ -1,0 +1,128 @@
+<button class="btn-primary" type="button" (click)="onClick()">
+  Crear nuevo pedido
+</button>
+
+<div class="overlay" *ngIf="open" (click)="closeModal()">
+  <div class="modal" (click)="stop($event)">
+    <div class="modal-top">
+      <div>
+        <h3>Crear nuevo pedido</h3>
+        <p>Apuntará a todos los donantes compatibles con el grupo sanguíneo seleccionado.</p>
+      </div>
+
+      <button class="icon-btn" type="button" (click)="closeModal()">✕</button>
+    </div>
+
+    <div class="modal-body">
+      <div class="grid">
+        <div class="field-block">
+          <label>Servicio</label>
+          <div class="dropdown">
+            <button
+              class="drop-btn"
+              type="button"
+              (click)="toggleDropdown('servicio')"
+              [class.open]="dropdownOpen.servicio"
+            >
+              <span>{{ form.servicio }}</span>
+              <span class="chev">▾</span>
+            </button>
+
+            <div class="menu" *ngIf="dropdownOpen.servicio">
+              <button
+                class="opt"
+                type="button"
+                *ngFor="let s of servicios"
+                (click)="selectServicio(s)"
+                [class.active]="s === form.servicio"
+              >
+                {{ s }}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="field-block">
+          <label>Componente</label>
+          <div class="dropdown">
+            <button
+              class="drop-btn"
+              type="button"
+              (click)="toggleDropdown('componente')"
+              [class.open]="dropdownOpen.componente"
+            >
+              <span>{{ 'Sangre' }}</span>
+              <span class="chev">▾</span>
+            </button>
+
+            <div class="menu" *ngIf="dropdownOpen.componente">
+              <button
+                class="opt"
+                type="button"
+                *ngFor="let c of componentes"
+                (click)="selectComponente(c)"
+                [class.active]="c === form.componente"
+              >
+                {{ c }}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="field-block">
+          <label>Grupo sanguíneo</label>
+          <div class="dropdown">
+            <button
+              class="drop-btn"
+              type="button"
+              (click)="toggleDropdown('grupo')"
+              [class.open]="dropdownOpen.grupo"
+              [disabled]="cargandoGrupos"
+            >
+              <span>{{ form.grupoSanguineo }}</span>
+              <span class="chev">{{ cargandoGrupos ? '…' : '▾' }}</span>
+            </button>
+
+            <div class="menu" *ngIf="dropdownOpen.grupo">
+              <button
+                class="opt"
+                type="button"
+                *ngFor="let g of grupos"
+                (click)="selectGrupo(g)"
+                [class.active]="g === form.grupoSanguineo"
+                [class.opt--disabled]="!isGrupoDisponible(g)"
+              >
+                <span>{{ g }}</span>
+                <span *ngIf="!isGrupoDisponible(g)" class="opt-badge">pedido manual activo</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="field-block">
+          <label>Solicitado por</label>
+          <input class="field" type="text" [(ngModel)]="form.solicitadoPor" placeholder="Ej: Dra. López" />
+        </div>
+
+        <div class="field-block">
+          <label>Fecha de vencimiento</label>
+          <input class="field" type="date" [(ngModel)]="form.fechaVencimiento" [min]="today" />
+        </div>
+
+        <div class="field-block full">
+          <label>Comentarios (opcional)</label>
+          <textarea class="field textarea" rows="3" [(ngModel)]="form.comentarios"></textarea>
+        </div>
+
+        <div class="error" *ngIf="errorMsg">{{ errorMsg }}</div>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-ghost" type="button" (click)="closeModal()" [disabled]="loading">Cancelar</button>
+      <button class="btn-primary" type="button" (click)="crear()" [disabled]="loading">
+        {{ loading ? 'Creando…' : 'Crear pedido' }}
+      </button>
+    </div>
+  </div>
+</div>

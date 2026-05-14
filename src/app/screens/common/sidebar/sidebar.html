@@ -1,0 +1,85 @@
+<div class="overlay" *ngIf="mobileOpen" (click)="closeMobile()"></div>
+
+<aside
+  class="sidebar"
+  [class.collapsed]="collapsed && !isMobile"
+  [class.mobile]="isMobile"
+  [class.mobile-open]="isMobile && mobileOpen"
+>
+  <div class="top">
+    <div class="brand">
+      <img class="logo-img" src="images/gota.png" alt="VitFlow" />
+      <span class="brand-text" *ngIf="!(collapsed && !isMobile)">VitFlow</span>
+    </div>
+
+    <div class="actions">
+      <button
+        *ngIf="!isMobile"
+        class="icon-btn"
+        type="button"
+        (click)="toggleCollapse()"
+        aria-label="Toggle sidebar"
+      >
+        <i class="pi" [ngClass]="collapsed ? 'pi-angle-right' : 'pi-angle-left'"></i>
+      </button>
+
+      <button
+        *ngIf="isMobile"
+        class="icon-btn"
+        type="button"
+        (click)="closeMobile()"
+        aria-label="Close sidebar"
+      >
+        <i class="pi pi-times"></i>
+      </button>
+    </div>
+  </div>
+
+  <nav class="nav">
+    <a routerLink="/home" routerLinkActive="active" class="item" (click)="onNavClick()">
+      <i class="pi pi-home icon"></i>
+      <span class="label" *ngIf="!(collapsed && !isMobile)">Resumen</span>
+    </a>
+
+    <a routerLink="/bancos" routerLinkActive="active" class="item" (click)="onNavClick()">
+      <i class="pi pi-chart-bar icon"></i>
+      <span class="label" *ngIf="!(collapsed && !isMobile)">Bancos de sangre</span>
+    </a>
+
+    <a routerLink="/turnos" routerLinkActive="active" class="item" (click)="onNavClick()">
+      <i class="pi pi-calendar icon"></i>
+      <span class="label" *ngIf="!(collapsed && !isMobile)">Turnos</span>
+    </a>
+
+    <a routerLink="/pedidos-alertas" routerLinkActive="active" class="item" (click)="onNavClick()">
+      <i class="pi pi-bell icon"></i>
+      <span class="label" *ngIf="!(collapsed && !isMobile)">Pedidos y alertas</span>
+    </a>
+
+    <a routerLink="/eventos" routerLinkActive="active" class="item" (click)="onNavClick()">
+      <i class="pi pi-megaphone icon"></i>
+      <span class="label" *ngIf="!(collapsed && !isMobile)">Eventos</span>
+    </a>
+
+    <a
+      *ngIf="isAdmin"
+      routerLink="/equipo-roles"
+      routerLinkActive="active"
+      class="item"
+      (click)="onNavClick()"
+    >
+      <i class="pi pi-users icon"></i>
+      <span class="label" *ngIf="!(collapsed && !isMobile)">Equipos Roles</span>
+    </a>
+
+    <a routerLink="/configuracion" routerLinkActive="active" class="item" (click)="onNavClick()">
+      <i class="pi pi-cog icon"></i>
+      <span class="label" *ngIf="!(collapsed && !isMobile)">Configuración</span>
+    </a>
+  </nav>
+
+  <div class="bottom" *ngIf="!(collapsed && !isMobile)">
+    <div class="hospital">{{ hospitalName }}</div>
+    <div class="user">{{ fullName }} ({{ roleLabel }})</div>
+  </div>
+</aside>

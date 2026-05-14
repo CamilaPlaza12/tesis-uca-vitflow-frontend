@@ -1,0 +1,23 @@
+<div *ngIf="open" class="vf-modal-backdrop" (click)="onBackdrop($event)">
+  <div class="vf-modal" role="dialog" aria-modal="true">
+    <div class="vf-modal__header" [class]="'vf-modal__header--' + kind">
+      <div class="vf-modal__title">
+        <span class="vf-modal__badge">
+          {{ kind === 'error' ? '!' : kind === 'success' ? '✓' : kind === 'warning' ? '⚠' : 'i' }}
+        </span>
+        {{ title }}
+      </div>
+      <button type="button" class="vf-modal__x" (click)="close()">✕</button>
+    </div>
+
+    <div class="vf-modal__body">
+      <p>{{ message }}</p>
+    </div>
+
+    <div class="vf-modal__footer">
+      <button type="button" class="vf-btn" (click)="close()">
+        {{ confirmText }}
+      </button>
+    </div>
+  </div>
+</div>

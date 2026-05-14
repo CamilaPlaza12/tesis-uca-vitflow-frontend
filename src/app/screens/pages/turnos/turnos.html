@@ -1,0 +1,247 @@
+<div class="page">
+  <header class="header">
+    <div class="header__left">
+      <h1>Turnos de donación</h1>
+
+      <div class="subtitle-row">
+        <p>Controlá la agenda de donaciones del hospital.</p>
+      </div>
+    </div>
+
+    <div class="header__right">
+      <div class="date">Hoy – {{ today | date: 'dd/MM/yyyy' }}</div>
+    </div>
+  </header>
+
+  <!-- LOADING DISPONIBILIDAD -->
+  <section class="availability-loading" *ngIf="availabilityLoading">
+    <div class="loading-box">Cargando disponibilidad…</div>
+  </section>
+
+  <!-- ONBOARDING (vacío) -->
+  <section class="onboarding" *ngIf="!availabilityLoading && showOnboarding">
+    <app-availability-empty-state
+      [open]="availabilityConfigOpen"
+      (configure)="openConfigFromOnboarding()"
+    ></app-availability-empty-state>
+
+    <div class="config-inline" [class.is-open]="availabilityConfigOpen">
+      <app-availability-config
+        *ngIf="availabilityConfigOpen || availabilityConfigClosing"
+        [initial]="disponibilidad"
+        [saving]="availabilitySaving"
+        [errorMsg]="availabilitySaveError"
+        (save)="onSaveDisponibilidad($event)"
+        (cancel)="onCancelConfigurar()"
+      ></app-availability-config>
+    </div>
+  </section>
+
+  <!-- AGENDA (cuando ya hay disponibilidad) -->
+  <section *ngIf="!availabilityLoading && showAgenda">
+    <section class="turnos-shell">
+      <section class="top" [class.with-detail]="!!turnoSeleccionado">
+        <div class="calendar-col">
+          <app-turnos-calendar
+            [turnos]="turnos"
+            [selectedDate]="today"
+            (selectTurno)="onSelectTurnoFromCalendar($event)"
+          ></app-turnos-calendar>
+
+          <div class="empty-detail" *ngIf="!turnoSeleccionado">
+            Seleccioná un turno para ver el detalle.
+          </div>
+        </div>
+
+        <div class="detail-col" *ngIf="turnoSeleccionado as t">
+          <app-turno-detail
+            [turno]="t"
+            (close)="turnoSeleccionado = null"
+            (action)="requestAction($event, t)"
+          ></app-turno-detail>
+        </div>
+      </section>
+
+      <section class="bottom">
+        <app-turnos-table
+          [turnos]="turnosHistorico"
+          (search)="onSearchHistorico($event)"
+          (clearFilters)="onClearHistorico()"
+        ></app-turnos-table>
+      </section>
+
+      <!-- ✅ CONFIG ABAJO: título + lapicito -->
+      <section class="availability-bottom">
+        <div class="availability-bottom__head">
+          <div class="availability-bottom__title">Horarios de atención</div>
+
+          <button
+            class="edit-icon"
+            type="button"
+            title="Editar disponibilidad"
+            aria-label="Editar disponibilidad"
+            (click)="toggleConfigFromBottom()"
+          >
+            <span class="edit-glyph">✎</span>
+          </button>
+        </div>
+
+        <div class="config-inline" [class.is-open]="availabilityConfigOpen">
+          <app-availability-config
+            *ngIf="availabilityConfigOpen || availabilityConfigClosing"
+            [initial]="disponibilidad"
+            [saving]="availabilitySaving"
+            [errorMsg]="availabilitySaveError"
+            (save)="onSaveDisponibilidad($event)"
+            (cancel)="onCancelConfigurar()"
+          ></app-availability-config>
+        </div>
+      </section>
+    </section>
+  </section>
+
+  <app-confirm-modal
+    [open]="modalOpen"
+    [title]="modalTitle"
+    [message]="modalMessage"
+    [confirmText]="modalConfirmText"
+    [loading]="modalLoading"
+    [error]="modalError"
+    [reprogram]="isReprogramAction"
+    [reprogramDate]="reprogramDate"
+    [reprogramTime]="reprogramTime"
+    [reprogramMinDate]="reprogramMinDate"
+    [reprogramAvailableDates]="reprogramAvailableDates"
+    [reprogramAvailableTimes]="reprogramAvailableTimes"
+    (reprogramDateChange)="reprogramDate = $event"
+    (reprogramTimeChange)="reprogramTime = $event"
+    (confirm)="confirmModal()"
+    (cancel)="closeModal()"
+  ></app-confirm-modal>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       MODAL: Selección de componentes obtenidos de la donación
+  ════════════════════════════════════════════════════════════════════════ -->
+  <p-dialog
+    [(visible)]="donacionModalOpen"
+    [modal]="true"
+    [draggable]="false"
+    [resizable]="false"
+    [closable]="!donacionLoading"
+    [dismissableMask]="!donacionLoading && !donacionTieneResultado"
+    maskStyleClass="vf-donacion-mask"
+    styleClass="vf-donacion-dialog"
+    [style]="{ width: '520px' }"
+    [baseZIndex]="10000"
+    (onHide)="closeDonacionModal()"
+  >
+    <ng-template pTemplate="header">
+      <div class="vf-don__header">
+        <div class="vf-don__title">
+          <div class="h">Registrar componentes donados</div>
+          <div class="s" *ngIf="donacionTurno">
+            {{ donacionTurno.donor.full_name }} · {{ donacionTurno.date_local }}
+          </div>
+        </div>
+        <span class="vf-don__chip">Pendiente de clasificación</span>
+      </div>
+    </ng-template>
+
+    <!-- Resultado exitoso -->
+    <div class="vf-don__body" *ngIf="donacionResultado">
+      <div class="vf-don__success">
+        <i class="pi pi-check-circle"></i>
+        <div class="vf-don__success-title">¡Unidades registradas!</div>
+        <div class="vf-don__success-sub">Se crearon {{ donacionResultado.unidades_creadas.length }} unidad(es) en el banco de sangre.</div>
+      </div>
+
+      <div class="vf-don__result-list">
+        <div class="vf-don__result-item" *ngFor="let u of donacionResultado.unidades_creadas">
+          <span class="vf-don__result-comp">
+            {{ componenteLabel(u.componente) }}
+          </span>
+          <span class="mono vf-don__result-group">{{ u.blood_group }}</span>
+          <span class="vf-don__result-vence">Vence: {{ formatDate(u.fecha_vencimiento) }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Formulario de selección -->
+    <div class="vf-don__body" *ngIf="!donacionTieneResultado">
+      <div class="vf-don__field">
+        <label class="vf-don__label">Grupo sanguíneo del donante</label>
+        <div class="vf-don__blood-readonly">
+          <span class="mono">{{ donacionBloodGroup || '—' }}</span>
+        </div>
+      </div>
+
+      <div class="vf-don__field">
+        <label class="vf-don__label">Componentes obtenidos</label>
+        <div class="vf-don__checks">
+          <label class="vf-don__check-item">
+            <input
+              type="checkbox"
+              [(ngModel)]="donacionComponentes.globulos_rojos"
+              [disabled]="donacionLoading"
+            />
+            <span class="vf-don__check-icon vf-don__check-icon--gr"></span>
+            Glóbulos Rojos
+            <span class="vf-don__check-hint">42 días de vida útil</span>
+          </label>
+
+          <label class="vf-don__check-item">
+            <input
+              type="checkbox"
+              [(ngModel)]="donacionComponentes.plasma"
+              [disabled]="donacionLoading"
+            />
+            <span class="vf-don__check-icon vf-don__check-icon--plasma"></span>
+            Plasma
+            <span class="vf-don__check-hint">365 días de vida útil</span>
+          </label>
+
+          <label class="vf-don__check-item">
+            <input
+              type="checkbox"
+              [(ngModel)]="donacionComponentes.plaquetas"
+              [disabled]="donacionLoading"
+            />
+            <span class="vf-don__check-icon vf-don__check-icon--plaquetas"></span>
+            Plaquetas
+            <span class="vf-don__check-hint">5 días de vida útil — muy corto</span>
+          </label>
+        </div>
+
+        <div class="vf-don__warn" *ngIf="donacionComponentesSeleccionados.length === 0">
+          Seleccioná al menos un componente para continuar.
+        </div>
+      </div>
+
+      <div class="vf-don__error" *ngIf="donacionError">{{ donacionError }}</div>
+    </div>
+
+    <ng-template pTemplate="footer">
+      <div class="vf-don__footer">
+        <button
+          class="btn btn--ghost"
+          type="button"
+          [disabled]="donacionLoading"
+          (click)="closeDonacionModal()"
+        >
+          {{ donacionTieneResultado ? 'Cerrar' : 'Omitir' }}
+        </button>
+
+        <button
+          *ngIf="!donacionTieneResultado"
+          class="btn btn--primary"
+          type="button"
+          [disabled]="!donacionPuedeConfirmar"
+          (click)="confirmDonacion()"
+        >
+          {{ donacionLoading ? 'Registrando…' : 'Registrar donación' }}
+        </button>
+      </div>
+    </ng-template>
+  </p-dialog>
+
+</div>

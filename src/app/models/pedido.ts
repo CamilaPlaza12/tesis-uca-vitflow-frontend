@@ -1,0 +1,87 @@
+
+export type HospitalRequestPriority = 'NORMAL' | 'URGENTE' | 'CRITICA';
+
+export type HospitalRequestStatus =
+  | 'ACTIVO'
+  | 'COMPLETO'
+  | 'CANCELADO'
+  | 'FINALIZADO';
+
+export type HospitalUnit =
+  | 'Urgencias'
+  | 'Terapia Intensiva'
+  | 'Guardia'
+  | 'Quirofano'
+  | 'Clinica Medica';
+
+export type HospitalRequestType = 'NORMAL' | 'CAMPAÑA';
+
+export type PedidoTipo = 'manual' | 'automatico' | 'evento';
+
+export interface HospitalRequestCreate {
+  hospital_unit: HospitalUnit;
+  component: string;
+  blood_group: string;
+  priority: HospitalRequestPriority;
+  requested_by: string;
+  end_date: string;
+  comments?: string | null;
+  request_type?: HospitalRequestType;
+  tipo?: PedidoTipo;
+}
+
+export interface HospitalRequest {
+  id: string;
+  datetime_local: string;
+  end_date: string;
+  requested_units?: number;
+  hospital_unit: HospitalUnit;
+  component: string;
+  blood_group: string;
+  priority: HospitalRequestPriority;
+  status: HospitalRequestStatus;
+  requested_by: string;
+  comments?: string | null;
+  tipo?: PedidoTipo;
+  pending_classifications_count?: number;
+}
+
+export interface UpdateHospitalRequestStatusRequest {
+  status: HospitalRequestStatus;
+}
+
+export interface UpdateHospitalRequestRequest {
+  hospital_unit?: HospitalUnit;
+  priority?: HospitalRequestPriority;
+  status?: HospitalRequestStatus;
+  comments?: string | null;
+  tipo?: PedidoTipo;
+}
+
+export interface TiposSangreDisponibles {
+  disponibles: string[];
+  no_disponibles: string[];
+}
+
+export interface CancelRequestResponse {
+  id: string;
+  status: 'CANCELADO';
+  cancelled_appointments: number;
+  donor_ids_to_notify: string[];
+}
+
+export interface PendingClassificationItem {
+  appointment_id: string;
+  donor_id: string | null;
+  donor_name: string;
+  donor_dni: string;
+  donor_blood_type: string | null;
+  date_local: string;
+  status: string;
+}
+
+export interface PendingClassificationsResponse {
+  request_id: string;
+  total: number;
+  items: PendingClassificationItem[];
+}

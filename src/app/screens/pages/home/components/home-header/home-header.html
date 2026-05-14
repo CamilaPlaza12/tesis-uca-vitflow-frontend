@@ -1,0 +1,15 @@
+<div class="header">
+  <div class="header__left">
+    <h1 class="header__title">{{ title }}</h1>
+    <div class="header__subtitle">{{ subtitle }}</div>
+  </div>
+
+  <div class="header__right">
+    <div class="header__date">{{ dateLabel }}</div>
+
+    <button class="header__bell" type="button" (click)="notificationsClick.emit()">
+      <span class="header__bellIcon">🔔</span>
+      <span *ngIf="unreadNotifications > 0" class="header__badge">{{ unreadNotifications }}</span>
+    </button>
+  </div>
+</div>

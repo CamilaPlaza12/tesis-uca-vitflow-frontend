@@ -1,0 +1,134 @@
+<div class="calendar">
+  <div class="calendar__header">
+    <div class="header-left">
+      <h3>Agenda</h3>
+
+      <div class="modes">
+        <button class="mode" type="button" [class.active]="view === 'DAY'" (click)="setView('DAY')">
+          Día
+        </button>
+        <button class="mode" type="button" [class.active]="view === 'WEEK'" (click)="setView('WEEK')">
+          Semana
+        </button>
+        <button class="mode" type="button" [class.active]="view === 'MONTH'" (click)="setView('MONTH')">
+          Mes
+        </button>
+      </div>
+    </div>
+
+    <div class="header-right">
+      <button class="nav" type="button" (click)="prev()">‹</button>
+
+      <div class="headline" *ngIf="view === 'DAY'">
+        {{ activeDate | date:'EEEE dd/MM/yyyy' }}
+      </div>
+
+      <div class="headline" *ngIf="view === 'WEEK'">
+        Semana · {{ weekLabel() }}
+      </div>
+
+      <div class="headline" *ngIf="view === 'MONTH'">
+        {{ activeDate | date:'MMMM yyyy' }}
+      </div>
+
+      <button class="nav" type="button" (click)="next()">›</button>
+
+      <button class="today" type="button" (click)="goToday()">Hoy</button>
+    </div>
+  </div>
+
+  <!-- ===== DAY ===== -->
+  <div class="calendar__grid day" *ngIf="view === 'DAY'">
+    <div class="hour-row" *ngFor="let hour of hours">
+      <div class="hour-label">{{ hour }}</div>
+
+      <div class="hour-slots">
+        <div
+          class="turno"
+          *ngFor="let t of turnosPorHora(hour)"
+          (click)="onSelect(t)"
+          [class.confirmado]="t.status === 'CONFIRMADO'"
+          [class.programado]="t.status === 'PROGRAMADO'"
+          [class.cancelado]="t.status === 'CANCELADO'"
+          [class.completado]="t.status === 'COMPLETADO'"
+          [class.no_presentado]="t.status === 'NO_PRESENTADO'"
+          [class.pendiente_clasificacion]="t.status === 'PENDIENTE_CLASIFICACION'"
+        >
+          <div class="turno__hora">{{ t.time_local }}</div>
+          <div class="turno__nombre">{{ t.donor.full_name }}</div>
+          <div class="turno__tipo">{{ t.donation_type }}</div>
+        </div>
+
+        <div class="empty-hour" *ngIf="turnosPorHora(hour).length === 0"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== WEEK ===== -->
+  <div class="calendar__grid week" *ngIf="view === 'WEEK'">
+    <div class="week__cols">
+      <div class="week__col" *ngFor="let d of weekDays">
+        <div class="week__colhead">
+          <div class="dow">{{ d | date:'EEE' }}</div>
+          <div class="dom">{{ d | date:'dd/MM' }}</div>
+        </div>
+
+        <div class="week__list">
+          <button
+            class="chip"
+            type="button"
+            *ngFor="let t of turnosDeFecha(d)"
+            (click)="onSelect(t)"
+            [class.pendiente_clasificacion]="t.status === 'PENDIENTE_CLASIFICACION'"
+          >
+            <span class="chip__time">{{ t.time_local }}</span>
+            <span class="chip__name">{{ t.donor.full_name }}</span>
+          </button>
+
+          <div class="week__empty" *ngIf="turnosDeFecha(d).length === 0">
+            —
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== MONTH ===== -->
+  <div class="calendar__grid month" *ngIf="view === 'MONTH'">
+    <div class="month__dow">
+      <div>Lun</div><div>Mar</div><div>Mié</div><div>Jue</div><div>Vie</div><div>Sáb</div><div>Dom</div>
+    </div>
+
+    <div class="month__grid">
+      <div
+        class="daycell"
+        *ngFor="let c of monthCells"
+        [class.dim]="!c.inCurrentMonth"
+        [class.is-today]="c.key === todayKey"
+      >
+        <button class="daycell__top" type="button" (click)="openDayFromMonth(c.date)">
+          <span class="num">{{ c.label }}</span>
+          <span class="count" *ngIf="countTurnos(c.key) > 0">
+            {{ countTurnos(c.key) }}
+          </span>
+        </button>
+
+        <div class="daycell__items">
+          <button
+            class="mini"
+            type="button"
+            *ngFor="let t of previewTurnos(c.key, 2)"
+            (click)="onSelect(t)"
+            [class.pendiente_clasificacion]="t.status === 'PENDIENTE_CLASIFICACION'"
+          >
+            {{ t.time_local }} · {{ t.donor.full_name }}
+          </button>
+
+          <div class="more" *ngIf="countTurnos(c.key) > 2">
+            +{{ countTurnos(c.key) - 2 }} más
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

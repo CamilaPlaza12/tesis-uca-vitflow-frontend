@@ -1,0 +1,20 @@
+<div class="grid">
+  <!-- IZQUIERDA: gráfico de barras agrupadas por componente -->
+  <div class="chartArea">
+    <div class="chartArea__panel">
+      <app-home-stock-dashboard
+        [dashboard]="stockDashboard"
+        [loading]="stockDashboardLoading"
+      ></app-home-stock-dashboard>
+    </div>
+  </div>
+
+  <!-- DERECHA: CTA grande + KPIs 2x2 grandes, estirados -->
+  <div class="side">
+    <app-home-primary-action (clickAction)="createRequestClick.emit()"></app-home-primary-action>
+
+    <div class="side__kpis">
+      <ng-content select="[homeSide]"></ng-content>
+    </div>
+  </div>
+</div>

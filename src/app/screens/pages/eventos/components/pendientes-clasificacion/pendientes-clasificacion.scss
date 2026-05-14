@@ -1,0 +1,254 @@
+.pendientes-section {
+  background: #fff;
+  border: 1px solid rgba(231, 238, 243, 0.95);
+  border-radius: 18px;
+  padding: 20px;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.pendientes-section__header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pendientes-section__icon {
+  font-size: 18px;
+  color: #f97316;
+}
+
+.pendientes-section__title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 800;
+  color: #0f2b3a;
+  letter-spacing: -0.01em;
+  flex: 1;
+}
+
+.pendientes-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 99px;
+  background: rgba(249, 115, 22, 0.12);
+  border: 1px solid rgba(249, 115, 22, 0.2);
+  color: #c2410c;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+/* Loading */
+.loading-state {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #5b6b7a;
+  font-size: 13.5px;
+  font-weight: 700;
+  padding: 12px 0;
+
+  i {
+    color: #3b82f6;
+  }
+}
+
+/* Empty */
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 24px 0;
+  color: #5b6b7a;
+  font-size: 13.5px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.empty__icon {
+  font-size: 26px;
+  color: #22c55e;
+}
+
+/* Tabla scrolleable */
+.tabla-wrap {
+  overflow-y: auto;
+  max-height: 380px;
+  border: 1px solid #f1f5f9;
+  border-radius: 12px;
+}
+
+.pendientes-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+
+  thead th {
+    position: sticky;
+    top: 0;
+    background: #f8fafc;
+    padding: 9px 14px;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 850;
+    color: #5b6b7a;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid #f1f5f9;
+    z-index: 1;
+  }
+
+  tbody tr {
+    border-bottom: 1px solid #f8fafc;
+    transition: background 100ms ease;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    &:hover {
+      background: #fafcff;
+    }
+
+    &.row--loading {
+      opacity: 0.6;
+      pointer-events: none;
+    }
+  }
+
+  td {
+    padding: 10px 14px;
+    vertical-align: middle;
+  }
+}
+
+/* Columnas */
+.col-donante {
+  min-width: 160px;
+  max-width: 220px;
+}
+
+.col-tipo {
+  width: 100%;
+}
+
+.col-accion {
+  white-space: nowrap;
+  padding-right: 10px;
+}
+
+/* Donante: nombre + meta */
+.donante-nombre {
+  display: block;
+  font-size: 13px;
+  font-weight: 750;
+  color: #0f2b3a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+
+.donante-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #94a3b8;
+  margin-top: 2px;
+}
+
+.meta-sep {
+  color: #cbd5e1;
+}
+
+/* Botones de componente */
+.comp-btns {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.btn-comp {
+  padding: 5px 10px;
+  border-radius: 8px;
+  border: 1px solid #e6ecf3;
+  background: #fff;
+  color: #334155;
+  font-size: 12px;
+  font-weight: 750;
+  cursor: pointer;
+  transition: background 120ms ease, border-color 120ms ease;
+  font-family: inherit;
+  white-space: nowrap;
+
+  &:hover:not(:disabled) {
+    background: #f1f5f9;
+    border-color: #d0d9e3;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.btn-comp--selected {
+  background: rgba(59, 130, 246, 0.1);
+  border-color: rgba(59, 130, 246, 0.3);
+  color: #1d4ed8;
+  font-weight: 800;
+}
+
+.btn-comp--entera.btn-comp--selected {
+  background: rgba(239, 68, 68, 0.08);
+  border-color: rgba(239, 68, 68, 0.22);
+  color: #b91c1c;
+}
+
+/* Botón guardar */
+.btn-guardar {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  border-radius: 9px;
+  border: 1px solid rgba(34, 197, 94, 0.25);
+  background: rgba(34, 197, 94, 0.1);
+  color: #15803d;
+  font-size: 12.5px;
+  font-weight: 800;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 120ms ease;
+  font-family: inherit;
+
+  &:hover:not(:disabled) {
+    background: rgba(34, 197, 94, 0.15);
+  }
+
+  &:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+}
+
+/* Error inline dentro de la celda */
+.error-inline {
+  margin-top: 4px;
+  padding: 5px 8px;
+  border-radius: 8px;
+  background: #fff1f2;
+  border: 1px solid #fee2e2;
+  color: #b91c1c;
+  font-size: 11.5px;
+  font-weight: 700;
+}

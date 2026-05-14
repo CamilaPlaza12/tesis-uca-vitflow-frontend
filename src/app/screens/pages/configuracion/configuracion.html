@@ -1,0 +1,142 @@
+<div class="page">
+  <header class="header">
+    <div class="header__left">
+      <h1>Configuración</h1>
+      <p class="subtitle">Perfil y datos del hospital.</p>
+    </div>
+  </header>
+
+  <section class="grid">
+    <div class="col">
+      <div class="card card--fill">
+        <div class="card__head">
+          <div class="headL">
+            <div class="iconBubble">👤</div>
+            <div>
+              <div class="title">Mi perfil</div>
+              <div class="hint">Datos de tu cuenta</div>
+            </div>
+          </div>
+
+          <button class="ghostBtn" type="button" (click)="startEditPhone()" [disabled]="editingPhone">
+            Editar
+          </button>
+        </div>
+
+        <div class="card__body">
+          <div class="formGrid">
+            <div class="field">
+              <div class="k">Email</div>
+              <div class="v readonly">{{ user.email }}</div>
+            </div>
+
+            <div class="field">
+              <div class="k">Rol</div>
+              <div class="v readonly chip">{{ user.roleLabel }}</div>
+            </div>
+
+            <div class="field">
+              <div class="k">Nombre</div>
+              <div class="v readonly">{{ user.firstName }}</div>
+            </div>
+
+            <div class="field">
+              <div class="k">Apellido</div>
+              <div class="v readonly">{{ user.lastName }}</div>
+            </div>
+
+            <div class="field field--full">
+              <div class="k">Teléfono</div>
+
+              <ng-container *ngIf="!editingPhone; else editPhone">
+                <div class="v">{{ user.phone }}</div>
+              </ng-container>
+
+              <ng-template #editPhone>
+                <div class="editRow">
+                  <input class="input" type="text" [(ngModel)]="phoneDraft" placeholder="+54 11 ..." />
+                  <button class="btn btn--ok" type="button" (click)="savePhone()">Guardar</button>
+                  <button class="btn btn--ghost" type="button" (click)="cancelEditPhone()">Cancelar</button>
+                </div>
+              </ng-template>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="col">
+      <div class="card">
+        <div class="card__head">
+          <div class="headL">
+            <div class="iconBubble">🏥</div>
+            <div>
+              <div class="title">Hospital asociado</div>
+              <div class="hint">Datos operativos</div>
+            </div>
+          </div>
+
+          <div class="badge" [class.badge--ok]="hospital.verified">
+            {{ hospital.verified ? 'Verificado' : 'Pendiente' }}
+          </div>
+        </div>
+
+        <div class="card__body">
+          <div class="hospitalHero">
+            <div class="hospitalName">{{ hospital.name }}</div>
+            <div class="hospitalSub">{{ hospital.subtitle }}</div>
+          </div>
+
+          <div class="kv">
+            <div class="k">Email</div>
+            <div class="v">{{ hospital.email }}</div>
+          </div>
+          <div class="kv">
+            <div class="k">Teléfono</div>
+            <div class="v">{{ hospital.phone }}</div>
+          </div>
+          <div class="kv">
+            <div class="k">Dirección</div>
+            <div class="v">{{ hospital.address }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card__head">
+          <div class="headL">
+            <div class="iconBubble">🔒</div>
+            <div>
+              <div class="title">Sesión</div>
+              <div class="hint">Si estás en un dispositivo compartido, cerrá sesión.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card__body">
+          <button class="dangerBtn" type="button" (click)="openLogout()">
+            Cerrar sesión
+          </button>
+          <div class="muted">
+            Tip: si te desconectás seguido, revisá el navegador (autocompletar/usuarios).
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="modalBackdrop" *ngIf="logoutOpen" (click)="closeLogout()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal__title">¿Cerrar sesión?</div>
+      <div class="modal__msg">
+        Vas a salir de VitFlow en este dispositivo. Si es una compu compartida, sí: salí.
+      </div>
+
+      <div class="modal__actions">
+        <button class="btn btn--ghost" type="button" (click)="closeLogout()">Cancelar</button>
+        <button class="btn btn--danger" type="button" (click)="confirmLogout()">Cerrar sesión</button>
+      </div>
+    </div>
+  </div>
+</div>

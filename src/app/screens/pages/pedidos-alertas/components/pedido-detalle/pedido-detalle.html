@@ -1,0 +1,264 @@
+<div class="detalle-wrap" *ngIf="pedido">
+  <div class="card">
+    <div class="top">
+      <h3>Detalle del pedido</h3>
+      <button class="icon-btn" type="button" (click)="close()">✕</button>
+    </div>
+
+    <div class="body">
+      <!-- VIEW MODE -->
+      <div class="meta" *ngIf="!editMode">
+        <div class="row">
+          <span class="k">Fecha</span>
+          <span class="v">{{ pedido.datetime_local | date:'dd/MM/yyyy' }}</span>
+        </div>
+
+        <div class="row">
+          <span class="k">Servicio</span>
+          <span class="v">{{ pedido.hospital_unit }}</span>
+        </div>
+
+        <div class="row">
+          <span class="k">Grupo sanguíneo</span>
+          <span class="v mono">{{ pedido.blood_group }}</span>
+        </div>
+
+        <div class="row">
+          <span class="k">Componente</span>
+          <span class="v">{{ pedido.component }}</span>
+        </div>
+
+        <div class="row">
+          <span class="k">Estado actual</span>
+          <span class="v">{{ estadoLabel(pedido.status) }}</span>
+        </div>
+
+        <div class="row">
+          <span class="k">Solicitado por</span>
+          <span class="v">
+            {{ pedido.requested_by }}
+          </span>
+        </div>
+
+        <div class="row">
+          <span class="k">Fecha de vencimiento</span>
+          <span class="v">{{ pedido.end_date | date:'dd/MM/yyyy' }}</span>
+        </div>
+
+        <div class="row" *ngIf="pedido.comments">
+          <span class="k">Comentarios</span>
+          <span class="v">{{ pedido.comments }}</span>
+        </div>
+      </div>
+
+      <!-- EDIT MODE -->
+      <div class="meta" *ngIf="editMode && draft">
+        <div class="row">
+          <span class="k">Servicio</span>
+          <div class="v">
+            <input
+              class="field"
+              list="serviciosList"
+              [(ngModel)]="draft.hospital_unit"
+            />
+            <datalist id="serviciosList">
+              <option *ngFor="let s of servicios" [value]="s"></option>
+            </datalist>
+          </div>
+        </div>
+
+        <div class="row">
+          <span class="k">Estado actual</span>
+          <div class="v">
+            <div class="dropdown">
+              <button class="drop-btn" type="button" (click)="toggleDropdown('estado')">
+                {{ estadoLabel(draft.status) }} ▾
+              </button>
+              <div class="menu" *ngIf="dropdownOpen.estado">
+                <button class="opt" *ngFor="let e of estados" (click)="selectEstado(e)">
+                  {{ estadoLabel(e) }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <span class="k">Comentarios</span>
+          <div class="v">
+            <textarea class="field textarea" rows="3" [(ngModel)]="draft.comments"></textarea>
+          </div>
+        </div>
+
+        <div class="error" *ngIf="errorMsg">{{ errorMsg }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Botón A clasificar (lazy: se carga al abrir) -->
+  <button
+    class="btn-pendientes-trigger"
+    type="button"
+    *ngIf="pendingCount > 0"
+    (click)="openPendientesModal()"
+  >
+    <span class="btn-pendientes-trigger__label">A clasificar</span>
+    <span class="btn-pendientes-trigger__count">{{ pendingCount }}</span>
+  </button>
+
+  <!-- Mensaje cancelación exitosa -->
+  <div class="cancel-success" *ngIf="cancelSuccessMsg">
+    {{ cancelSuccessMsg }}
+  </div>
+
+  <!-- View mode actions -->
+  <div class="below-actions" *ngIf="!editMode && puedeCancelar() && !cancelSuccessMsg">
+    <button class="btn-primary" type="button" (click)="empezarEdicion()" *ngIf="puedeEditar()">
+      Editar
+    </button>
+    <button class="btn-danger" type="button" (click)="onClickCancelar()" [disabled]="cancelLoading">
+      {{ cancelLoading ? 'Cancelando…' : 'Cancelar pedido' }}
+    </button>
+  </div>
+
+  <!-- Edit mode actions -->
+  <div class="below-actions edit-actions" *ngIf="editMode">
+    <button class="btn-soft" type="button" (click)="guardar()">Guardar</button>
+    <button class="btn-ghost" type="button" (click)="cancelarEdicion()">Cancelar</button>
+  </div>
+
+  <!-- Step 1 cancel -->
+  <app-confirm-modal
+    [open]="showCancelStep1"
+    title="¿Cancelar pedido?"
+    message="¿Estás seguro de que querés cancelar este pedido?"
+    confirmText="Continuar"
+    cancelText="Volver"
+    (confirm)="onConfirmStep1()"
+    (cancel)="onAbortCancel()"
+  ></app-confirm-modal>
+
+  <!-- Step 2 cancel -->
+  <app-confirm-modal
+    [open]="showCancelStep2"
+    title="Confirmación final"
+    message="Esta acción cancelará TODOS los turnos asociados y notificará a los donantes. Esta acción no se puede deshacer."
+    confirmText="Sí, cancelar pedido"
+    cancelText="Abortar"
+    [loading]="cancelLoading"
+    [error]="cancelError || null"
+    (confirm)="onConfirmStep2()"
+    (cancel)="onAbortCancel()"
+  ></app-confirm-modal>
+</div>
+
+<!-- ══ POPUP: Pendientes de clasificación ══════════════════════════════════ -->
+<div class="pend-overlay" *ngIf="pendientesModalOpen" (click)="closePendientesModal()">
+  <div class="pend-modal" (click)="$event.stopPropagation()">
+
+    <div class="pend-top">
+      <div class="pend-top__left">
+        <div class="pend-title">Pendientes de clasificación</div>
+        <div class="pend-sub">Seleccioná un donante para registrar los componentes obtenidos</div>
+      </div>
+      <div class="pend-top__right">
+        <span class="pend-count-badge" *ngIf="!cargandoPendientes">
+          {{ pendientesClasificacion.length }}
+        </span>
+        <button class="icon-btn" type="button" (click)="closePendientesModal()" [disabled]="clasificarLoading">✕</button>
+      </div>
+    </div>
+
+    <div class="pend-loading" *ngIf="cargandoPendientes">Cargando…</div>
+
+    <div class="pend-empty" *ngIf="!cargandoPendientes && pendientesClasificacion.length === 0">
+      Sin donaciones pendientes de clasificación.
+    </div>
+
+    <div class="pend-list-wrap" *ngIf="!cargandoPendientes && pendientesClasificacion.length > 0">
+      <div class="pend-list">
+        <div class="pend-row" *ngFor="let t of pendientesClasificacion">
+          <div class="pend-avatar">{{ t.donor_name.charAt(0).toUpperCase() }}</div>
+          <div class="pend-info">
+            <div class="pend-name">{{ t.donor_name }}</div>
+            <div class="pend-meta">
+              <span class="pend-chip pend-chip--dni">DNI {{ t.donor_dni }}</span>
+              <span class="pend-chip">{{ t.date_local }}</span>
+            </div>
+          </div>
+          <button class="btn-clasificar" type="button" (click)="openClasificar(t)">
+            Clasificar
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══ POPUP: Clasificación de componentes ════════════════════════════════ -->
+<div class="clasificar-overlay" *ngIf="clasificarTurno" (click)="closeClasificar()">
+  <div class="clasificar-modal" (click)="$event.stopPropagation()">
+
+    <div class="clas-top">
+      <div>
+        <div class="clas-title">Registrar componentes donados</div>
+        <div class="clas-sub">{{ clasificarTurno.donor_name }} · {{ clasificarTurno.date_local }}</div>
+      </div>
+      <button class="icon-btn" type="button" (click)="closeClasificar()" [disabled]="clasificarLoading">✕</button>
+    </div>
+
+    <!-- Éxito -->
+    <div class="clas-exito" *ngIf="clasificarExito">
+      <span class="clas-exito-icon">✔</span>
+      <span>¡Componentes registrados! El turno pasó a completado.</span>
+    </div>
+
+    <!-- Formulario -->
+    <div class="clas-body" *ngIf="!clasificarExito">
+      <div class="clas-field">
+        <label class="clas-label">Grupo sanguíneo</label>
+        <div class="clas-blood-readonly">
+          <span class="mono">{{ clasificarTurno.donor_blood_type || pedido?.blood_group || '—' }}</span>
+        </div>
+      </div>
+
+      <div class="clas-field">
+        <label class="clas-label">Componentes obtenidos</label>
+        <div class="clas-checks">
+          <label class="clas-check" *ngFor="let op of componenteOpciones">
+            <input
+              type="checkbox"
+              [(ngModel)]="clasificarComponentes[op.value]"
+              [disabled]="clasificarLoading"
+            />
+            <span class="clas-check-name">{{ op.label }}</span>
+            <span class="clas-check-hint">{{ op.hint }}</span>
+          </label>
+        </div>
+
+        <div class="clas-warn" *ngIf="clasificarComponentesSeleccionados.length === 0">
+          Seleccioná al menos un componente.
+        </div>
+      </div>
+
+      <div class="clas-error" *ngIf="clasificarError">{{ clasificarError }}</div>
+    </div>
+
+    <div class="clas-footer">
+      <button class="btn-ghost" type="button" [disabled]="clasificarLoading" (click)="closeClasificar()">
+        {{ clasificarExito ? 'Cerrar' : 'Cancelar' }}
+      </button>
+      <button
+        *ngIf="!clasificarExito"
+        class="btn-soft"
+        type="button"
+        [disabled]="!clasificarPuedeConfirmar"
+        (click)="confirmarClasificacion()"
+      >
+        {{ clasificarLoading ? 'Registrando…' : 'Confirmar registro' }}
+      </button>
+    </div>
+
+  </div>
+</div>

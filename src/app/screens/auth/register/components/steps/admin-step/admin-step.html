@@ -1,0 +1,83 @@
+<div class="step-title">Usuario administrador</div>
+
+<form class="admin-form" [formGroup]="group">
+  <!-- fila 1: Nombre / Apellido -->
+  <div class="grid">
+    <div class="field">
+      <div class="label-row">
+        <label>Nombre</label>
+        <span class="label-error" *ngIf="group.get('firstName')?.touched && group.get('firstName')?.invalid">
+          Obligatorio
+        </span>
+      </div>
+      <input class="pill-input" type="text" formControlName="firstName" placeholder="Camila" maxlength="40" />
+    </div>
+
+    <div class="field">
+      <div class="label-row">
+        <label>Apellido</label>
+        <span class="label-error" *ngIf="group.get('lastName')?.touched && group.get('lastName')?.invalid">
+          Obligatorio
+        </span>
+      </div>
+      <input class="pill-input" type="text" formControlName="lastName" placeholder="Plaza" maxlength="40" />
+    </div>
+  </div>
+
+  <!-- fila 2: Email / Teléfono -->
+  <div class="grid section-gap">
+    <div class="field">
+      <div class="label-row">
+        <label>Email institucional</label>
+        <span class="label-error" *ngIf="group.get('email')?.touched && group.get('email')?.invalid">
+          Email inválido
+        </span>
+      </div>
+      <input class="pill-input" type="email" formControlName="email" placeholder="admin@hospital.com" maxlength="120" />
+    </div>
+
+    <div class="field">
+      <div class="label-row">
+        <label>Teléfono</label>
+        <span class="label-error" *ngIf="group.get('phone')?.touched && group.get('phone')?.invalid">
+          Teléfono inválido
+        </span>
+      </div>
+
+      <input
+        class="pill-input"
+        type="tel"
+        formControlName="phone"
+        placeholder="+54 11 1234 5678"
+        maxlength="20"
+        inputmode="tel"
+        (input)="onPhoneInput($event)"
+      />
+    </div>
+  </div>
+
+  <!-- fila 3: DNI -->
+  <div class="grid section-gap">
+    <div class="field">
+      <div class="label-row">
+        <label>DNI</label>
+        <span class="label-error" *ngIf="group.get('dni')?.touched && group.get('dni')?.invalid">
+          DNI inválido
+        </span>
+      </div>
+
+      <input
+        class="pill-input"
+        type="text"
+        formControlName="dni"
+        placeholder="12345678"
+        maxlength="8"
+        inputmode="numeric"
+        (input)="onDniInput($event)"
+      />
+    </div>
+
+    <!-- Columna vacía para mantener la grilla -->
+    <div class="field"></div>
+  </div>
+</form>

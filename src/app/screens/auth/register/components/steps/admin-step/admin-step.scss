@@ -1,0 +1,118 @@
+.step-title {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #1f2933;
+  margin: 0.25rem 0 0.90rem;
+}
+
+.admin-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.section-gap {
+  margin-top: 0.75rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 0.95rem;
+}
+
+@media (max-width: 900px) {
+  .grid { grid-template-columns: 1fr; }
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.18rem;
+}
+
+.label-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.label-row label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #4b5563;
+}
+
+.label-error {
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: #e02424;
+  white-space: nowrap;
+  margin-right: 10%;
+}
+
+.pill-input {
+  width: 85%;
+  padding: 0.1rem 0.85rem;
+  min-height: 36px;
+  border-radius: 999px;
+  border: 1px solid #d1d5db;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  background: #ffffff;
+}
+
+.pill-input:focus {
+  border-color: #f2543f;
+  box-shadow: 0 0 0 2px rgba(242, 84, 63, 0.18);
+}
+
+.pill-input.ng-touched.ng-invalid {
+  border-color: #e02424;
+}
+
+.pw-row {
+  width: 95%;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.pw-row .pill-input {
+  width: 100%;
+}
+
+.eye {
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  flex: 0 0 36px;
+  color: #374151;
+}
+
+.eye:hover {
+  border-color: #f2543f;
+  box-shadow: 0 0 0 2px rgba(242, 84, 63, 0.12);
+}
+
+.eye > svg {
+  display: block;
+  width: 18px;
+  height: 18px;
+}
+
+.match {
+  margin-top: 0.25rem;
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+.match.ok { color: #15803d; }
+.match.bad { color: #e02424; }

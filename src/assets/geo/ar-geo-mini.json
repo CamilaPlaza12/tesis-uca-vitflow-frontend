@@ -1,0 +1,120 @@
+{
+  "provinces": [
+    {
+      "id": "CABA",
+      "name": "Ciudad Autónoma de Buenos Aires",
+      "cities": [
+        {
+          "id": "CABA",
+          "name": "CABA",
+          "localidades": [
+            "Agronomía",
+            "Almagro",
+            "Balvanera",
+            "Barracas",
+            "Belgrano",
+            "Boedo",
+            "Caballito",
+            "Chacarita",
+            "Colegiales",
+            "Constitución",
+            "Flores",
+            "Floresta",
+            "La Boca",
+            "Liniers",
+            "Mataderos",
+            "Montserrat",
+            "Nueva Pompeya",
+            "Núñez",
+            "Palermo",
+            "Parque Avellaneda",
+            "Parque Chacabuco",
+            "Parque Patricios",
+            "Paternal",
+            "Puerto Madero",
+            "Recoleta",
+            "Retiro",
+            "Saavedra",
+            "San Cristóbal",
+            "San Nicolás",
+            "San Telmo",
+            "Vélez Sarsfield",
+            "Versalles",
+            "Villa Crespo",
+            "Villa del Parque",
+            "Villa Devoto",
+            "Villa General Mitre",
+            "Villa Lugano",
+            "Villa Luro",
+            "Villa Ortúzar",
+            "Villa Pueyrredón",
+            "Villa Real",
+            "Villa Riachuelo",
+            "Villa Santa Rita",
+            "Villa Soldati",
+            "Villa Urquiza"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "BUE",
+      "name": "Buenos Aires",
+      "cities": [
+        {
+          "id": "SAN_ISIDRO",
+          "name": "San Isidro",
+          "localidades": ["Acassuso", "Beccar", "Boulogne", "Martínez", "San Isidro"]
+        },
+        {
+          "id": "VICENTE_LOPEZ",
+          "name": "Vicente López",
+          "localidades": ["Carapachay", "Florida", "La Lucila", "Munro", "Olivos", "Vicente López", "Villa Martelli"]
+        },
+        {
+          "id": "LA_PLATA",
+          "name": "La Plata",
+          "localidades": ["Casco Urbano", "City Bell", "Gonnet", "Los Hornos", "Tolosa"]
+        }
+      ]
+    },
+    {
+      "id": "CBA",
+      "name": "Córdoba",
+      "cities": [
+        {
+          "id": "CORDOBA",
+          "name": "Córdoba",
+          "localidades": ["Centro", "Nueva Córdoba", "General Paz", "Alta Córdoba"]
+        }
+      ]
+    },
+    {
+      "id": "SFE",
+      "name": "Santa Fe",
+      "cities": [
+        {
+          "id": "ROSARIO",
+          "name": "Rosario",
+          "localidades": ["Centro", "Fisherton", "Echesortu"]
+        },
+        {
+          "id": "SANTA_FE",
+          "name": "Santa Fe",
+          "localidades": ["Centro", "Candioti", "Guadalupe"]
+        }
+      ]
+    },
+    {
+      "id": "MZA",
+      "name": "Mendoza",
+      "cities": [
+        {
+          "id": "MENDOZA",
+          "name": "Mendoza",
+          "localidades": ["Centro", "Godoy Cruz", "Guaymallén"]
+        }
+      ]
+    }
+  ]
+}

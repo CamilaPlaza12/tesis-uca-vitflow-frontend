@@ -1,0 +1,82 @@
+<div class="overlay" *ngIf="open" (click)="onOverlayClick()">
+  <div class="modal" (click)="stop($event)">
+    <div class="modal-top">
+      <div>
+        <h3>{{ title }}</h3>
+      </div>
+
+      <button class="icon-btn" type="button" (click)="onCancel()" aria-label="Cerrar">
+        ✕
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <!-- ✅ mensaje normal -->
+      <p class="message" *ngIf="!reprogram">{{ message }}</p>
+
+      <!-- modo reprogramar -->
+      <div class="reprogram-form" *ngIf="reprogram">
+        <p class="message">{{ message }}</p>
+
+        <label class="rf-label">Nueva fecha</label>
+
+        <ng-container *ngIf="reprogramAvailableDates.length > 0; else freeDateInput">
+          <select
+            class="rf-input"
+            [value]="reprogramDate"
+            (change)="onReprogramDateInput(($any($event.target)).value)"
+          >
+            <option value="" disabled>Seleccioná una fecha</option>
+            <option *ngFor="let d of reprogramAvailableDates" [value]="d">
+              {{ formatDateLabel(d) }}
+            </option>
+          </select>
+        </ng-container>
+        <ng-template #freeDateInput>
+          <input
+            class="rf-input"
+            type="date"
+            [min]="reprogramMinDate"
+            [value]="reprogramDate"
+            (input)="onReprogramDateInput(($any($event.target)).value)"
+          />
+        </ng-template>
+
+        <label class="rf-label">Nueva hora</label>
+
+        <ng-container *ngIf="reprogramAvailableTimes.length > 0; else freeTimeInput">
+          <select
+            class="rf-input"
+            [value]="reprogramTime"
+            (change)="onReprogramTimeInput(($any($event.target)).value)"
+          >
+            <option value="" disabled>Seleccioná un horario</option>
+            <option *ngFor="let t of reprogramAvailableTimes" [value]="t">{{ t }}</option>
+          </select>
+        </ng-container>
+        <ng-template #freeTimeInput>
+          <input
+            class="rf-input"
+            type="time"
+            [value]="reprogramTime"
+            (input)="onReprogramTimeInput(($any($event.target)).value)"
+          />
+        </ng-template>
+      </div>
+
+      <div class="error" *ngIf="error">
+        {{ error }}
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-ghost" type="button" (click)="onCancel()" [disabled]="loading">
+        {{ cancelText }}
+      </button>
+
+      <button class="btn-primary" type="button" (click)="onConfirm()" [disabled]="loading">
+        {{ loading ? 'Procesando…' : confirmText }}
+      </button>
+    </div>
+  </div>
+</div>

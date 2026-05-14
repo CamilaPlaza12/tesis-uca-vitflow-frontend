@@ -1,0 +1,148 @@
+<div class="page">
+  <header class="header">
+    <div class="header__left">
+      <h1>Equipo y roles</h1>
+      <p>Invitá miembros al hospital, asignales roles y administrá accesos.</p>
+    </div>
+
+    <div class="header__right">
+      <button class="btn btn--primary" (click)="openInvitar()">
+        + Invitar miembro
+      </button>
+    </div>
+  </header>
+
+  <section class="layout">
+    <app-miembros-table
+      [miembros]="miembros"
+      [miembroSeleccionadoId]="null"
+      [cargando]="cargando"
+      (selectMiembro)="onSelectMiembro($event)"
+      (cambiarRol)="onCambiarRol($event.miembro, $event.role)"
+      (toggleEstado)="onToggleEstado($event)"
+      (reenviarInvitacion)="onReenviarInvitacion($event)"
+    ></app-miembros-table>
+  </section>
+
+  <div
+    class="toast"
+    *ngIf="toastOpen"
+    [class.toast--success]="toastKind === 'success'"
+    [class.toast--error]="toastKind === 'error'"
+    [class.toast--info]="toastKind === 'info'"
+    (click)="closeToast()"
+    role="status"
+    aria-live="polite"
+  >
+    <span class="dot"></span>
+    <span class="txt">{{ toastText }}</span>
+    <span class="x">✕</span>
+  </div>
+
+  <div class="overlay" *ngIf="modalInvitarOpen" (click)="closeInvitar()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal__header">
+        <div>
+          <h3>Invitar miembro</h3>
+          <p>Se enviará un email para que active su cuenta y defina contraseña.</p>
+        </div>
+        <button class="icon-btn" (click)="closeInvitar()" aria-label="Cerrar">✕</button>
+      </div>
+
+      <div class="modal__body">
+        <div class="grid">
+          <label class="field">
+            <span>Email *</span>
+            <input type="email" [(ngModel)]="invite_email" placeholder="nombre@hospital.org" />
+          </label>
+
+          <label class="field" [class.field--error]="dniError">
+            <span>DNI *</span>
+            <input
+              type="text"
+              [(ngModel)]="invite_dni"
+              (input)="sanitizeDni($event)"
+              placeholder="Ej: 40123456"
+              maxlength="8"
+            />
+            <span class="field__error" *ngIf="dniError">{{ dniError }}</span>
+          </label>
+
+          <label class="field">
+            <span>Nombre *</span>
+            <input
+              type="text"
+              [(ngModel)]="invite_nombre"
+              (input)="sanitizeNombre($event)"
+              placeholder="Nombre"
+            />
+          </label>
+
+          <label class="field">
+            <span>Apellido *</span>
+            <input
+              type="text"
+              [(ngModel)]="invite_apellido"
+              (input)="sanitizeApellido($event)"
+              placeholder="Apellido"
+            />
+          </label>
+
+          <label class="field" [class.field--error]="phoneError">
+            <span>Teléfono *</span>
+            <input
+              type="text"
+              [(ngModel)]="invite_phone"
+              (input)="sanitizePhone($event)"
+              placeholder="Ej: 1122334455"
+              maxlength="15"
+            />
+            <span class="field__error" *ngIf="phoneError">{{ phoneError }}</span>
+          </label>
+
+          <div class="field">
+            <span>Rol</span>
+            <div class="role-static">Técnico</div>
+          </div>
+        </div>
+
+        <div class="modal__footer">
+          <button class="btn btn--soft" (click)="closeInvitar()" [disabled]="inviteLoading">
+            Cancelar
+          </button>
+
+          <button
+            class="btn btn--primary"
+            (click)="submitInvitar()"
+            [disabled]="inviteLoading || !inviteFormValid"
+          >
+            {{ inviteLoading ? 'Enviando...' : 'Enviar invitación' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="overlay" *ngIf="confirmOpen" (click)="closeConfirm()">
+    <div class="modal modal--sm" (click)="$event.stopPropagation()">
+      <div class="modal__header">
+        <div>
+          <h3>{{ confirmTitle }}</h3>
+          <p>{{ confirmMessage }}</p>
+        </div>
+        <button class="icon-btn" (click)="closeConfirm()" aria-label="Cerrar">✕</button>
+      </div>
+
+      <div class="modal__body">
+        <div class="modal__footer">
+          <button class="btn btn--soft" (click)="closeConfirm()" [disabled]="confirmLoading">
+            Cancelar
+          </button>
+          <button class="btn btn--primary" (click)="confirmDo()" [disabled]="confirmLoading">
+            {{ confirmLoading ? 'Procesando...' : 'Confirmar' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

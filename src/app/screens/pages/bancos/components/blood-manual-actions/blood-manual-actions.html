@@ -1,0 +1,152 @@
+<div class="card actions-card">
+  <div class="card__header">
+    <h2>Acciones</h2>
+    <span class="hint">Manual</span>
+  </div>
+
+  <div class="body">
+    <p class="desc">{{ subtitle() }}</p>
+
+    <div class="actions-grid">
+      <button class="action-btn action-btn--add" type="button" (click)="open('add')">
+        <span class="icon pi pi-plus"></span>
+        <span class="txt">
+          <span class="t">Agregar stock</span>
+          <span class="s">Sumá unidades a un grupo</span>
+        </span>
+      </button>
+
+      <button class="action-btn action-btn--remove" type="button" (click)="open('remove')">
+        <span class="icon pi pi-minus"></span>
+        <span class="txt">
+          <span class="t">Quitar stock</span>
+          <span class="s">Descontá unidades de un grupo</span>
+        </span>
+      </button>
+
+      <button class="action-btn action-btn--history" type="button" (click)="openHistory()">
+        <span class="icon pi pi-clock"></span>
+        <span class="txt">
+          <span class="t">Ver historial</span>
+          <span class="s">Movimientos y ajustes</span>
+        </span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<p-dialog
+  [(visible)]="modalOpen"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [closable]="true"
+  [dismissableMask]="true"
+  maskStyleClass="vf-actions-mask"
+  styleClass="vf-actions-dialog"
+  [style]="{ width: '480px' }"
+  [baseZIndex]="10000"
+  (onHide)="close()"
+>
+  <ng-template pTemplate="header">
+    <div class="vf-act__header">
+      <div class="vf-act__title">
+        <div class="h">{{ title() }}</div>
+        <div class="s">Ajuste manual de stock (unidades) por grupo sanguíneo</div>
+      </div>
+
+      <div class="vf-act__chip mono">
+        {{ modalAction === 'add' ? 'Agregar' : 'Quitar' }}
+      </div>
+    </div>
+  </ng-template>
+
+  <div class="vf-act__body">
+    <div class="vf-field">
+      <label class="vf-label">Grupo</label>
+      <div class="vf-control">
+        <select class="select" [(ngModel)]="selectedType" (change)="onTypeChange()">
+          <option *ngFor="let t of bloodTypes" [value]="t">{{ t }}</option>
+        </select>
+
+        <div class="vf-help" *ngIf="modalAction === 'remove'">
+          Stock actual: <span class="mono">{{ currentStock() }} unidades</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="vf-field">
+      <label class="vf-label">Cantidad (unidades))</label>
+      <div class="vf-control">
+        <p-inputNumber
+          [(ngModel)]="amountUnits"
+          [min]="1"
+          [max]="maxAmount()"
+          [useGrouping]="true"
+          [style]="{ width: '100%' }"
+        ></p-inputNumber>
+
+        <div class="vf-error" *ngIf="removeError()">{{ removeError() }}</div>
+
+        <div class="vf-help" *ngIf="!removeError()">
+          Se aplicará como {{ modalAction === 'add' ? 'suma' : 'resta' }} al stock del grupo seleccionado.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <div class="vf-act__footer">
+      <button class="btn btn--ghost" type="button" (click)="close()">Cancelar</button>
+
+      <!-- ✅ blindado: disabled doble + click guard -->
+      <button
+        class="btn btn--primary"
+        type="button"
+        [disabled]="confirmDisabled"
+        [attr.disabled]="confirmDisabled ? '' : null"
+        [class.is-disabled]="confirmDisabled"
+        (click)="confirmDisabled ? $event.preventDefault() : confirm()"
+      >
+        {{ modalAction === 'add' ? 'Confirmar agregado' : 'Confirmar descuento' }}
+      </button>
+    </div>
+  </ng-template>
+</p-dialog>
+
+<p-dialog
+  [(visible)]="historyOpen"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [closable]="true"
+  [dismissableMask]="true"
+  maskStyleClass="vf-actions-mask"
+  styleClass="vf-actions-dialog"
+  [style]="{ width: '520px' }"
+  [baseZIndex]="10000"
+  (onHide)="closeHistory()"
+>
+  <ng-template pTemplate="header">
+    <div class="vf-act__header">
+      <div class="vf-act__title">
+        <div class="h">Historial de movimientos</div>
+        <div class="s">Entradas, salidas y ajustes manuales</div>
+      </div>
+      <div class="vf-act__chip mono">Próximamente</div>
+    </div>
+  </ng-template>
+
+  <div class="vf-act__body">
+    <div class="empty-state">
+      <div class="k">Todavía no hay historial conectado</div>
+      <div class="s">Cuando sumemos el endpoint, lo mostramos acá con filtros y export.</div>
+    </div>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <div class="vf-act__footer">
+      <button class="btn btn--primary" type="button" (click)="closeHistory()">Cerrar</button>
+    </div>
+  </ng-template>
+</p-dialog>

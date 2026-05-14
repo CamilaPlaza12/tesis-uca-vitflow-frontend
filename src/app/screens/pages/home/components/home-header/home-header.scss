@@ -1,0 +1,66 @@
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.header__title {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #0f2b3a;
+}
+
+.header__subtitle {
+  margin-top: 6px;
+  color: #4a6574;
+  font-size: 14px;
+}
+
+.header__right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.header__date {
+  color: #4a6574;
+  font-size: 14px;
+  font-weight: 650;
+}
+
+.header__bell {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  border: 1px solid #e7eef3;
+  background: rgba(255,255,255,0.8);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+
+.header__bellIcon {
+  font-size: 18px;
+}
+
+.header__badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: #ff5b4d;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  display: grid;
+  place-items: center;
+  border: 2px solid #ffffff;
+}

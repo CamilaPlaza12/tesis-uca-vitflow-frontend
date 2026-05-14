@@ -1,0 +1,77 @@
+<div class="pendientes-section">
+  <div class="pendientes-section__header">
+    <i class="pi pi-list-check pendientes-section__icon"></i>
+    <h3 class="pendientes-section__title">Pendientes de clasificación</h3>
+    <span class="pendientes-count" *ngIf="pendientes.length > 0">{{ pendientes.length }}</span>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="cargando" class="loading-state">
+    <i class="pi pi-spinner pi-spin"></i>
+    <span>Cargando...</span>
+  </div>
+
+  <!-- Vacío -->
+  <div *ngIf="!cargando && pendientes.length === 0" class="empty">
+    <i class="pi pi-check-circle empty__icon"></i>
+    <span>No hay donaciones pendientes de clasificar</span>
+  </div>
+
+  <!-- Tabla -->
+  <div class="tabla-wrap" *ngIf="!cargando && pendientes.length > 0">
+    <table class="pendientes-table">
+      <thead>
+        <tr>
+          <th class="col-donante">Donante</th>
+          <th class="col-tipo">Tipo de donación</th>
+          <th class="col-accion"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of pendientes" [class.row--loading]="item.loading">
+          <!-- Donante: nombre + DNI + hora -->
+          <td class="col-donante">
+            <span class="donante-nombre">{{ getNombre(item) }}</span>
+            <span class="donante-meta">
+              <span class="meta-sep">·</span>
+              {{ item.donante_dni }}
+              <span class="meta-sep">·</span>
+              {{ item.time_local }}
+            </span>
+            <div class="error-inline" *ngIf="item.error">{{ item.error }}</div>
+          </td>
+
+          <!-- Selector de componentes (multi-select) -->
+          <td class="col-tipo">
+            <div class="comp-btns">
+              <button
+                *ngFor="let c of componentes"
+                type="button"
+                class="btn-comp"
+                [class.btn-comp--selected]="isSelected(item, c.value)"
+                (click)="toggleComponente(item, c.value)"
+                [disabled]="item.loading"
+              >
+                {{ c.label }}
+              </button>
+            </div>
+          </td>
+
+          <!-- Guardar -->
+          <td class="col-accion">
+            <button
+              type="button"
+              class="btn-guardar"
+              [disabled]="item.selectedComponentes.length === 0 || item.loading"
+              (click)="guardar(item)"
+            >
+              <i class="pi pi-spinner pi-spin" *ngIf="item.loading"></i>
+              <i class="pi pi-check" *ngIf="!item.loading"></i>
+              {{ item.loading ? 'Guardando…' : 'Guardar' }}
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

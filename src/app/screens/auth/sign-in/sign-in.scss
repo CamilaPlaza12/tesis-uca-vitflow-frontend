@@ -4,17 +4,38 @@
 }
 
 .auth-page {
-  min-height: 100vh;
+  height: 100svh;
+  box-sizing: border-box;
+  overflow: hidden;
+
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 2rem;
-  background-color: #fdfdfd;
-  background-image: url('/images/fondo.png');
-  background-position: center;
-  background-size: cover;
-  background-repeat: no-repeat;
+
+  padding: clamp(12px, 2vw, 28px);
+
+  background:
+    radial-gradient(900px 520px at 82% 18%,
+      rgba(242, 106, 85, 0.80) 0%,
+      rgba(242, 106, 85, 0.55) 35%,
+      rgba(242, 106, 85, 0.00) 62%
+    ),
+    radial-gradient(1200px 760px at 50% 56%,
+      rgba(132, 206, 223, 0.85) 0%,
+      rgba(132, 206, 223, 0.55) 40%,
+      rgba(132, 206, 223, 0.00) 68%
+    ),
+    radial-gradient(680px 420px at 10% 6%,
+      rgba(132, 206, 223, 0.75) 0%,
+      rgba(132, 206, 223, 0.00) 60%
+    ),
+    radial-gradient(520px 360px at 92% 92%,
+      rgba(132, 206, 223, 0.55) 0%,
+      rgba(132, 206, 223, 0.00) 62%
+    ),
+    linear-gradient(135deg, #fbfaf7 0%, #ffffff 55%, #fbfaf7 100%);
 }
+
 
 .auth-card {
   display: flex;
@@ -150,9 +171,42 @@
   background: #ffffff;
 }
 
-#email,
-#password {
+#email {
   max-width: 92%;
+}
+
+.password-wrapper {
+  position: relative;
+  max-width: 100%;
+
+  input {
+    width: 100%;
+    box-sizing: border-box;
+    padding-right: 3rem;
+  }
+}
+
+.toggle-password {
+  position: absolute;
+  right: 0.85rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #9ca3af;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  line-height: 1;
+
+  &:hover {
+    color: #374151;
+  }
+
+  i {
+    font-size: 1rem;
+  }
 }
 
 .form-field input:focus {

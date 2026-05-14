@@ -1,0 +1,269 @@
+<div class="dashboard">
+  <!-- Header del evento -->
+  <div class="dashboard-header">
+    <div class="dashboard-header__info">
+      <h2 class="dashboard-header__nombre">{{ evento.nombre }}</h2>
+      <p class="dashboard-header__subtitulo" *ngIf="subtitulo">{{ subtitulo }}</p>
+    </div>
+    <div class="dashboard-header__actions">
+      <span class="badge" [ngClass]="badgeClass">{{ estadoBadgeLabel }}</span>
+      <button
+        *ngIf="!soloLectura"
+        class="btn btn--danger-soft"
+        (click)="openFinalizarConfirm()"
+      >
+        <i class="pi pi-stop-circle"></i>
+        Finalizar evento
+      </button>
+      <button
+        *ngIf="puedeCancelar"
+        class="btn btn--warning-soft"
+        (click)="openCancelarConfirm()"
+      >
+        <i class="pi pi-times-circle"></i>
+        Cancelar evento
+      </button>
+    </div>
+  </div>
+
+  <!-- Aviso solo lectura (evento activo pero no es hoy) -->
+  <div class="aviso-readonly" *ngIf="soloLectura && evento.estado === 'ACTIVO'">
+    <i class="pi pi-info-circle"></i>
+    <span>Este evento no es hoy. Solo podés cancelarlo.</span>
+  </div>
+
+  <!-- Aviso evento finalizado: aún se puede clasificar pendientes -->
+  <div class="aviso-readonly aviso-readonly--finalizado" *ngIf="evento.estado === 'FINALIZADO'">
+    <i class="pi pi-info-circle"></i>
+    <span>El evento está finalizado. Todavía podés ingresar donantes y clasificar pendientes que quedaron sin procesar.</span>
+  </div>
+
+  <!-- Loading skeleton -->
+  <div *ngIf="cargandoDashboard" class="loading-state">
+    <i class="pi pi-spinner pi-spin"></i>
+    <span>Cargando datos...</span>
+  </div>
+
+  <ng-container *ngIf="!cargandoDashboard && dashboard">
+    <!-- KPI cards — 2 en fila -->
+    <div class="kpis">
+      <!-- Turnos agendados -->
+      <div class="kpi">
+        <div class="kpi__meta">
+          <div class="kpi__label">Turnos agendados</div>
+          <div class="kpi__value">{{ cargandoTurnos ? '—' : turnosAgendados }}</div>
+          <div class="kpi__sub" *ngIf="!cargandoTurnos && turnosCount">
+            <span class="kpi__sub-item kpi__sub-item--prog">{{ turnosCount.by_status['PROGRAMADO'] ?? 0 }} programados</span>
+            <span class="kpi__sub-sep">·</span>
+            <span class="kpi__sub-item kpi__sub-item--conf">{{ turnosCount.by_status['CONFIRMADO'] ?? 0 }} confirmados</span>
+            <ng-container *ngIf="(turnosCount.by_status['PENDIENTE_CLASIFICACION'] ?? 0) > 0">
+              <span class="kpi__sub-sep">·</span>
+              <span class="kpi__sub-item kpi__sub-item--pend">{{ turnosCount.by_status['PENDIENTE_CLASIFICACION'] }} en espera</span>
+            </ng-container>
+          </div>
+        </div>
+        <div class="kpi__icon">📅</div>
+      </div>
+
+      <!-- Donaciones registradas + badge pendientes -->
+      <div class="kpi">
+        <div class="kpi__meta">
+          <div class="kpi__label">Donaciones registradas</div>
+          <div class="kpi__value">{{ dashboard.total_donaciones_registradas }}</div>
+          <div class="kpi__pending" *ngIf="dashboard.pendientes_clasificacion > 0">
+            <i class="pi pi-clock"></i>
+            {{ dashboard.pendientes_clasificacion }} pendientes de clasificar
+          </div>
+        </div>
+        <div class="kpi__icon">🩸</div>
+      </div>
+    </div>
+
+    <!-- Barra de progreso: turnos agendados vs capacidad esperada -->
+    <div class="progress-section" *ngIf="dashboard.capacidad_esperada">
+      <div class="progress-info">
+        <span>{{ turnosAgendados }} / {{ dashboard.capacidad_esperada }} donantes</span>
+        <span class="progress-pct">{{ porcentajeAsistencia }}%</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" [style.width.%]="porcentajeAsistencia"></div>
+      </div>
+    </div>
+
+    <!-- Breakdown por componente -->
+    <div class="breakdown">
+      <div class="breakdown__title">Recaudación</div>
+      <div class="breakdown-item">
+        <span class="breakdown-label">Plasma</span>
+        <span class="breakdown-val">{{ dashboard.por_componente.plasma }}</span>
+      </div>
+      <div class="breakdown-item">
+        <span class="breakdown-label">Plaquetas</span>
+        <span class="breakdown-val">{{ dashboard.por_componente.plaquetas }}</span>
+      </div>
+      <div class="breakdown-item">
+        <span class="breakdown-label">Glóbulos rojos</span>
+        <span class="breakdown-val">{{ dashboard.por_componente.globulos_rojos }}</span>
+      </div>
+      <div class="breakdown-item">
+        <span class="breakdown-label">Sangre entera</span>
+        <span class="breakdown-val">{{ dashboard.por_componente.sangre_entera }}</span>
+      </div>
+    </div>
+  </ng-container>
+
+  <!-- Área principal: registrar donación + tabla de turnos -->
+  <div class="main-grid" *ngIf="puedeOperar">
+    <app-registrar-donacion
+      [eventoId]="evento.id"
+      [sinClasificar]="dashboard?.pendientes_clasificacion ?? 0"
+      [cargandoDashboard]="cargandoDashboard"
+      (donacionRegistrada)="onDonacionRegistrada()"
+    ></app-registrar-donacion>
+
+    <!-- Tabla de turnos del evento -->
+    <div class="turnos-list">
+      <div class="turnos-list__header">
+        <span class="turnos-list__title">
+          <i class="pi pi-calendar"></i>
+          Turnos del evento
+        </span>
+        <i class="pi pi-spinner pi-spin turnos-list__spinner" *ngIf="cargandoTurnosList"></i>
+      </div>
+      <div class="turnos-search-wrap">
+        <input
+          type="text"
+          class="turnos-search"
+          placeholder="Buscar por DNI..."
+          [value]="searchDni"
+          (input)="searchDni = $any($event.target).value"
+          inputmode="numeric"
+          autocomplete="off"
+        />
+      </div>
+      <div class="turnos-table-wrap">
+        <table class="turnos-table" *ngIf="!cargandoTurnosList">
+          <thead>
+            <tr>
+              <th>Donante</th>
+              <th>DNI</th>
+              <th>Hora</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              *ngFor="let turno of turnosFiltered"
+              [class.turno-row--highlighted]="searchDni.trim() && turno.dni === searchDni.trim()"
+            >
+              <td class="td-nombre">{{ turno.full_name }}</td>
+              <td class="td-mono">{{ turno.dni }}</td>
+              <td class="td-mono">{{ turno.time_local }}</td>
+              <td>
+                <span class="turno-badge" [ngClass]="turnoStatusClass(turno.status)">
+                  {{ turnoStatusLabel(turno.status) }}
+                </span>
+              </td>
+            </tr>
+            <tr *ngIf="turnosList.length === 0 && !searchDni.trim()">
+              <td colspan="4" class="td-empty">Sin turnos registrados</td>
+            </tr>
+            <tr *ngIf="turnosFiltered.length === 0 && searchDni.trim()">
+              <td colspan="4" class="td-empty td-empty--search">
+                No se encontró en la lista de turnos
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pendientes de clasificación -->
+  <app-pendientes-clasificacion
+    *ngIf="puedeOperar"
+    [eventoId]="evento.id"
+    (clasificacionRealizada)="onClasificacionRealizada()"
+  ></app-pendientes-clasificacion>
+</div>
+
+<!-- Confirm finalizar evento -->
+<div class="overlay" *ngIf="finalizarConfirmOpen" (click)="closeFinalizarConfirm()">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <div class="modal__header">
+      <div>
+        <h3>Finalizar evento</h3>
+        <p>Esta acción no se puede deshacer.</p>
+      </div>
+      <button class="icon-btn" (click)="closeFinalizarConfirm()" [disabled]="finalizarLoading" aria-label="Cerrar">
+        ✕
+      </button>
+    </div>
+    <div class="modal__body">
+      <p class="modal__message">
+        ¿Estás seguro de que querés finalizar <strong>{{ evento.nombre }}</strong>? Ya no se podrán registrar nuevas donaciones.
+      </p>
+      <div class="error" *ngIf="finalizarError">{{ finalizarError }}</div>
+    </div>
+    <div class="modal__footer">
+      <button class="btn btn--soft" (click)="closeFinalizarConfirm()" [disabled]="finalizarLoading">
+        Volver
+      </button>
+      <button class="btn btn--danger" (click)="confirmarFinalizar()" [disabled]="finalizarLoading">
+        {{ finalizarLoading ? 'Finalizando…' : 'Finalizar evento' }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Cancelar – Paso 1: primera confirmación -->
+<div class="overlay" *ngIf="cancelStep1Open" (click)="closeCancelarConfirm()">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <div class="modal__header">
+      <div>
+        <h3>¿Cancelar evento?</h3>
+        <p>Esta acción no se puede deshacer.</p>
+      </div>
+      <button class="icon-btn" (click)="closeCancelarConfirm()" aria-label="Cerrar">✕</button>
+    </div>
+    <div class="modal__body">
+      <p class="modal__message">
+        ¿Estás seguro de que querés cancelar <strong>{{ evento.nombre }}</strong>?
+      </p>
+    </div>
+    <div class="modal__footer">
+      <button class="btn btn--soft" (click)="closeCancelarConfirm()">Volver</button>
+      <button class="btn btn--warning" (click)="onConfirmCancelStep1()">Continuar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Cancelar – Paso 2: advertencia fuerte -->
+<div class="overlay" *ngIf="cancelStep2Open" (click)="!cancelarLoading && closeCancelarConfirm()">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <div class="modal__header">
+      <div>
+        <h3>Confirmación final</h3>
+        <p>Esta acción no se puede deshacer.</p>
+      </div>
+      <button class="icon-btn" (click)="closeCancelarConfirm()" [disabled]="cancelarLoading" aria-label="Cerrar">
+        ✕
+      </button>
+    </div>
+    <div class="modal__body">
+      <p class="modal__message modal__message--warning">
+        Esta acción cancelará TODOS los turnos asociados y notificará a los donantes.
+        Esta acción no se puede deshacer.
+      </p>
+      <div class="error" *ngIf="cancelarError">{{ cancelarError }}</div>
+    </div>
+    <div class="modal__footer">
+      <button class="btn btn--soft" (click)="closeCancelarConfirm()" [disabled]="cancelarLoading">
+        Abortar
+      </button>
+      <button class="btn btn--danger" (click)="confirmarCancelar()" [disabled]="cancelarLoading">
+        {{ cancelarLoading ? 'Cancelando…' : 'Sí, cancelar pedido' }}
+      </button>
+    </div>
+  </div>
+</div>

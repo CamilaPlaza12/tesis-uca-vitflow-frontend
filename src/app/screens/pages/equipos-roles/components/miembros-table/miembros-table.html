@@ -1,0 +1,91 @@
+<div class="card">
+  <div class="card__header">
+    <h2>Miembros del hospital</h2>
+    <span class="hint">{{ miembros.length }} en lista</span>
+  </div>
+
+  <div class="table-wrap">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Email</th>
+          <th>DNI</th>
+          <th>Rol</th>
+          <th>Estado</th>
+          <th>Alta</th>
+          <th>Acceso</th>
+          <th>Invitación</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngIf="cargando && miembros.length === 0">
+          <td class="empty" colspan="8">
+            <div style="text-align: center; padding: 20px;">
+              <span>Cargando miembros...</span>
+            </div>
+          </td>
+        </tr>
+
+        <tr *ngIf="!cargando && miembros.length === 0">
+          <td class="empty" colspan="8">
+            No hay miembros para mostrar.
+          </td>
+        </tr>
+
+        <tr
+          *ngFor="let m of miembros"
+          class="row"
+          [class.selected]="m.uid === miembroSeleccionadoId"
+          (click)="onRowClick(m)"
+        >
+          <td class="name">{{ getFullName(m) }}</td>
+          <td class="mono">{{ m.email }}</td>
+          <td class="mono">{{ m.dni }}</td>
+
+          <td>
+            <span class="role-readonly">{{ roleLabel(m.role) }}</span>
+          </td>
+
+          <td>
+            <span
+              class="status"
+              [class.status--activo]="m.status === 'ACTIVE'"
+              [class.status--invitado]="m.status === 'INVITED'"
+              [class.status--suspendido]="m.status === 'SUSPENDED'"
+            >
+              {{ statusLabel(m.status) }}
+            </span>
+          </td>
+
+          <td class="mono">{{ formatFechaHora(m.createdAt) }}</td>
+
+          <td (click)="$event.stopPropagation()">
+            <button
+              class="mini mini--icon"
+              [class.mini--danger]="m.status !== 'SUSPENDED'"
+              [class.mini--success]="m.status === 'SUSPENDED'"
+              (click)="toggleEstado.emit(m)"
+              [disabled]="m.role === 'HOSPITAL_ADMIN'"
+              [title]="m.status === 'SUSPENDED' ? 'Reactivar acceso' : 'Suspender acceso'"
+            >
+              <i [class]="m.status === 'SUSPENDED' ? 'pi pi-check-circle' : 'pi pi-ban'"></i>
+            </button>
+          </td>
+
+          <td (click)="$event.stopPropagation()">
+            <button
+              class="mini"
+              (click)="reenviarInvitacion.emit(m)"
+              [disabled]="m.status !== 'INVITED'"
+              title="Reenviar invitación"
+            >
+              Reenviar
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

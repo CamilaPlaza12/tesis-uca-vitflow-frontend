@@ -1,0 +1,172 @@
+.vf-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+
+  display: grid;
+  place-items: center;
+
+  padding: 16px;
+
+  background: rgba(2, 6, 23, 0.55);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+
+  animation: vfFadeIn 140ms ease-out;
+}
+
+.vf-modal {
+  width: min(520px, 100%);
+  border-radius: 22px;
+  background: #ffffff;
+  overflow: hidden;
+
+  box-shadow:
+    0 22px 60px rgba(15, 23, 42, 0.28),
+    0 2px 10px rgba(15, 23, 42, 0.08);
+
+  transform: translateY(6px) scale(0.985);
+  animation: vfPopIn 160ms ease-out forwards;
+
+  border: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.vf-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.vf-modal__title {
+  font-weight: 800;
+  font-size: 1.02rem;
+  letter-spacing: -0.01em;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.vf-modal__x {
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  border: 1px solid rgba(15, 23, 42, 0.10);
+  background: rgba(255, 255, 255, 0.75);
+  color: #475569;
+  cursor: pointer;
+
+  display: grid;
+  place-items: center;
+
+  transition: transform 120ms ease, background 120ms ease, border-color 120ms ease;
+}
+
+.vf-modal__x:hover {
+  background: rgba(248, 250, 252, 1);
+  border-color: rgba(15, 23, 42, 0.16);
+  transform: scale(1.03);
+}
+
+.vf-modal__body {
+  padding: 14px 16px 6px;
+}
+
+.vf-modal__body p {
+  margin: 0;
+  color: #334155;
+  line-height: 1.55;
+  font-size: 0.95rem;
+}
+
+.vf-modal__footer {
+  padding: 12px 16px 16px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+/* Botón (look VitFlow) */
+.vf-btn {
+  border: none;
+  border-radius: 999px;
+  padding: 10px 14px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+
+  color: #ffffff;
+  background: #f2543f;
+
+  box-shadow: 0 10px 22px rgba(242, 84, 63, 0.35);
+  transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease;
+}
+
+.vf-btn:hover {
+  background: #e04735;
+  transform: translateY(-1px);
+  box-shadow: 0 14px 26px rgba(242, 84, 63, 0.42);
+}
+
+.vf-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 8px 18px rgba(242, 84, 63, 0.28);
+}
+
+/* Header variant bar */
+.vf-modal__header--error {
+  background:
+    linear-gradient(90deg, rgba(224, 36, 36, 0.12), rgba(242, 84, 63, 0.10));
+}
+
+.vf-modal__header--success {
+  background:
+    linear-gradient(90deg, rgba(16, 185, 129, 0.14), rgba(16, 185, 129, 0.08));
+}
+
+.vf-modal__header--warning {
+  background:
+    linear-gradient(90deg, rgba(245, 158, 11, 0.16), rgba(245, 158, 11, 0.08));
+}
+
+.vf-modal__header--info {
+  background:
+    linear-gradient(90deg, rgba(59, 130, 246, 0.14), rgba(59, 130, 246, 0.08));
+}
+
+/* Mini “badge” circular (opcional si agregás el span en el HTML) */
+.vf-modal__badge {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  font-size: 16px;
+  background: rgba(15, 23, 42, 0.06);
+  border: 1px solid rgba(15, 23, 42, 0.10);
+}
+
+/* Animations */
+@keyframes vfFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes vfPopIn {
+  to { transform: translateY(0) scale(1); }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+  .vf-modal__title {
+    font-size: 0.98rem;
+  }
+  .vf-btn {
+    width: 100%;
+  }
+  .vf-modal__footer {
+    justify-content: stretch;
+  }
+}

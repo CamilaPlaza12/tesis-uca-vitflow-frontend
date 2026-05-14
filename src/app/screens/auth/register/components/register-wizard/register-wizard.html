@@ -1,0 +1,66 @@
+<app-stepper
+  [steps]="[
+    { key: 'hospital', label: 'Hospital' },
+    { key: 'admin', label: 'Administrador' },
+    { key: 'review', label: 'Confirmación' }
+  ]"
+  [activeIndex]="stepIndex"
+></app-stepper>
+
+<div class="wizard-body">
+  <div class="form-error" *ngIf="errorMsg">{{ errorMsg }}</div>
+
+  <app-hospital-step
+    *ngIf="currentStep === 'hospital'"
+    [group]="hospitalGroup"
+  ></app-hospital-step>
+
+  <app-admin-step
+    *ngIf="currentStep === 'admin'"
+    [group]="adminGroup"
+  ></app-admin-step>
+
+  <!--<app-plan-step
+    *ngIf="currentStep === 'plan'"
+    [group]="planGroup"
+    ></app-plan-step>
+  -->
+
+  <app-review-step
+    *ngIf="currentStep === 'review'"
+    [form]="form"
+  ></app-review-step>
+
+  <div class="wizard-actions">
+    <!-- ✅ NO mostrar volver en el paso 1 -->
+    <button
+      *ngIf="stepIndex > 0"
+      class="btn btn-google"
+      type="button"
+      (click)="goBack()"
+      [disabled]="loading"
+    >
+      Volver
+    </button>
+
+    <button
+      class="btn btn-primary"
+      type="button"
+      (click)="currentStep === 'review' ? submit() : goNext()"
+      [disabled]="loading"
+    >
+      <span *ngIf="!loading">
+        {{ currentStep === 'review' ? 'Confirmar registro' : 'Continuar' }}
+      </span>
+      <span *ngIf="loading">Procesando…</span>
+    </button>
+  </div>
+</div>
+
+<app-send-validation-modal
+  [open]="sendValidationOpen"
+  [adminEmail]="adminEmail"
+  [loading]="loading"
+  (cancel)="onModalCancel()"
+  (confirm)="onModalConfirm()"
+></app-send-validation-modal>

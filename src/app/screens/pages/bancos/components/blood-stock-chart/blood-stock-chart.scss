@@ -1,0 +1,118 @@
+/* 🔥 CARD (modo standalone, no lo estás usando pero lo dejo limpio) */
+.card {
+  background: #fff;
+  border-radius: 18px;
+  border: 1px solid #eef2f6;
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.06);
+  overflow: hidden;
+
+  display: flex;
+  flex-direction: column;
+}
+
+/* HEADER */
+.card__header {
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #eef2f6;
+
+  h2 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  .hint {
+    font-size: 11px;
+    color: #7b8a99;
+    background: #f6f8fb;
+    border: 1px solid #eef2f6;
+    padding: 4px 8px;
+    border-radius: 999px;
+  }
+}
+
+/* 🔥 CHART WRAP (LA CLAVE) */
+.chart-wrap {
+  height: 140px; /* 🔥 controlás el tamaño acá */
+  padding: 8px 10px 4px;
+}
+
+/* 🔥 FORZAR CANVAS A RESPETAR ALTURA */
+:host ::ng-deep .chart-wrap .p-chart {
+  width: 100%;
+  height: 100% !important;
+}
+
+:host ::ng-deep .chart-wrap canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* LEGEND */
+.legend {
+  padding: 6px 10px 10px;
+  display: flex;
+  gap: 6px;
+  justify-content: flex-end;
+}
+
+.pill {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 999px;
+
+  &.pill--ok {
+    background: #eef6ff;
+    color: #1d4ed8;
+  }
+
+  &.pill--warn {
+    background: #fff3e6;
+    color: #9a4b00;
+  }
+
+  &.pill--bad {
+    background: #fff1f2;
+    color: #b91c1c;
+  }
+}
+
+/* 🔥 EMBED (el que realmente estás usando) */
+.embed {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+
+  background: transparent;
+  border: none;
+  box-shadow: none;
+
+  .card__header {
+    padding: 10px 12px;
+
+    h2 {
+      font-size: 13px;
+      font-weight: 800;
+    }
+  }
+
+  .chart-wrap {
+    height: 140px; /* 🔥 ESTE ES EL QUE IMPORTA */
+  }
+}
+
+/* 🔥 Compact ya no hace nada raro */
+.embed--compact {
+  .chart-wrap {
+    height: 450px; /* aún más chico si querés */
+  }
+}
+
+/* LEGEND EMBED */
+.legend--embed {
+  padding: 6px 10px 10px;
+}

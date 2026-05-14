@@ -1,0 +1,537 @@
+.card {
+  background: #fff;
+  border-radius: 18px;
+  border: 1px solid #eef2f6;
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.06);
+  overflow: hidden;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.card__header {
+  padding: 16px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid #f1f4f8;
+
+  h2 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 750;
+    letter-spacing: -0.01em;
+  }
+
+  .hint {
+    font-size: 12.5px;
+    color: #7b8a99;
+    background: #f6f8fb;
+    border: 1px solid #eef2f6;
+    padding: 6px 10px;
+    border-radius: 999px;
+  }
+}
+
+.body {
+  padding: 16px 18px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1;
+}
+
+.desc {
+  margin: 0;
+  font-size: 13px;
+  color: #607080;
+}
+
+.action-btn {
+  width: 100%;
+  border: 1px solid #eef2f6;
+  background: #fff;
+  border-radius: 16px;
+  padding: 12px 12px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  cursor: pointer;
+  transition: transform 120ms ease, border-color 120ms ease, background 120ms ease;
+
+  &:hover {
+    transform: translateY(-1px);
+    border-color: #dbe6f3;
+    background: #fbfcfe;
+  }
+
+  .icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    border: 1px solid transparent;
+  }
+
+  .txt {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+
+    .t {
+      font-size: 13.5px;
+      font-weight: 780;
+      color: #1f2a37;
+    }
+
+    .s {
+      font-size: 12.5px;
+      color: #7b8a99;
+    }
+  }
+}
+
+.action-btn--add .icon {
+  background: #eef6ff;
+  color: #1d4ed8;
+  border-color: #dbeafe;
+}
+
+.action-btn--remove .icon {
+  background: #fff1f2;
+  color: #b91c1c;
+  border-color: #fee2e2;
+}
+
+.note {
+  margin-top: auto;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: #f6f8fb;
+  border: 1px solid #eef2f6;
+  font-size: 12.5px;
+  color: #607080;
+
+  .mono {
+    font-variant-numeric: tabular-nums;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  }
+}
+
+/* dialog internal */
+.dialog-body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.dialog-row {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  gap: 12px;
+  align-items: start;
+
+  .label {
+    color: #607080;
+    font-size: 12.5px;
+    font-weight: 750;
+    padding-top: 6px;
+  }
+}
+
+.select {
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid #eef2f6;
+  background: #fff;
+  padding: 10px 12px;
+  font-size: 13.5px;
+  color: #1f2a37;
+}
+
+.subhint {
+  margin-top: 8px;
+  font-size: 12.5px;
+  color: #7b8a99;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding-top: 6px;
+}
+
+.btn {
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-size: 13px;
+  font-weight: 760;
+  cursor: pointer;
+  border: 1px solid transparent;
+
+  &.btn--ghost {
+    background: #f6f8fb;
+    border-color: #eef2f6;
+    color: #526274;
+
+    &:hover {
+      background: #f1f4f8;
+    }
+  }
+
+  &.btn--primary {
+    background: rgba(59, 130, 246, 0.9);
+    color: white;
+
+    &:hover {
+      background: rgba(59, 130, 246, 1);
+    }
+  }
+}
+
+/* ✅ SOLO este dialog: fondo blanco sólido */
+:host ::ng-deep .vf-dialog .p-dialog {
+  background: #fff !important;
+  border-radius: 16px !important;
+  border: 1px solid #eef2f6 !important;
+  box-shadow: 0 22px 60px rgba(15, 23, 42, 0.18) !important;
+  overflow: hidden;
+}
+
+:host ::ng-deep .vf-dialog .p-dialog-header {
+  background: #fff !important;
+  border-bottom: 1px solid #eef2f6 !important;
+}
+
+:host ::ng-deep .vf-dialog .p-dialog-content {
+  background: #fff !important;
+}
+
+/* ✅ mask SOLO acciones */
+:host ::ng-deep .vf-actions-mask {
+  background: rgba(2, 6, 23, 0.45) !important;
+  backdrop-filter: blur(2px);
+}
+
+/* ✅ mask SOLO este dialog */
+:host ::ng-deep .vf-actions-mask {
+  background: rgba(2, 6, 23, 0.50) !important;
+  backdrop-filter: blur(2px);
+}
+
+/* ✅ Dialog VitFlow SOLO actions */
+:host ::ng-deep .vf-actions-dialog.p-dialog {
+  border-radius: 18px !important;
+  border: 1px solid #eef2f6 !important;
+  box-shadow: 0 26px 80px rgba(15, 23, 42, 0.22) !important;
+  overflow: hidden;
+}
+
+:host ::ng-deep .vf-actions-dialog .p-dialog-header {
+  padding: 16px 18px !important;
+  background: #fff !important;
+  border-bottom: 1px solid #eef2f6 !important;
+}
+
+:host ::ng-deep .vf-actions-dialog .p-dialog-content {
+  padding: 16px 18px 18px !important;
+  background: #fff !important;
+}
+
+:host ::ng-deep .vf-actions-dialog .p-dialog-footer {
+  padding: 12px 18px 16px !important;
+  background: #fff !important;
+  border-top: 1px solid #eef2f6 !important;
+}
+
+:host ::ng-deep .vf-actions-dialog .p-dialog-header .p-dialog-header-icon {
+  width: 34px !important;
+  height: 34px !important;
+  border-radius: 12px !important;
+  border: 1px solid #eef2f6 !important;
+  background: #fff !important;
+}
+
+:host ::ng-deep .vf-actions-dialog .p-dialog-header .p-dialog-header-icon:hover {
+  background: #fbfcfe !important;
+  border-color: #dbe6f3 !important;
+}
+
+/* Header layout */
+.vf-act__header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.vf-act__title .h {
+  font-size: 14.5px;
+  font-weight: 820;
+  letter-spacing: -0.01em;
+  color: #0f172a;
+  margin: 0;
+}
+
+.vf-act__title .s {
+  margin-top: 4px;
+  font-size: 12.5px;
+  color: #6b7280;
+}
+
+.vf-act__chip {
+  font-size: 12.5px;
+  font-weight: 820;
+  color: #1f2a37;
+  background: #f6f8fb;
+  border: 1px solid #eef2f6;
+  padding: 6px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+/* Body */
+.vf-act__body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.vf-field {
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  gap: 12px;
+  align-items: start;
+}
+
+.vf-label {
+  padding-top: 10px;
+  font-size: 12.5px;
+  font-weight: 800;
+  color: #607080;
+}
+
+.vf-control {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.select {
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid #eef2f6;
+  background: #fff;
+  padding: 10px 12px;
+  font-size: 13.5px;
+  color: #0f172a;
+}
+
+.select:focus {
+  outline: none;
+  border-color: rgba(59, 130, 246, 0.45);
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
+}
+
+:host ::ng-deep .vf-actions-dialog .p-inputnumber-input {
+  border-radius: 12px !important;
+  border: 1px solid #eef2f6 !important;
+  padding: 10px 12px !important;
+  font-size: 13.5px !important;
+}
+
+:host ::ng-deep .vf-actions-dialog .p-inputnumber-input:focus {
+  border-color: rgba(59, 130, 246, 0.45) !important;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12) !important;
+}
+
+.vf-help {
+  font-size: 12.5px;
+  color: #7b8a99;
+  line-height: 1.35;
+}
+
+.vf-act__warn {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: #fff3e6;
+  border: 1px solid #ffe3c7;
+  color: #9a4b00;
+  font-size: 12.5px;
+  line-height: 1.35;
+
+  i {
+    margin-top: 2px;
+  }
+}
+
+/* Footer */
+.vf-act__footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+/* Botones coherentes */
+.btn {
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: filter 120ms ease, transform 120ms ease;
+}
+
+.btn--ghost {
+  background: #f6f8fb;
+  border-color: #eef2f6;
+  color: #526274;
+}
+
+.btn--ghost:hover {
+  filter: brightness(0.98);
+  transform: translateY(-1px);
+}
+
+.btn--primary {
+  background: rgba(59, 130, 246, 0.92);
+  color: #fff;
+}
+
+.btn--primary:hover {
+  background: rgba(59, 130, 246, 1);
+  transform: translateY(-1px);
+}
+
+.mono {
+  font-variant-numeric: tabular-nums;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+.actions-grid {
+  display: grid;
+  grid-template-rows: repeat(3, 1fr);
+  gap: 12px;
+  height: 100%;
+}
+
+.action-btn {
+  width: 100%;
+  min-height: 84px;
+  border: 1px solid #eef2f6;
+  background: #fff;
+  border-radius: 18px;
+  padding: 14px 14px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  cursor: pointer;
+  transition: transform 120ms ease, border-color 120ms ease, background 120ms ease;
+
+  &:hover {
+    transform: translateY(-1px);
+    border-color: #dbe6f3;
+    background: #fbfcfe;
+  }
+
+  .icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    border: 1px solid transparent;
+    flex: 0 0 auto;
+  }
+
+  .txt {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 3px;
+
+    .t {
+      font-size: 14px;
+      font-weight: 820;
+      color: #0f172a;
+    }
+
+    .s {
+      font-size: 12.5px;
+      color: #7b8a99;
+    }
+  }
+}
+
+.action-btn--add .icon {
+  background: #eef6ff;
+  color: #1d4ed8;
+  border-color: #dbeafe;
+}
+
+.action-btn--remove .icon {
+  background: #fff1f2;
+  color: #b91c1c;
+  border-color: #fee2e2;
+}
+
+.action-btn--history .icon {
+  background: #f6f8fb;
+  color: #475569;
+  border-color: #eef2f6;
+}
+
+.vf-error {
+  margin-top: 8px;
+  font-size: 12.5px;
+  color: #b91c1c;
+  background: #fff1f2;
+  border: 1px solid #fee2e2;
+  padding: 8px 10px;
+  border-radius: 12px;
+}
+
+.empty-state {
+  border: 1px dashed #dbe6f3;
+  background: #fbfcfe;
+  border-radius: 16px;
+  padding: 16px;
+  text-align: center;
+
+  .k {
+    font-size: 13.5px;
+    font-weight: 820;
+    color: #0f172a;
+  }
+
+  .s {
+    margin-top: 6px;
+    font-size: 12.5px;
+    color: #7b8a99;
+  }
+}
+
+.btn.is-disabled,
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed !important;
+  pointer-events: none; // ✅ ni click, ni magia negra
+}
+
+.btn--primary.is-disabled,
+.btn--primary:disabled {
+  background: rgba(59, 130, 246, 0.55) !important;
+}

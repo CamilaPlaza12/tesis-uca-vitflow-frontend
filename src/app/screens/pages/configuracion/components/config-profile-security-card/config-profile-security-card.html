@@ -1,0 +1,58 @@
+<section class="card">
+  <div class="card__head">
+    <div class="headLeft">
+      <div class="icon">👤</div>
+      <div>
+        <div class="title">Mi perfil</div>
+        <div class="sub">Datos de tu cuenta</div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button *ngIf="!editing" type="button" class="btn btn--ghost" (click)="startEdit()">
+        Editar
+      </button>
+
+      <button *ngIf="editing" type="button" class="btn btn--ghost" (click)="cancelEdit()" [disabled]="saving">
+        Cancelar
+      </button>
+
+      <button *ngIf="editing" type="button" class="btn btn--primary" (click)="submit()" [disabled]="saving">
+        {{ saving ? 'Guardando…' : 'Guardar' }}
+      </button>
+    </div>
+  </div>
+
+  <div class="card__body">
+    <div class="topRow">
+      <div class="chip">
+        <div class="chip__k">Email</div>
+        <div class="chip__v">{{ email }}</div>
+      </div>
+
+      <div class="pill" [class.pill--admin]="roleLabel === 'Administrador'">
+        {{ roleLabel }}
+      </div>
+    </div>
+
+    <div class="form">
+      <label class="field">
+        <span>Nombre</span>
+        <input [(ngModel)]="form.firstName" [disabled]="!editing || saving" placeholder="Nombre" />
+      </label>
+
+      <label class="field">
+        <span>Apellido</span>
+        <input [(ngModel)]="form.lastName" [disabled]="!editing || saving" placeholder="Apellido" />
+      </label>
+
+      <label class="field field--full">
+        <span>Teléfono</span>
+        <input [(ngModel)]="form.phone" [disabled]="!editing || saving" placeholder="Teléfono" />
+      </label>
+    </div>
+
+    <div class="status" *ngIf="ok">✅ Guardado</div>
+    <div class="status status--err" *ngIf="error">{{ error }}</div>
+  </div>
+</section>

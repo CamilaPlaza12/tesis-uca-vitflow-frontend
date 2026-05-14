@@ -1,0 +1,67 @@
+<div class="registro-block">
+  <div class="registro-header">
+    <i class="pi pi-user-plus registro-header__icon"></i>
+    <span class="registro-header__title">Registrar llegada de donante</span>
+  </div>
+
+  <form class="registro-form" [formGroup]="form" (ngSubmit)="onRegistrar()" autocomplete="off">
+    <label class="dni-label">DNI del donante</label>
+    <div class="input-row">
+      <input
+        #dniInput
+        type="text"
+        class="dni-input"
+        formControlName="dni"
+        placeholder="Ej: 12345678"
+        inputmode="numeric"
+        maxlength="8"
+        (keydown.enter)="onRegistrar()"
+        autocomplete="off"
+      />
+      <button
+        type="button"
+        class="btn-add"
+        (click)="onRegistrar()"
+        [disabled]="loading"
+        aria-label="Registrar donación"
+      >
+        <i class="pi pi-spin pi-spinner" *ngIf="loading"></i>
+        <i class="pi pi-plus" *ngIf="!loading"></i>
+      </button>
+    </div>
+
+    <div class="field-error" *ngIf="dniDuplicado">
+      Este DNI ya fue registrado en este evento
+    </div>
+
+    <div class="field-error" *ngIf="dniCtrl?.invalid && dniCtrl?.touched && !dniDuplicado">
+      <span *ngIf="dniCtrl?.errors?.['required']">El DNI es requerido</span>
+      <span *ngIf="dniCtrl?.errors?.['pattern'] && !dniCtrl?.errors?.['required']">
+        El DNI debe tener entre 7 y 8 dígitos numéricos
+      </span>
+    </div>
+  </form>
+
+  <div class="sin-clasificar-badge" *ngIf="sinClasificar > 0">
+    <i class="pi pi-clock"></i>
+    {{ sinClasificar }} donación{{ sinClasificar !== 1 ? 'es' : '' }} sin clasificar
+  </div>
+  <div class="sin-clasificar-ok" *ngIf="sinClasificar === 0 && !cargandoDashboard">
+    <i class="pi pi-check-circle"></i>
+    Todo clasificado
+  </div>
+
+  <div
+    class="toast"
+    *ngIf="toastOpen"
+    [class.toast--success]="toastKind === 'success'"
+    [class.toast--error]="toastKind === 'error'"
+    (click)="closeToast()"
+    role="status"
+    aria-live="polite"
+  >
+    <span class="dot"></span>
+    <span class="txt">{{ toastText }}</span>
+    <span class="x">✕</span>
+  </div>
+</div>

@@ -1,0 +1,109 @@
+<div class="card">
+  <div class="card__header">
+    <h2>Umbrales mínimos</h2>
+    <span class="hint">Editá por grupo</span>
+  </div>
+
+  <div class="table-wrap">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Grupo/Rh</th>
+          <th>Stock (unidades)</th>
+          <th>Umbral mínimo (unidades)</th>
+          <th>Estado</th>
+          <th class="actions-col"></th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let type of bloodTypes" class="row">
+          <td class="mono">{{ type }}</td>
+          <td class="mono">{{ stocks[type] }}</td>
+          <td class="mono">{{ (thresholds[type] ?? 0) }}</td>
+
+          <td>
+            <span
+              class="status"
+              [class.status--ok]="getStatus(type) === 'ok'"
+              [class.status--bajo]="getStatus(type) === 'bajo'"
+              [class.status--critico]="getStatus(type) === 'critico'"
+            >
+              {{ statusLabel(getStatus(type)) }}
+            </span>
+          </td>
+
+          <td class="actions-col">
+            <button
+              class="icon-btn"
+              type="button"
+              (click)="openEdit(type); $event.stopPropagation()"
+              aria-label="Editar umbral"
+            >
+              <i class="pi pi-pencil"></i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Modal edición -->
+<p-dialog
+  [(visible)]="editOpen"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [closable]="true"
+  [dismissableMask]="true"
+  maskStyleClass="vf-thr-mask"
+  styleClass="vf-thr-dialog"
+  [style]="{ width: '460px' }"
+  [baseZIndex]="10000"
+  (onHide)="cancelEdit()"
+>
+  <!-- Header custom -->
+  <ng-template pTemplate="header">
+    <div class="vf-thr__header">
+      <div class="vf-thr__title">
+        <div class="h">Editar umbral mínimo</div>
+        <div class="s">Definí el mínimo para alertas y color del gráfico</div>
+      </div>
+
+      <div class="vf-thr__chip mono">{{ editType }}</div>
+    </div>
+  </ng-template>
+
+  <!-- Content -->
+  <div class="vf-thr__body">
+    <div class="vf-field">
+      <label class="vf-label">Grupo</label>
+      <div class="vf-value mono">{{ editType }}</div>
+    </div>
+
+    <div class="vf-field">
+      <label class="vf-label">Umbral mínimo (unidades)</label>
+      <div class="vf-control">
+        <p-inputNumber
+          [(ngModel)]="editValue"
+          [min]="0"
+          [max]="5000000"
+          [useGrouping]="true"
+          [style]="{ width: '100%' }"
+        ></p-inputNumber>
+        <div class="vf-help">
+          Se usa para colorear el gráfico y disparar alertas automáticas.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <ng-template pTemplate="footer">
+    <div class="vf-thr__footer">
+      <button class="btn btn--ghost" type="button" (click)="cancelEdit()">Cancelar</button>
+      <button class="btn btn--primary" type="button" (click)="saveEdit()">Guardar</button>
+    </div>
+  </ng-template>
+</p-dialog>

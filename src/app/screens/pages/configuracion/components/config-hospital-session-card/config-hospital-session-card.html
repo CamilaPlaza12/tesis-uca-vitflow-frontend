@@ -1,0 +1,57 @@
+<section class="card">
+  <div class="card__head">
+    <div class="headLeft">
+      <div class="icon">🏥</div>
+      <div>
+        <div class="title">
+          Hospital asociado
+          <span class="badge" *ngIf="verified">Verificado</span>
+        </div>
+        <div class="sub">Datos operativos</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card__body">
+    <div class="hero">
+      <div class="hero__name">{{ hospitalName }}</div>
+      <div class="hero__hint">Banco de sangre • Gestión interna</div>
+    </div>
+
+    <div class="info">
+      <div class="row">
+        <div class="k">Email</div>
+        <div class="v">{{ hospitalEmail }}</div>
+      </div>
+
+      <div class="row">
+        <div class="k">Teléfono</div>
+        <div class="v">{{ hospitalPhone }}</div>
+      </div>
+
+      <div class="row row--full">
+        <div class="k">Dirección</div>
+        <div class="v">{{ addressLine }}</div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="logout">
+      <div class="logout__t">Sesión</div>
+      <div class="logout__s">Cerrá sesión si estás en un dispositivo compartido.</div>
+
+      <button type="button" class="btn btn--danger" (click)="openConfirm()">
+        Cerrar sesión
+      </button>
+
+      <div class="confirm" *ngIf="confirmOpen">
+        <div class="confirm__title">¿Cerrar sesión?</div>
+        <div class="confirm__actions">
+          <button type="button" class="btn btn--ghost" (click)="cancel()">Cancelar</button>
+          <button type="button" class="btn btn--dangerSmall" (click)="confirm()">Sí, salir</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
