@@ -7,7 +7,7 @@ import { AuthService } from './auth_service';
 type LoginResult = { ok: true } | { ok: false; message: string };
 
 @Injectable({ providedIn: 'root' })
-export class UserService {h
+export class UserService {
   currentUser: User | null = null;
 
   currentUserData: any = null;
