@@ -52,7 +52,6 @@ export class AuthInterceptor implements HttpInterceptor {
               this.isRefreshing = false;
 
               if (retryError.status === 401) {
-                console.error('Token refresh failed. Logging out.');
                 this.authService.logout();
               }
 
@@ -80,7 +79,6 @@ export class AuthInterceptor implements HttpInterceptor {
       });
 
     } catch (error) {
-      console.error('Error getting token:', error);
       this.authService.logout();
       return req;
     }

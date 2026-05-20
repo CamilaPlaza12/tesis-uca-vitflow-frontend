@@ -64,7 +64,6 @@ export class PedidosAlertas implements OnInit {
         });
       },
       error: (err) => {
-        console.error(err);
         this.cargando = false;
         this.cdr.detectChanges();
       },

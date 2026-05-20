@@ -74,7 +74,6 @@ export class EquipoRoles implements OnInit {
 
     this.equipoRolesService.getUsers().subscribe({
       next: (users) => {
-        console.log('USERS BACK:', users);
         this.miembros = users || [];
         this.cargando = false;
         this.cdr.detectChanges();

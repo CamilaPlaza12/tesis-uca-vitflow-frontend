@@ -250,7 +250,6 @@ export class PedidoDetalle implements OnChanges {
         this.close();
       },
       error: (err: any) => {
-        console.error('Error actualizando pedido', err);
         this.errorMsg = 'No se pudo guardar el pedido.';
       },
     });

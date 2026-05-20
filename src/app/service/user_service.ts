@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, firstValueFrom } from 'rxjs';
 import { signInWithEmailAndPassword, User } from 'firebase/auth';
 import { auth } from './firebaseconfig';
@@ -22,8 +22,6 @@ export class UserService {
       const cred = await signInWithEmailAndPassword(auth, email, password);
       this.currentUser = cred.user;
 
-      const token = await cred.user.getIdToken();
-
       const data = await this.fetchUserData();
 
       this.currentUserData = data;
@@ -31,8 +29,6 @@ export class UserService {
 
       return { ok: true };
     } catch (e: any) {
-      console.error('Login error:', e);
-
       // Firebase suele venir con e.code
       const code = String(e?.code ?? '');
 

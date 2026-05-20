@@ -188,7 +188,6 @@ export class RegisterWizard {
       this.router.navigate(['/signin'], { replaceUrl: true });
 
     } catch (error) {
-      console.error(error);
       this.errorMsg = 'No pudimos enviar la solicitud. Intentá nuevamente.';
     } finally {
       this.loading = false;

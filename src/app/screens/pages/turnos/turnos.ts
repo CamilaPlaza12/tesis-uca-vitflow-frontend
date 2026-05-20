@@ -77,7 +77,6 @@ export class Turnos implements OnInit {
     this.turnoService.getTurnosWindowMonths().subscribe({
       next: (rows) => (this.turnos = rows ?? []),
       error: (e) => {
-        console.error('Error al cargar turnos:', e);
         this.turnos = [];
       },
     });
@@ -92,7 +91,6 @@ export class Turnos implements OnInit {
         this.disponibilidad = payload?.days ?? null;
       },
       error: (e) => {
-        console.error('Error al cargar disponibilidad:', e);
         this.disponibilidad = null;
       },
       complete: () => {
@@ -210,7 +208,6 @@ export class Turnos implements OnInit {
         this.closeAvailabilityConfig();
       },
       error: (e) => {
-        console.error('Error al guardar disponibilidad:', e);
         this.availabilitySaveError =
           e?.error?.detail ?? 'No se pudo guardar la disponibilidad. Revisá el backend/token.';
       },
@@ -443,7 +440,6 @@ export class Turnos implements OnInit {
         this.loadingHistorico = false;
       },
       error: (err) => {
-        console.error(err);
         this.turnosHistorico = [];
         this.errorHistorico = 'No se pudo cargar el histórico';
         this.loadingHistorico = false;

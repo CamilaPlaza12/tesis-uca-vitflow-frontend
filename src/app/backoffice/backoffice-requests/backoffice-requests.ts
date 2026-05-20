@@ -89,7 +89,6 @@ export class BackofficeRequests implements OnInit {
     });
 
   } catch (e) {
-    console.error(e);
     this.zone.run(() => {
       this.errorMsg = 'No se pudieron cargar las solicitudes.';
       this.loading = false;
@@ -186,7 +185,6 @@ export class BackofficeRequests implements OnInit {
     await this.loadRequests();
 
   } catch (e) {
-    console.error(e);
     this.zone.run(() => {
       this.confirmError = 'No se pudo completar la acción.';
       this.cdr.detectChanges();

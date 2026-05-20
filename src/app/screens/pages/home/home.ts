@@ -131,8 +131,7 @@ export class Home implements OnInit {
         this.loading = false;
         this.cdr.detectChanges();
       },
-      error: (err) => {
-        console.error('Error loading home summary:', err);
+      error: (_err) => {
         this.loading = false;
         this.cdr.detectChanges();
       },
@@ -156,9 +155,7 @@ export class Home implements OnInit {
           }));
         this.cdr.detectChanges();
       },
-      error: (err) => {
-        console.error('Error loading active requests:', err);
-      },
+      error: () => {},
     });
   }
 
@@ -168,9 +165,7 @@ export class Home implements OnInit {
         this.kpiTotalUnits = data.total ?? 0;
         this.cdr.detectChanges();
       },
-      error: (err) => {
-        console.error('Error loading stock totales:', err);
-      },
+      error: () => {},
     });
   }
 
@@ -198,9 +193,7 @@ export class Home implements OnInit {
           }));
         this.cdr.detectChanges();
       },
-      error: (err) => {
-        console.error('Error loading appointments window:', err);
-      },
+      error: () => {},
     });
   }
 
@@ -223,8 +216,7 @@ export class Home implements OnInit {
         this.stockDashboardLoading = false;
         this.cdr.detectChanges();
       },
-      error: (err) => {
-        console.error('Error loading stock dashboard:', err);
+      error: () => {
         this.stockDashboardLoading = false;
         this.cdr.detectChanges();
       },

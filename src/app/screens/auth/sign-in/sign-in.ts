@@ -69,7 +69,6 @@ export class SignIn {
 
       this.showError('No se pudo iniciar sesión', result.message);
     } catch (e) {
-      console.error(e);
       this.showError('Ups…', 'Ocurrió un error inesperado. Probá de nuevo en unos segundos.');
     } finally {
       this.loading = false;
@@ -77,7 +76,7 @@ export class SignIn {
     }
   }
 
-  onGoogleSignIn(): void { console.log('Google sign in clickeado'); }
-  onForgotPassword(): void { console.log('Olvidé mi contraseña clickeado'); }
+  onGoogleSignIn(): void {}
+  onForgotPassword(): void {}
   onRequestAccess(): void { this.router.navigate(['/register']); }
 }
