@@ -18,8 +18,7 @@ import { AuthService } from '../service/auth_service';
 export class AuthInterceptor implements HttpInterceptor {
 
   private isRefreshing = false;
-  private readonly API_BASE = 'http://localhost:8000/api/v1';
-  //private readonly API_BASE = 'https://vitflow-backend.onrender.com/api/v1';
+  private readonly API_BASE = 'https://vitflow-backend.onrender.com/api/v1';
 
   constructor(private authService: AuthService) {}
 
