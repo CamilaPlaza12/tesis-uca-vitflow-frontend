@@ -94,8 +94,7 @@ export class Home implements OnInit {
   activeRequests: ActiveRequestRow[] = [];
 
   loading = false;
-  private baseUrl = 'http://localhost:8000/api/v1';
-  //private baseUrl = 'https://vitflow-backend.onrender.com/api/v1';
+  private baseUrl = 'https://vitflow-backend.onrender.com/api/v1';
 
   constructor(
     private router: Router,
