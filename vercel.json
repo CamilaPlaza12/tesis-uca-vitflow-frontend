@@ -1,0 +1,8 @@
+{
+    "buildCommand": "ng build",
+    "outputDirectory": "dist/vitflow-frontend/browser",
+    "framework": null,
+    "rewrites": [
+          { "source": "/(.*)", "destination": "/index.html" }
+    ]
+}

@@ -14,7 +14,7 @@ import {
 
 @Injectable({ providedIn: 'root' })
 export class EventosService {
-  private base = 'http://localhost:8000/api/v1';
+    private base = 'https://vitflow-backend.onrender.com/api/v1';
 
   constructor(private http: HttpClient) {}
 

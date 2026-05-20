@@ -25,8 +25,8 @@ export interface ConfirmarDonacionResponse {
 
 @Injectable({ providedIn: 'root' })
 export class StockService {
-  private base = 'http://localhost:8000/api/v1';
-  //private base = 'https://vitflow-backend.onrender.com/api/v1';
+  //private base = 'http://localhost:8000/api/v1';
+  private base = 'https://vitflow-backend.onrender.com/api/v1';
 
   constructor(private http: HttpClient) {}
 
