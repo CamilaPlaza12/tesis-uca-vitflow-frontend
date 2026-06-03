@@ -167,6 +167,11 @@
     color: #b91c1c;
     border-color: #fee2e2;
   }
+  &.status--finalizado {
+    background: #f0f7f4;
+    color: #2d6a4f;
+    border-color: #c3e6d8;
+  }
 }
 
 .empty {

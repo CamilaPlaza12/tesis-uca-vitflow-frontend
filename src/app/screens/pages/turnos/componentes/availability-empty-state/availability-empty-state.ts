@@ -8,9 +8,10 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 })
 export class AvailabilityEmptyState {
   @Input() open = false;
+  @Input() readOnly = false;
   @Output() configure = new EventEmitter<void>();
 
   onClick(): void {
-    this.configure.emit();
+    if (!this.readOnly) this.configure.emit();
   }
 }

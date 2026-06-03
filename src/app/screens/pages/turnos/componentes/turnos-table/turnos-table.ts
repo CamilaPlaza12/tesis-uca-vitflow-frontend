@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Turno, DonationType, AppointmentStatus } from '../../../../../models/turno';
 
 type TipoFiltro = 'TODOS' | DonationType;
+type EstadoFiltro = 'TODOS' | AppointmentStatus;
 
 @Component({
   selector: 'app-turnos-table',
@@ -28,6 +29,7 @@ export class TurnosTable {
 
   donante = '';
   tipo: TipoFiltro = 'TODOS';
+  estado: EstadoFiltro = 'TODOS';
 
   onDesdeChange(v: string): void {
     const next = this.clampToToday(v);
@@ -50,6 +52,7 @@ export class TurnosTable {
     this.hasta = this.todayStr;
     this.donante = '';
     this.tipo = 'TODOS';
+    this.estado = 'TODOS';
     this.clearFilters.emit();
   }
 
@@ -101,7 +104,8 @@ export class TurnosTable {
         const okFecha = this.inRange(t.date_local);
         const okDon = !qDon || ((t.donor?.full_name || '').toLowerCase().includes(qDon));
         const okTipo = this.tipo === 'TODOS' || t.donation_type === this.tipo;
-        return okFecha && okDon && okTipo;
+        const okEstado = this.estado === 'TODOS' || t.status === this.estado;
+        return okFecha && okDon && okTipo && okEstado;
       })
       .sort((a, b) => this.turnoDateTime(b) - this.turnoDateTime(a));
   }

@@ -8,6 +8,7 @@ import {
   UmbralStock,
 } from '../../../models/blood-bank.model';
 import { StockService } from '../../../service/stock_service';
+import { UserService } from '../../../service/user_service';
 import { COMPONENT_COLORS } from '../../../models/component-colors';
 import { firstValueFrom } from 'rxjs';
 
@@ -125,9 +126,14 @@ export class Bancos implements OnInit {
 
   constructor(
     private stockService: StockService,
+    private userService: UserService,
     private cdr: ChangeDetectorRef,
     private zone: NgZone
   ) {}
+
+  get isAdmin(): boolean {
+    return this.userService.currentUserData?.user?.role === 'HOSPITAL_ADMIN';
+  }
 
   ngOnInit(): void {
     COMPONENTES.forEach((c) => this.loadComponente(c));

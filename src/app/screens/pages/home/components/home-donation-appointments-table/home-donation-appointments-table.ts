@@ -60,8 +60,9 @@ export class HomeDonationAppointmentsTableComponent {
       case 'PENDIENTE_CLASIFICACION':
         return 'info';
       case 'CANCELADO':
-      case 'NO_PRESENTADO':
         return 'danger';
+      case 'NO_PRESENTADO':
+        return 'neutral';
       default:
         return 'neutral';
     }

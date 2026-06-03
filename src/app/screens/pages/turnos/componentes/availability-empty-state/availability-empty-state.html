@@ -10,7 +10,7 @@
       </p>
     </div>
 
-    <div class="empty__cta">
+    <div class="empty__cta" *ngIf="!readOnly">
       <button class="btn btn--primary" type="button" (click)="onClick()">
         Configurar disponibilidad
       </button>
