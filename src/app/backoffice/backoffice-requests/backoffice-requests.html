@@ -19,6 +19,15 @@
 
   <main class="bo-page">
 
+    <!-- ACCESO DENEGADO -->
+    <div class="bo-access-denied" *ngIf="accessDenied">
+      <div class="bo-access-denied__icon">🔒</div>
+      <div class="bo-access-denied__title">Acceso denegado</div>
+      <div class="bo-access-denied__sub">No tenés permisos para acceder a esta sección.</div>
+    </div>
+
+    <ng-container *ngIf="!accessDenied">
+
     <div class="bo-hero">
       <div>
         <div class="bo-title">Solicitudes de alta</div>
@@ -26,6 +35,23 @@
           Revisá instituciones registradas y aprobá o rechazá la validación.
         </div>
       </div>
+
+      <!-- Jobs -->
+      <div class="bo-jobs">
+        <button class="bo-job-btn" type="button" (click)="openJobConfirm('finalizar')" [disabled]="jobLoading">
+          <i class="pi pi-check-circle"></i>
+          Finalizar pedidos vencidos
+        </button>
+        <button class="bo-job-btn" type="button" (click)="openJobConfirm('no-presentados')" [disabled]="jobLoading">
+          <i class="pi pi-user-minus"></i>
+          Marcar turnos no presentados
+        </button>
+      </div>
+    </div>
+
+    <!-- RESULTADO JOB -->
+    <div class="bo-job-result" *ngIf="jobResultMsg">
+      {{ jobResultMsg }}
     </div>
 
     <!-- LOADER -->
@@ -75,7 +101,7 @@
     <!-- EMPTY -->
     <div
       class="bo-empty"
-      *ngIf="!loading && pendingRequests.length === 0"
+      *ngIf="!loading && pendingRequests.length === 0 && !errorMsg"
     >
       <div class="bo-empty-title">
         No hay solicitudes pendientes
@@ -85,8 +111,23 @@
       </div>
     </div>
 
+    </ng-container>
+
   </main>
 </div>
+
+<!-- JOB CONFIRM MODAL -->
+<app-confirm-modal
+  [open]="jobConfirmOpen"
+  [title]="jobConfirmTitle"
+  [message]="jobConfirmMessage"
+  confirmText="Ejecutar"
+  cancelText="Cancelar"
+  [loading]="jobLoading"
+  [error]="jobError"
+  (confirm)="onConfirmJob()"
+  (cancel)="closeJobConfirm()"
+></app-confirm-modal>
 
 <!-- DETAIL PANEL -->
 <div class="bo-backdrop" *ngIf="selected" (click)="closeDetail()">

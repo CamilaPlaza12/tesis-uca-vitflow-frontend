@@ -401,3 +401,75 @@
   transform: none;
   box-shadow: none;
 }
+
+/* Access denied */
+.bo-access-denied {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 3rem 1rem;
+  text-align: center;
+}
+
+.bo-access-denied__icon {
+  font-size: 2.5rem;
+  line-height: 1;
+}
+
+.bo-access-denied__title {
+  font-size: 1.2rem;
+  font-weight: 900;
+  color: #111827;
+}
+
+.bo-access-denied__sub {
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+/* Jobs section */
+.bo-jobs {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.bo-job-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.55rem 1rem;
+  border-radius: 12px;
+  border: 1px solid rgba(209, 213, 219, 0.95);
+  background: #fff;
+  font-size: 0.85rem;
+  font-weight: 850;
+  color: #374151;
+  cursor: pointer;
+  transition: background 120ms ease, border-color 120ms ease, transform 100ms ease;
+}
+
+.bo-job-btn:hover:not(:disabled) {
+  background: #f6f8fb;
+  border-color: #cbd5e1;
+  transform: translateY(-1px);
+}
+
+.bo-job-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* Job result message */
+.bo-job-result {
+  background: #ecfdf5;
+  border: 1px solid #d1fae5;
+  color: #047857;
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 750;
+  margin-bottom: 1rem;
+}

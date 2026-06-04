@@ -114,7 +114,11 @@
               </td>
 
               <td>
-                <button class="icon-btn" (click)="openEditUmbral(getUmbral(comp.key, bt)!)">
+                <button
+                  *ngIf="isAdmin"
+                  class="icon-btn"
+                  (click)="openEditUmbral(getUmbral(comp.key, bt)!)"
+                >
                   <i class="pi pi-pencil"></i>
                 </button>
               </td>

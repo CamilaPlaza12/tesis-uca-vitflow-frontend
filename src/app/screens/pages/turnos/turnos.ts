@@ -4,6 +4,7 @@ import { AccionTurno, canClasificar } from './turno-actions.policy';
 import { AvailabilityDay, HospitalAvailability } from '../../../models/disponibilidad';
 import { TurnoService, UnidadCreada, ClasificarComponentesResponse } from '../../../service/turno_service';
 import { AvailabilityService } from '../../../service/availability_service';
+import { UserService } from '../../../service/user_service';
 import { ComponenteSanguineo } from '../../../models/blood-bank.model';
 import { firstValueFrom } from 'rxjs';
 
@@ -65,8 +66,13 @@ export class Turnos implements OnInit {
   constructor(
     private turnoService: TurnoService,
     private availabilityService: AvailabilityService,
+    private userService: UserService,
     private cdr: ChangeDetectorRef
   ) {}
+
+  get isAdmin(): boolean {
+    return this.userService.currentUserData?.user?.role === 'HOSPITAL_ADMIN';
+  }
 
   ngOnInit(): void {
     this.loadTurnos();

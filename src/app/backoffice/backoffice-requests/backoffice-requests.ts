@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { OnboardingRequestsService } from '../../service/onboarding_request_service';
+import { AdminJobsService } from '../../service/admin_jobs_service';
 import { ChangeDetectorRef, NgZone } from '@angular/core';
 
 type OnboardingStatus = 'SUBMITTED' | 'APPROVED' | 'REJECTED';
@@ -44,6 +45,16 @@ export class BackofficeRequests implements OnInit {
   loading = false;
   loaded = false;
   errorMsg = '';
+  accessDenied = false;
+
+  // Jobs
+  jobConfirmOpen = false;
+  jobConfirmTitle = '';
+  jobConfirmMessage = '';
+  jobLoading = false;
+  jobResultMsg = '';
+  jobError = '';
+  private pendingJob: 'finalizar' | 'no-presentados' | null = null;
 
   requests: HospitalOnboardingRequest[] = [];
   pendingRequests: HospitalOnboardingRequest[] = [];
@@ -59,10 +70,11 @@ export class BackofficeRequests implements OnInit {
   private pendingAction: PendingAction | null = null;
 
   constructor(
-  private onboardingRequestsService: OnboardingRequestsService,
-  private cdr: ChangeDetectorRef,
-  private zone: NgZone
-) {}
+    private onboardingRequestsService: OnboardingRequestsService,
+    private adminJobsService: AdminJobsService,
+    private cdr: ChangeDetectorRef,
+    private zone: NgZone
+  ) {}
 
   async ngOnInit(): Promise<void> {
     await this.loadRequests();
@@ -88,14 +100,67 @@ export class BackofficeRequests implements OnInit {
       this.cdr.detectChanges();
     });
 
-  } catch (e) {
+  } catch (e: any) {
     this.zone.run(() => {
-      this.errorMsg = 'No se pudieron cargar las solicitudes.';
+      if (e?.status === 403) {
+        this.accessDenied = true;
+      } else {
+        this.errorMsg = 'No se pudieron cargar las solicitudes.';
+      }
       this.loading = false;
       this.cdr.detectChanges();
     });
   }
 }
+
+  openJobConfirm(job: 'finalizar' | 'no-presentados'): void {
+    this.pendingJob = job;
+    this.jobResultMsg = '';
+    this.jobError = '';
+    if (job === 'finalizar') {
+      this.jobConfirmTitle = 'Finalizar pedidos vencidos';
+      this.jobConfirmMessage = '¿Confirmás que querés finalizar todos los pedidos vencidos?';
+    } else {
+      this.jobConfirmTitle = 'Marcar turnos no presentados';
+      this.jobConfirmMessage = '¿Confirmás que querés marcar como "No se presentó" todos los turnos vencidos?';
+    }
+    this.jobConfirmOpen = true;
+  }
+
+  closeJobConfirm(): void {
+    if (this.jobLoading) return;
+    this.jobConfirmOpen = false;
+    this.pendingJob = null;
+  }
+
+  async onConfirmJob(): Promise<void> {
+    if (!this.pendingJob || this.jobLoading) return;
+    this.jobLoading = true;
+    this.jobError = '';
+
+    try {
+      const obs = this.pendingJob === 'finalizar'
+        ? this.adminJobsService.finalizarPedidosVencidos()
+        : this.adminJobsService.marcarNoPresentes();
+
+      const result = await firstValueFrom(obs);
+      const n = result?.updated ?? 0;
+
+      this.zone.run(() => {
+        this.jobConfirmOpen = false;
+        this.pendingJob = null;
+        this.jobResultMsg = `Operación completada. ${n} registro${n !== 1 ? 's' : ''} actualizado${n !== 1 ? 's' : ''}.`;
+        this.jobLoading = false;
+        this.cdr.detectChanges();
+      });
+    } catch (e: any) {
+      this.zone.run(() => {
+        this.jobError = e?.error?.detail ?? 'No se pudo ejecutar el job. Intentá de nuevo.';
+        this.jobLoading = false;
+        this.cdr.detectChanges();
+      });
+    }
+  }
 
   formatDate(iso: string): string {
     const d = new Date(iso);

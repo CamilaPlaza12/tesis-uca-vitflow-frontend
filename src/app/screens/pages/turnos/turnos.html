@@ -22,6 +22,7 @@
   <section class="onboarding" *ngIf="!availabilityLoading && showOnboarding">
     <app-availability-empty-state
       [open]="availabilityConfigOpen"
+      [readOnly]="!isAdmin"
       (configure)="openConfigFromOnboarding()"
     ></app-availability-empty-state>
 
@@ -76,6 +77,7 @@
           <div class="availability-bottom__title">Horarios de atención</div>
 
           <button
+            *ngIf="isAdmin"
             class="edit-icon"
             type="button"
             title="Editar disponibilidad"

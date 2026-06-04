@@ -72,6 +72,19 @@
       </select>
     </div>
 
+    <div class="field">
+      <label>Estado</label>
+      <select class="input" [(ngModel)]="estado">
+        <option value="TODOS">Todos</option>
+        <option value="PROGRAMADO">Programado</option>
+        <option value="CONFIRMADO">Confirmado</option>
+        <option value="COMPLETADO">Completado</option>
+        <option value="PENDIENTE_CLASIFICACION">Pend. clasificación</option>
+        <option value="NO_PRESENTADO">No se presentó</option>
+        <option value="CANCELADO">Cancelado</option>
+      </select>
+    </div>
+
     <button class="btn" type="button" (click)="buscar()" [disabled]="loading">
       {{ loading ? 'Buscando...' : 'Buscar' }}
     </button>

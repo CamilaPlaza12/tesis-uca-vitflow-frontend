@@ -60,7 +60,8 @@
               class="status"
               [class.status--pendiente]="p.status === 'ACTIVO'"
               [class.status--prep]="p.status === 'CANCELADO'"
-              [class.status--cancelado]="p.status === 'COMPLETO' || p.status === 'FINALIZADO'"
+              [class.status--cancelado]="p.status === 'COMPLETO'"
+              [class.status--finalizado]="p.status === 'FINALIZADO'"
             >
               {{ estadoLabel(p.status) }}
             </span>
