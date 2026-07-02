@@ -25,7 +25,7 @@ export class CrearPedido {
   today = new Date().toISOString().split('T')[0];
 
   servicios: HospitalUnit[] = [
-    'Urgencias',
+    'ITU',
     'Terapia Intensiva',
     'Guardia',
     'Quirofano',
@@ -46,7 +46,7 @@ export class CrearPedido {
   tiposRequest: HospitalRequestType[] = ['NORMAL', 'CAMPAÑA'];
 
   form = {
-    servicio: 'Urgencias' as HospitalUnit,
+    servicio: 'ITU' as HospitalUnit,
     componente: 'Sangre',
     grupoSanguineo: 'O-',
     solicitadoPor: '',
@@ -231,7 +231,7 @@ export class CrearPedido {
     this.form.comentarios = '';
     this.form.componente = 'Sangre';
     this.form.grupoSanguineo = 'O-';
-    this.form.servicio = 'Urgencias';
+    this.form.servicio = 'ITU';
     this.form.fechaVencimiento = '';
     this.form.tipoRequest = 'NORMAL';
   }

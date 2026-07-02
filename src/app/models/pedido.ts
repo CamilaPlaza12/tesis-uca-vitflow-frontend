@@ -8,7 +8,7 @@ export type HospitalRequestStatus =
   | 'FINALIZADO';
 
 export type HospitalUnit =
-  | 'Urgencias'
+  | 'ITU'
   | 'Terapia Intensiva'
   | 'Guardia'
   | 'Quirofano'
