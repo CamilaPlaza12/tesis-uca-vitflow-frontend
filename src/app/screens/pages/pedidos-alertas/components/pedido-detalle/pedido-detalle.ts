@@ -69,7 +69,7 @@ export class PedidoDetalle implements OnChanges {
   clasificarExito = false;
 
   servicios: HospitalUnit[] = [
-    'Urgencias',
+    'ITU',
     'Terapia Intensiva',
     'Guardia',
     'Quirofano',
